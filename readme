@@ -1,2 +1,5 @@
-# study
 对一些常用开源库接口的测试记录
+
+其中包含对openssl, libhv, jsoncpp, yaml-cpp, mysql, redis, protobuf, libfiber等接口的实际测试
+
+记录下来以方便后续使用
