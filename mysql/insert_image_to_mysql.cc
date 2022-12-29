@@ -45,8 +45,8 @@ int main(int argc, char **argv)
     }
 
     uint32_t imageSize = lseek(fd, 0, SEEK_END);
-    char *buf = new char[imageSize];
-    LOG_ASSERT(buf, "");
+    char *buf = new char[imageSize + 1];
+    LOG_ASSERT2(buf);
     uint32_t offset = 0;
     lseek(fd, 0, SEEK_SET);
     while (1) {
