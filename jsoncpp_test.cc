@@ -25,7 +25,6 @@ int main()
     array.append(array2);
     val1["array"] = array;
 
-    writer.enableYAMLCompatibility();
     Json::String str = writer.write(val1);
     std::cout << str << std::endl;
 
