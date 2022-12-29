@@ -1,0 +1,18 @@
+log:
+  leval: I
+  target: stdout|file
+  dateformat: "%.2d-%.2d %.2d:%.2d:%.2d.%.3ld"
+name: Barack Obama
+children:
+  - Sasha
+  - Malia
+
+array: [2, 3, 5, 7, 11]
+method: post  # should we change this method to get?
+test_operator:
+  - [1, 2, 3]
+alias:
+  - &fred
+    name: Fred
+    age: 42
+  - *fred

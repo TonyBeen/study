@@ -1,0 +1,29 @@
+
+all :
+	make write_protobuf
+	make read_protobuf
+	make write_protocol
+	make read_protocol
+
+write_protobuf: test_protobuf.cc msg.pb.cc
+	g++ $^ -o $@ -lprotobuf
+
+read_protobuf: read_protobuf.cc msg.pb.cc
+	g++ $^ -o $@ -lprotobuf
+
+msg.pb.cc : msg.proto
+	protoc $^ -I=. --cpp_out=.
+
+write_protocol : write_protocol.cc protocol.pb.cc
+	g++ $^ -o $@ -lprotobuf
+read_protocol : read_protocol.cc protocol.pb.cc
+	g++ $^ -o $@ -lprotobuf
+protocol.pb.cc : protocol.proto
+	protoc $^ -I=. --cpp_out=.
+
+.PHONY:
+	all write_protobuf read_protobuf write_protocol read_protocol clean
+
+clean:
+	rm -f write_protobuf read_protobuf write_protocol read_protocol \
+	 msg.pb.cc msg.pb.h protocol.pb.cc protocol.pb.h

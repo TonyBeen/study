@@ -1,0 +1,6 @@
+log:
+  level: info
+  target: stdout
+  sync: true
+  test:
+    - [1, 2, 3]

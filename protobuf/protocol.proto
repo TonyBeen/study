@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+message PeerInfo {
+    optional uint32  host_binary = 1;
+    optional uint32  port_binary = 2;
+    optional string  peer_uuid   = 3;
+    optional string  peer_name   = 4;
+}
+
+message P2SResponse {
+    required uint32     statuscode = 1;
+    required string     msg = 2;
+    repeated PeerInfo   info = 3;
+}
