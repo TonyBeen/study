@@ -9,15 +9,15 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-using namespace eular;
-void listmsg(const ProtoBufTest & msg)
+
+void listmsg(const eular::ProtoBufTest & msg)
 {
     std::cout << "0x" << std::hex  << msg.id() << std::endl;
     std::cout << msg.str() << std::endl;
 }
 int main(void)
 {
-    ProtoBufTest msg1;
+    eular::ProtoBufTest msg1;
     fstream input("./log", ios::in | ios::binary);
     if(!msg1.ParseFromIstream(&input)) { // 反序列化
         std::cerr << "Failed to prase address book" << std::endl;

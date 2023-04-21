@@ -1,5 +1,7 @@
 syntax = "proto2";
-package eular;
+
+package eular; // c++的命名空间
+
 message ProtoBufTest {
     required int32   id = 1;
     required string  str = 2;

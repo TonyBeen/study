@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package log;
+
+message LogContext {
+    uint32  level = 1;
+    uint64  millisecond = 2;
+    uint32  pid = 3;
+    uint32  tid = 4;
+    string  tag = 5;
+    string  msg = 6;
+    bool    enableColor = 7;
+}
