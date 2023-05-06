@@ -4,3 +4,13 @@ log:
   sync: true
   test:
     - [1, 2, 3]
+    - [4, 5, 6]
+array:
+  - 1
+  - 2
+  - 3
+containers:
+  - image: nginx:1.14
+    imagePullPolicy: IfNotPresent
+  - image: websocket:2.10
+    imagePullPolicy: IfNotPresent

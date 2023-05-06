@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XmlRdbCfg>
+    <ServerA>
+        <enable> 1 </enable>
+        <rdbname>127.0.0.1</rdbname>
+        <node>127.0.0.1</node>
+        <dbname> paradb </dbname>
+        <username> dbuser </username>
+        <password> 07cafa </password>
+        <debug> 1 </debug>
+        <ip>127.0.0.1</ip>
+        <detectport> 6750 </detectport>
+        <serverport> 3306 </serverport>
+        <timeout> 6 </timeout>
+    </ServerA>
+
+    <ServerB>
+        <enable> 0 </enable>
+        <rdbname>192.168.31.45</rdbname>
+        <node>192.168.31.45</node>
+        <dbname> paradb </dbname>
+        <username> dbuser </username>
+        <password> 07cafa </password>
+        <debug> 1 </debug>
+        <ip> 192.168.31.45 </ip>
+        <detectport> 6750 </detectport>
+        <serverport> 3306 </serverport>
+        <timeout> 6 </timeout>
+    </ServerB>
+
+    <RdbSchema>dbuser</RdbSchema>
+    <RdbFile> D:\data\sqlitedb\xm_2line.db </RdbFile>
+</XmlRdbCfg>

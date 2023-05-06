@@ -116,7 +116,7 @@ void ReadFormClient()
     }
     char readBuf[RD_BUF_SIZE] = {0};
     bzero(readBuf, RD_BUF_SIZE);
-    int readSize = ::read(gClientFd, readBuf, RD_BUF_SIZE);
+    int readSize = ::recv(gClientFd, readBuf, RD_BUF_SIZE, 0);
     if (readSize < 0) {
         LOGE("read error. error code = %d, error message: %s", errno, strerror(errno));
         if (errno == ECONNRESET) {

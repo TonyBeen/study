@@ -40,7 +40,54 @@ int main()
     cout << (*config)["log"]["level"].as<std::string>() << endl;
     (*config)["log"]["level"] = "info";
 
-    fstream fout("./config.yml");
-    fout << *config;
+    cout << (*config)["log"]["sync"].as<bool>() << endl;
+
+    {
+        std::cout << "*******************************************************\n";
+        auto node = (*config)["log"]["test"];
+        cout << "test type = " << node.Type() << ", style = " << node.Style() << endl;
+        if (node.IsSequence()) {
+            for (int i = 0; i < node.size(); ++i) {
+                const YAML::Node &temp = node[i];
+                cout << "type = " << temp.Type() << endl;
+                cout << node[i] << endl;
+                if (temp.IsSequence()) {
+                    for (int i = 0; i < temp.size(); ++i) {
+                        cout << temp[i].as<int>() << "\t";
+                    }
+                }
+                cout << endl;
+            }
+        }
+    }
+    
+    {
+        std::cout << "*******************************************************\n";
+        auto node = (*config)["array"];
+        cout << "array type = " << node.Type() << ", style = " << node.Style() << endl;
+        if (node.IsSequence()) {
+            for (int i = 0; i < node.size(); ++i) {
+                cout << node[i].Scalar() << ", tag = " << node[i].Tag() << endl;
+            }
+        }
+    }
+
+    {
+        std::cout << "*******************************************************\n";
+        const YAML::Node &node = (*config)["containers"];
+        cout << "containers type = " << node.Type() << ", style = " << node.Style() << endl;
+        if (node.IsSequence()) {
+            for (int i = 0; i < node.size(); ++i) {
+                const YAML::Node &temp = node[i];
+                cout << "type = " << temp.Type() << endl;
+                if (temp.IsMap()) {
+                    for (auto it = temp.begin(); it != temp.end(); ++it) {
+                        cout << "[" << it->first.Scalar() << ", " << it->second.Scalar() << "]\n";
+                    }
+                }
+            }
+        }
+    }
+
     return 0;
 }

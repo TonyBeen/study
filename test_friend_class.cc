@@ -32,6 +32,7 @@ public:
     {
         Base *b = new Drived;
         b->func();
+        delete b;
     }
 };
 

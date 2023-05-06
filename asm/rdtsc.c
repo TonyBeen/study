@@ -93,7 +93,7 @@ static pthread_once_t __once_control2 = PTHREAD_ONCE_INIT;
 
 static void time_metric_once(void)
 {
-	set_time_metric(1000);
+	set_time_metric(1);
 }
 
 int acl_fiber_gettimeofday(struct timeval *tv)

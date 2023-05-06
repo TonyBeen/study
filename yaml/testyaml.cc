@@ -12,14 +12,14 @@ void LoadYamlFile()
     YAML::Node config = YAML::LoadFile("./config.yaml");
     cout << config << endl;
 
-    /*     config["log"]["leval"] = "I";
-        std::string fmt = config["log"]["dateformat"].as<std::string>();
-        cout << fmt << endl;
-        char buf[32] = {0};
-        sprintf(buf, fmt.c_str(), 1, 1, 1, 1, 1, 1, 1);
-        cout << "buf = " << buf << "\n";
-        ofstream fout("./config.yaml");
-        fout << config; */
+    config["log"]["leval"] = "I";
+    std::string fmt = config["log"]["dateformat"].as<std::string>();
+    cout << fmt << endl;
+    char buf[32] = {0};
+    sprintf(buf, fmt.c_str(), 1, 1, 1, 1, 1, 1, 1);
+    cout << "buf = " << buf << "\n";
+    ofstream fout("./config.yaml");
+    fout << config;
 }
 
 void ConstructYaml_seq()
@@ -45,7 +45,24 @@ void ConstructYaml_map()
     out << YAML::Value << "Ryan Braun";
     out << YAML::Key << "position";
     out << YAML::Value << "LF";
+
+    out << YAML::Key << "seq";
+    out << YAML::Value << YAML::BeginSeq << "a" << "b" << "c" << YAML::EndSeq;
     out << YAML::EndMap;
+
+    ofstream fout("./config.yaml");
+    fout << out.c_str() << endl;
+}
+
+void ConstructYaml_doc()
+{
+    YAML::Emitter out;
+    out << YAML::BeginDoc;
+    out << YAML::BeginMap;
+    out << YAML::Key << "seq";
+    out << YAML::Value << YAML::BeginSeq << "a" << "b" << "c" << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::EndDoc;
 
     ofstream fout("./config.yaml");
     fout << out.c_str() << endl;
@@ -55,14 +72,35 @@ void map_seq()
 {
     YAML::Emitter out;
     out << YAML::BeginMap;
-    out << YAML::Key << "name";
-    out << YAML::Value << "Barack Obama";
-    out << YAML::Key << "children";
-    out << YAML::Value << YAML::BeginSeq << "Sasha"
-        << "Malia" << YAML::EndSeq;
+    
+    // student: [Sasha, Malia]
+    out << YAML::Key << "student";
+    out << YAML::Value << YAML::Flow << YAML::BeginSeq << "Sasha" << "Malia" << YAML::EndSeq;
+
+    // env:
+    // - name: NKCLD_HOME
+    //   value: /nkcld/nkcldrun
+    // - name: NKCLD3PATH
+    //   value: /nkcld/nkcld3
+    out << YAML::Key << "env";
+    out << YAML::Value;
+    out << YAML::BeginSeq;
+    out << YAML::BeginMap
+        << YAML::Key << "name" << YAML::Value << "NKCLD_HOME"
+        << YAML::Key << "value" << YAML::Value << "/nkcld/nkcldrun"
+        << YAML::EndMap;
+    out << YAML::BeginMap
+        << YAML::Key << "name" << YAML::Value << "NKCLD3PATH"
+        << YAML::Key << "value" << YAML::Value << "/nkcld/nkcld3"
+        << YAML::EndMap;
+    out << YAML::EndSeq;
+
     out << YAML::EndMap;
 
+    YAML::Emitter emit;
+
     ofstream fout("./config.yaml", ios::in | ios::out | ios::app);
+    std::cout << out.c_str() << std::endl;
     fout << out.c_str() << endl;
 }
 
@@ -72,7 +110,6 @@ void create_array()
     out << YAML::BeginMap;
     out << YAML::Key << "array";
     out << YAML::Value;
-    out << YAML::Flow;
     out << YAML::BeginSeq << 2 << 3 << 5 << 7 << 11 << YAML::EndSeq;
     out << YAML::EndMap;
 
@@ -145,6 +182,12 @@ void test_operator()
 
 int main()
 {
-    LoadYamlFile();
+    // ConstructYaml_seq();
+    // ConstructYaml_map();
+    // ConstructYaml_doc();
+    map_seq();
+    create_array();
+    // create_note();
+    // create_aliases_anchors();
     return 0;
 }

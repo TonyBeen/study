@@ -13,14 +13,17 @@ int main()
     val1["node"] = 100;
 
     Json::Value array;
+
     Json::Value array1;
     array1.append("array1");
     array1.append(true);
     array1.append(200);
+
     Json::Value array2;
     array2.append("array2");
     array2.append(false);
     array2.append(300);
+
     array.append(array1);
     array.append(array2);
     val1["array"] = array;
@@ -31,6 +34,7 @@ int main()
     str = style.write(val1);
     std::cout << str << std::endl;
 
+    std::cout << "***************************\n";
     Json::Value root;
     Json::Reader reader;
     reader.parse(str, root);
@@ -39,7 +43,7 @@ int main()
 
     array = root["array"];
     for (int i = 0; i < array.size(); ++i) {
-        std::cout << root["array"][i] << std::endl;
+        std::cout << root["array"][i].type() << ", " << root["array"][i] << std::endl;
     }
 
     return 0;

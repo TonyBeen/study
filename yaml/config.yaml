@@ -1,18 +1,24 @@
-log:
-  leval: I
-  target: stdout|file
-  dateformat: "%.2d-%.2d %.2d:%.2d:%.2d.%.3ld"
-name: Barack Obama
-children:
-  - Sasha
-  - Malia
-
-array: [2, 3, 5, 7, 11]
-method: post  # should we change this method to get?
-test_operator:
-  - [1, 2, 3]
-alias:
-  - &fred
-    name: Fred
-    age: 42
-  - *fred
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx-demo1
+  namespace: kube-public
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:1.14
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
