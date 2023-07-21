@@ -23,7 +23,7 @@
 
 #include <log/log.h>
 #include <utils/string8.h>
-#include <utils/Errors.h>
+#include <utils/errors.h>
 
 #define LOG_TAG "icmp"
 
