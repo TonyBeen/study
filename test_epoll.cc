@@ -235,11 +235,7 @@ int main(int argc, char **argv)
 
     LOGI("server fd[%d] waiting for client...", serverSock);
     std::thread th_1(std::bind(thread_1));
-    std::thread th_2(std::bind(thread_2));
 
     th_1.join();
-    th_2.join();
-    
-    exit(0);
     return 0;
 }

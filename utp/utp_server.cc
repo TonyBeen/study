@@ -474,7 +474,7 @@ int main(int argc, char **argv)
 {
     int option = 0;
     uint16_t localPort = 8000;
-    const char *localAddress = "10.0.24.17";
+    const char *localAddress = "127.0.0.1";
 
     while ((option = getopt(argc, argv, "hl:")) > 0)
     {

@@ -45,7 +45,7 @@ int main()
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family = PF_PACKET;
     server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = inet_addr("172.25.12.215"); // htonl(INADDR_ANY);
+    server_addr.sin_addr.s_addr = inet_addr("10.0.24.17"); // htonl(INADDR_ANY);
 
     int opt = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
