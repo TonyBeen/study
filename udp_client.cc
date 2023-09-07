@@ -48,11 +48,24 @@ int main(int argc, char **argv)
 
     struct sockaddr_in addr;
     socklen_t len = sizeof(sockaddr_in);
+    
+    int ufd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    assert(ufd > 0);
+
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr("10.0.24.17"); // IP地址，需要进行网络序转换，INADDR_ANY：本地地址
+    addr.sin_port = htons(10000);  // 端口号，需要网络序转换
+
+    int ret = bind(ufd, (struct sockaddr*)&addr, len);
+    if(ret < 0) {
+        perror("socket bind fail!");
+        return -1;
+    }
+
+    memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(host);
     addr.sin_port = htons(port);
-    int ufd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    assert(ufd > 0);
 
     char buf[128];
     while (true) {
