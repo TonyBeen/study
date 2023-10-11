@@ -6,6 +6,7 @@
  ************************************************************************/
 
 #include <string>
+#include <iostream>
 #include <stdio.h>
 using namespace std;
 
@@ -17,7 +18,7 @@ using namespace std;
 
 namespace eular {
 
-template<typename T>
+template<typename ...T>
 class Foo
 {
 public:
@@ -28,9 +29,10 @@ public:
 }
 
 template<typename T>
-void f()
+const char * f()
 {
     printf("%s\n", __PROPERTY_FUNCTION__);
+    return __PROPERTY_FUNCTION__;
 }
 
 int main()
@@ -43,6 +45,9 @@ int main()
     f<double>();
     f<eular::Foo<int32_t>>();
 
-    eular::Foo<double> foo;
+    eular::Foo<double, int32_t, int64_t, std::string> foo;
+
+    std::string view("Hello World", 2);
+    std::cout << view << std::endl;
     return 0;
 }

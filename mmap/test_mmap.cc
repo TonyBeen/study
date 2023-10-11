@@ -23,7 +23,7 @@
 
 void test_mmap_file(int argc, char **argv)
 {
-        char begin = 'A';
+    char begin = 'A';
     int distance = 'Z' - 'A';
     srand(time(nullptr));
 
