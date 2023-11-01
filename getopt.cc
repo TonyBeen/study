@@ -22,13 +22,16 @@ int main(int argc, char **argv)
             printf("h\n");
             break;
         case 'c':
-            printf("c\n");
-            printf("%s\n", optarg);
+            printf("c: %s\n", optarg);
             break;
         case 'p':
-            printf("p\n%s\n", optarg);
+            printf("p: %s\n", optarg);
+            break;
+        case '?':
+            printf("invalid param\n");
             break;
         default:
+            printf("default\n");
             break;
         }
     }
