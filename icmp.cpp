@@ -138,7 +138,6 @@ int main()
 
             LOGI("window size: %u, checksum: %u", tcpHeader->th_win, tcpHeader->th_sum);
             LOGI("window size: %u, checksum: %u", tcpHeader->window, tcpHeader->check);
-
         }
         sleep(1);
         
