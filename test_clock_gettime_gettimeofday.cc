@@ -73,6 +73,7 @@ void test_clock_gettime(int32_t type = CLOCK_MONOTONIC)
     uint64_t beginNS = begin.tv_sec * 1000 * 1000 * 1000 + begin.tv_nsec;
     uint64_t endNS = end.tv_sec * 1000 * 1000 * 1000 + end.tv_nsec;
 
+    // 经多次测试, 获取一次CLOCK_MONOTONIC大概耗时60 - 65纳秒, 普遍是62,63
     printf("clock_gettime(%s) consume %ldns\n", strType, (endNS - beginNS) / cycle);
 }
 
