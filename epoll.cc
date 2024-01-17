@@ -143,7 +143,7 @@ void ReadFormClient()
 
 int main(int argc, char *argv[])
 {
-    int serverSock = InitSocket();
+    int serverSock = InitSocket(15000);
     if (serverSock < 0) {
         return 0;
     }
