@@ -125,3 +125,26 @@ int main() {
     return 0;
 }
 
+
+/**
+// 删除带有文件的监控目录后触发的事件, IN_IGNORED表示表示监测的对象已经被移除或删除, 即使后面在目录恢复, 也不会在进行监测
+read length: 64
+wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: 
+wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: 
+wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: 
+wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: 
+
+read length: 48
+wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: 
+wd: 1, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: something.txt
+
+read length: 16
+wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: 
+
+read length: 16
+wd: 1, mask: 0x400(IN_DELETE_SELF), cookie: 0, len: 0, name: 
+
+read length: 16
+wd: 1, mask: 0x8000(IN_IGNORED), cookie: 0, len: 0, name: 
+
+*/
