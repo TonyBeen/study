@@ -14,6 +14,19 @@
 #define EVENT_SIZE  (sizeof(struct inotify_event))
 #define BUF_LEN     (1024 * (EVENT_SIZE + 16))
 
+
+/**
+struct inotify_event
+{
+    int wd;             // inotify_add_watch返回的文件描述符
+    uint32_t mask;      // 触发的事件
+    uint32_t cookie;    // 将两个事件关联 (cookie > 0时有效)
+    uint32_t len;       // name的长度, 为0表示空, 无需做任何处理
+    char name[];        // 操作的文件名字
+};
+
+*/
+
 void dump_event(struct inotify_event *ev)
 {
     std::string opTotal = "";
@@ -33,9 +46,9 @@ void dump_event(struct inotify_event *ev)
     if (ev->mask & IN_MOVE_SELF)        opTotal += "IN_MOVE_SELF | ";
 
     // Events sent by the kernel.
-    if (ev->mask & IN_UNMOUNT)          opTotal += "IN_UNMOUNT | ";
-    if (ev->mask & IN_Q_OVERFLOW)       opTotal += "IN_Q_OVERFLOW | ";
-    if (ev->mask & IN_IGNORED)          opTotal += "IN_IGNORED | ";
+    if (ev->mask & IN_UNMOUNT)          opTotal += "IN_UNMOUNT | ";     // 当监视的目录或文件所在的文件系统被卸载时, 会触发 IN_UNMOUNT 事件
+    if (ev->mask & IN_Q_OVERFLOW)       opTotal += "IN_Q_OVERFLOW | ";  // 当 inotify 事件队列溢出时, 会触发 IN_Q_OVERFLOW 事件. 事件可能会丢失.
+    if (ev->mask & IN_IGNORED)          opTotal += "IN_IGNORED | ";     // 当添加的监视被移除, 或者监视的目录被删除时, 会触发 IN_IGNORED 事件
 
     // Special flags
     if (ev->mask & IN_ONLYDIR)          opTotal += "IN_ONLYDIR | ";
@@ -48,7 +61,7 @@ void dump_event(struct inotify_event *ev)
     std::string temp(opTotal.c_str(), opTotal.length() - 3);
 
     printf("wd: %d, mask: %#x(%s), cookie: %#x, len: %u, name: %s\n",
-        ev->wd, ev->mask, temp.c_str(), ev->cookie, ev->len, ev->name);
+        ev->wd, ev->mask, temp.c_str(), ev->cookie, ev->len, ev->len > 0 ? ev->name : "(null)");
 }
 
 /**
@@ -125,9 +138,12 @@ int main() {
     return 0;
 }
 
+/*
+在dir目录下新建目录, 此时在新目录下操作不会触发事件, 需要调用inotify_add_watch将新目录加到监视器才能继续监视新目录
+*/
 
 /**
-// 删除带有文件的监控目录后触发的事件, IN_IGNORED表示表示监测的对象已经被移除或删除, 即使后面在目录恢复, 也不会在进行监测
+删除带有文件的监控目录后触发的事件, IN_IGNORED表示表示监测的对象已经被移除或删除, 即使后面在目录恢复, 也不会在进行监测
 read length: 64
 wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: 
 wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: 
@@ -147,4 +163,18 @@ wd: 1, mask: 0x400(IN_DELETE_SELF), cookie: 0, len: 0, name:
 read length: 16
 wd: 1, mask: 0x8000(IN_IGNORED), cookie: 0, len: 0, name: 
 
+*/
+
+/*
+修改dir目录下文件名字, 会依次触发IN_MOVED_FROM和IN_MOVED_TO事件, 并且cookie相同
+
+wd: 1, mask: 0x40(IN_MOVED_FROM), cookie: 0x1cfb, len: 16, name: soming.txt
+wd: 1, mask: 0x80(IN_MOVED_TO), cookie: 0x1cfb, len: 16, name: something.txt
+*/
+
+/*
+mv dir dir_new
+将dir目录重命名会触发IN_MOVE_SELF事件, 但不会触发IN_IGNORED事件, 即对dir_new目录的任何操作都会被继续监视
+
+wd: 1, mask: 0x800(IN_MOVE_SELF), cookie: 0, len: 0, name: (null)
 */
