@@ -47,16 +47,17 @@ void dump_event(struct inotify_event *ev)
 
     // Events sent by the kernel.
     if (ev->mask & IN_UNMOUNT)          opTotal += "IN_UNMOUNT | ";     // 当监视的目录或文件所在的文件系统被卸载时, 会触发 IN_UNMOUNT 事件
-    if (ev->mask & IN_Q_OVERFLOW)       opTotal += "IN_Q_OVERFLOW | ";  // 当 inotify 事件队列溢出时, 会触发 IN_Q_OVERFLOW 事件. 事件可能会丢失.
+    if (ev->mask & IN_Q_OVERFLOW)       opTotal += "IN_Q_OVERFLOW | ";  // 当 inotify 事件队列溢出时, 会触发 IN_Q_OVERFLOW 事件. 事件可能会丢失
     if (ev->mask & IN_IGNORED)          opTotal += "IN_IGNORED | ";     // 当添加的监视被移除, 或者监视的目录被删除时, 会触发 IN_IGNORED 事件
 
     // Special flags
-    if (ev->mask & IN_ONLYDIR)          opTotal += "IN_ONLYDIR | ";
-    if (ev->mask & IN_DONT_FOLLOW)      opTotal += "IN_DONT_FOLLOW | ";
-    if (ev->mask & IN_EXCL_UNLINK)      opTotal += "IN_EXCL_UNLINK | ";
-    if (ev->mask & IN_MASK_ADD)         opTotal += "IN_MASK_ADD | ";
-    if (ev->mask & IN_ISDIR)            opTotal += "IN_ISDIR | ";
-    if (ev->mask & IN_ONESHOT)          opTotal += "IN_ONESHOT | ";
+    if (ev->mask & IN_ONLYDIR)          opTotal += "IN_ONLYDIR | ";     // 表示只对目录进行监视. 如果被监视的对象不是一个目录, 则会返回一个错误
+    if (ev->mask & IN_DONT_FOLLOW)      opTotal += "IN_DONT_FOLLOW | "; // 指示不要跟随符号链接. 如果被监视的对象是一个符号链接, 且设置了该标志, 则不会跟随符号链接所指向的目标进行监视
+    if (ev->mask & IN_EXCL_UNLINK)      opTotal += "IN_EXCL_UNLINK | "; // 指示在监视文件或目录时忽略对其删除操作的事件. 即使文件或目录被删除, 也不会产生 IN_DELETE 或 IN_DELETE_SELF 事件
+    if (ev->mask & IN_MASK_ADD)         opTotal += "IN_MASK_ADD | ";    // 指示在监视目录时, 可以自动为新创建的项目添加监视
+    if (ev->mask & IN_ISDIR)            opTotal += "IN_ISDIR | ";       // 表示事件发生在一个目录上. 当使用 inotify_add_watch() 函数为目录添加监视时, 会自动设置这个标志
+    if (ev->mask & IN_ONESHOT)          opTotal += "IN_ONESHOT | ";     // 仅对一个事件生效. 当设置了该标志时, 在触发一次事件之后, 监视对象会被自动移除.
+                                                                        // IN_ONESHOT 标志仅对 inotify_add_watch() 函数有效, 不适用于 inotify_rm_watch() 函数
 
     std::string temp(opTotal.c_str(), opTotal.length() - 3);
 
@@ -144,6 +145,9 @@ int main() {
 
 /**
 删除带有文件的监控目录后触发的事件, IN_IGNORED表示表示监测的对象已经被移除或删除, 即使后面在目录恢复, 也不会在进行监测
+
+重要事件: IN_DELETE IN_DELETE_SELF IN_IGNORED
+
 read length: 64
 wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: 
 wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: 
@@ -174,7 +178,48 @@ wd: 1, mask: 0x80(IN_MOVED_TO), cookie: 0x1cfb, len: 16, name: something.txt
 
 /*
 mv dir dir_new
-将dir目录重命名会触发IN_MOVE_SELF事件, 但不会触发IN_IGNORED事件, 即对dir_new目录的任何操作都会被继续监视
+mv dir ../
+以上操作触发IN_MOVE_SELF事件, 但不会触发IN_IGNORED事件, 即在新的dir目录下的任何操作都会被继续监视
 
 wd: 1, mask: 0x800(IN_MOVE_SELF), cookie: 0, len: 0, name: (null)
+*/
+
+/*
+rm something.sss
+
+wd: 1, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: something.sss
+*/
+
+/*
+cp a.out ./dir
+
+read length: 64
+wd: 1, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: a.out
+
+read length: 64
+wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: a.out
+
+cp a.out dir -a
+read length: 160
+wd: 1, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: a.out
+wd: 1, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: a.out
+*/
+
+/*
+mv a.out dir
+
+read length: 32
+wd: 1, mask: 0x80(IN_MOVED_TO), cookie: 0x1d19, len: 16, name: a.out
+*/
+
+/*
+mv dir/a.out .
+
+read length: 32
+wd: 1, mask: 0x40(IN_MOVED_FROM), cookie: 0x1d1a, len: 16, name: a.out
 */
