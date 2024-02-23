@@ -223,3 +223,18 @@ mv dir/a.out .
 read length: 32
 wd: 1, mask: 0x40(IN_MOVED_FROM), cookie: 0x1d1a, len: 16, name: a.out
 */
+
+/*
+mv new_dir/ dir
+
+read length: 32
+wd: 1, mask: 0x40000080(IN_MOVED_TO | IN_ISDIR), cookie: 0x209c, len: 16, name: new_dir
+*/
+
+/*
+mv dir/other_dir/ dir/old_dir
+
+read length: 64
+wd: 1, mask: 0x40000040(IN_MOVED_FROM | IN_ISDIR), cookie: 0x209f, len: 16, name: other_dir
+wd: 1, mask: 0x40000080(IN_MOVED_TO | IN_ISDIR), cookie: 0x209f, len: 16, name: old_dir
+*/
