@@ -321,12 +321,13 @@ uint64_t timenow()
     return mills.count();
 }
 
-#define NUM_STRINGS     100
-#define MAX_LENGTH      1024
-#define SUB_MAX_LEN     32
+#define NUM_STRINGS     128
+#define MAX_LENGTH      1024 * 10
+#define SUB_MAX_LEN     32 * 10
 
 char mainStrings[NUM_STRINGS][MAX_LENGTH + 1];
 char subStrings[NUM_STRINGS][SUB_MAX_LEN + 1];
+void* indexVec[NUM_STRINGS];
 
 void genStringVec()
 {
@@ -343,6 +344,8 @@ void genStringVec()
 
         int32_t index = rand() % (MAX_LENGTH - SUB_MAX_LEN);
 
+        indexVec[i] = mainStrings[i] + index;
+
         // 生成对应的子字符串，长度为主字符串长度的一半
         strncpy(subStrings[i], mainStrings[i] + index, SUB_MAX_LEN);
         subStrings[i][SUB_MAX_LEN] = '\0';
@@ -358,7 +361,7 @@ int main(int argc, char **argv)
     uint64_t timeBegin = timenow();
     for (int32_t i = 0; i < recyle; ++i)
     {
-        assert(NULL != glibc_memmem(mainStrings[i], MAX_LENGTH, subStrings[i], SUB_MAX_LEN));
+        assert(indexVec[i] == glibc_memmem(mainStrings[i], MAX_LENGTH, subStrings[i], SUB_MAX_LEN));
     }
 
     uint64_t timeEnd = timenow();
@@ -367,7 +370,7 @@ int main(int argc, char **argv)
     timeBegin = timenow();
     for (int32_t i = 0; i < recyle; ++i)
     {
-        assert(NULL != memmem(mainStrings[i], MAX_LENGTH, subStrings[i], SUB_MAX_LEN));
+        assert(indexVec[i] == memmem(mainStrings[i], MAX_LENGTH, subStrings[i], SUB_MAX_LEN));
     }
     timeEnd = timenow();
     printf("memmem spend: %3.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));

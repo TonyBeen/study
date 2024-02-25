@@ -14,7 +14,7 @@
 
 int main()
 {
-    unsigned char in[] = "HSZ@1772747354";
+    unsigned char in[] = "ABCDEFGHIGKLMN";
     unsigned char out[128];
 
     size_t n;

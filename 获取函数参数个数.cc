@@ -12,14 +12,13 @@ using namespace std;
 template<typename... Args>
 struct FunctionTraits
 {
-    static const std::size_t arity = sizeof...(Args);
+    static const std::size_t size = sizeof...(Args);
+    static_assert(size >= 0, "");
 };
 
 template<typename R, typename... Args>
 struct FunctionTraits<R(Args...)> : public FunctionTraits<Args...>
-{
-    using ReturnType = R;
-};
+{};
 
 template<typename R, typename... Args>
 struct FunctionTraits<R(*)(Args...)> : public FunctionTraits<R(Args...)>
@@ -38,7 +37,7 @@ class FunctionTest
 private:
     
 public:
-    void get() {}
+    void get() const {}
     void set(int32_t) {}
     void set2(int32_t, double) {}
 
@@ -48,11 +47,11 @@ public:
 
 int main(int argc, char **argv)
 {
-    std::cout << FunctionTraits<decltype(main)>::arity << std::endl;
-    std::cout << FunctionTraits<decltype(&FunctionTest::get)>::arity << std::endl;
-    std::cout << FunctionTraits<decltype(&FunctionTest::set)>::arity << std::endl;
-    std::cout << FunctionTraits<decltype(&FunctionTest::set2)>::arity << std::endl;
-    std::cout << FunctionTraits<decltype(&FunctionTest::Get)>::arity << std::endl;
-    std::cout << FunctionTraits<decltype(&FunctionTest::Set)>::arity << std::endl;
+    std::cout << FunctionTraits<decltype(&main)>::size << std::endl;
+    std::cout << FunctionTraits<decltype(&FunctionTest::get)>::size << std::endl;
+    std::cout << FunctionTraits<decltype(&FunctionTest::set)>::size << std::endl;
+    std::cout << FunctionTraits<decltype(&FunctionTest::set2)>::size << std::endl;
+    std::cout << FunctionTraits<decltype(&FunctionTest::Get)>::size << std::endl;
+    std::cout << FunctionTraits<decltype(&FunctionTest::Set)>::size << std::endl;
     return 0;
 }
