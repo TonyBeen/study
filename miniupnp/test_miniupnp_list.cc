@@ -25,47 +25,62 @@ static void DisplayInfos(struct UPNPUrls *urls, struct IGDdatas *data)
     time_t timenow, timestarted;
     int32_t r;
     if (UPNP_GetConnectionTypeInfo(urls->controlURL,
-                                    data->first.servicetype,
-                                    connectionType) != UPNPCOMMAND_SUCCESS)
+                                   data->first.servicetype,
+                                   connectionType) != UPNPCOMMAND_SUCCESS)
         printf("GetConnectionTypeInfo failed.\n");
     else
         printf("Connection Type : %s\n", connectionType);
-    if(UPNP_GetStatusInfo(urls->controlURL, data->first.servicetype,
-                            status, &uptime, lastconnerr) != UPNPCOMMAND_SUCCESS)
+    if (UPNP_GetStatusInfo(urls->controlURL, data->first.servicetype,
+                           status, &uptime, lastconnerr) != UPNPCOMMAND_SUCCESS)
         printf("GetStatusInfo failed.\n");
     else
         printf("Status : %s, uptime=%us, LastConnectionError : %s\n", status, uptime, lastconnerr);
-    if (uptime > 0) {
+    if (uptime > 0)
+    {
         timenow = time(NULL);
         timestarted = timenow - uptime;
         printf("  Time started : %s", ctime(&timestarted));
     }
-    if(UPNP_GetLinkLayerMaxBitRates(urls->controlURL_CIF, data->CIF.servicetype,
-                                    &brDown, &brUp) != UPNPCOMMAND_SUCCESS) {
+    if (UPNP_GetLinkLayerMaxBitRates(urls->controlURL_CIF, data->CIF.servicetype,
+                                     &brDown, &brUp) != UPNPCOMMAND_SUCCESS)
+    {
         printf("GetLinkLayerMaxBitRates failed.\n");
-    } else {
+    }
+    else
+    {
         printf("MaxBitRateDown : %u bps", brDown);
-        if(brDown >= 1000000) {
+        if (brDown >= 1000000)
+        {
             printf(" (%u.%u Mbps)", brDown / 1000000, (brDown / 100000) % 10);
-        } else if(brDown >= 1000) {
+        }
+        else if (brDown >= 1000)
+        {
             printf(" (%u Kbps)", brDown / 1000);
         }
         printf("   MaxBitRateUp %u bps", brUp);
-        if(brUp >= 1000000) {
+        if (brUp >= 1000000)
+        {
             printf(" (%u.%u Mbps)", brUp / 1000000, (brUp / 100000) % 10);
-        } else if(brUp >= 1000) {
+        }
+        else if (brUp >= 1000)
+        {
             printf(" (%u Kbps)", brUp / 1000);
         }
         printf("\n");
     }
     r = UPNP_GetExternalIPAddress(urls->controlURL,
-                                data->first.servicetype,
-                                externalIPAddress);
-    if(r != UPNPCOMMAND_SUCCESS) {
+                                  data->first.servicetype,
+                                  externalIPAddress);
+    if (r != UPNPCOMMAND_SUCCESS)
+    {
         printf("GetExternalIPAddress failed. (errorcode=%d)\n", r);
-    } else if(!externalIPAddress[0]) {
+    }
+    else if (!externalIPAddress[0])
+    {
         printf("GetExternalIPAddress failed. (empty string)\n");
-    } else {
+    }
+    else
+    {
         printf("ExternalIPAddress = %s\n", externalIPAddress);
     }
 }
@@ -74,11 +89,11 @@ void format(uint16_t index, const char *protocol, const char *exPort, const char
             const char *description, const char *remoteHost, const char *leaseTime)
 {
     printf("| %hu | %-8s | %5s->%s:%-5s | '%s' | '%s' | %s |\n",
-        index, protocol, exPort, inAddr, inPort, description, remoteHost, leaseTime);
+           index, protocol, exPort, inAddr, inPort, description, remoteHost, leaseTime);
 }
 
-static void ListRedirections(struct UPNPUrls * urls,
-                             struct IGDdatas * data)
+static void ListRedirections(struct UPNPUrls *urls,
+                             struct IGDdatas *data)
 {
     int r;
     unsigned short i = 0;
@@ -93,23 +108,28 @@ static void ListRedirections(struct UPNPUrls * urls,
     char duration[16];
 
     printf("| i | protocol | exPort->inAddr:inPort | description | remoteHost | leaseTime |\n");
-    do {
+    do
+    {
         snprintf(index, 6, "%hu", i);
-        rHost[0] = '\0'; enabled[0] = '\0';
-        duration[0] = '\0'; desc[0] = '\0';
-        extPort[0] = '\0'; intPort[0] = '\0'; intClient[0] = '\0';
+        rHost[0] = '\0';
+        enabled[0] = '\0';
+        duration[0] = '\0';
+        desc[0] = '\0';
+        extPort[0] = '\0';
+        intPort[0] = '\0';
+        intClient[0] = '\0';
         r = UPNP_GetGenericPortMappingEntry(urls->controlURL,
-                                        data->first.servicetype,
-                                        index,
-                                        extPort, intClient, intPort,
-                                        protocol, desc, enabled,
-                                        rHost, duration);
-        if (r==0)
+                                            data->first.servicetype,
+                                            index,
+                                            extPort, intClient, intPort,
+                                            protocol, desc, enabled,
+                                            rHost, duration);
+        if (r == 0)
             format(i, protocol, extPort, intClient, intPort, desc, rHost, duration);
         else
             printf("GetGenericPortMappingEntry() returned %d (%s)\n",
-                    r, strupnperror(r));
-    } while(r == 0 && i++ < 65535);
+                   r, strupnperror(r));
+    } while (r == 0 && i++ < 65535);
 }
 
 int main(int argc, char **argv)
@@ -136,7 +156,8 @@ int main(int argc, char **argv)
 
     int32_t index = 0;
     index = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-    switch (index) {
+    switch (index)
+    {
     case 1:
         printf("Found valid IGD : %s\n", urls.controlURL);
         break;

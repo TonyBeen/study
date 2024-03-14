@@ -20,10 +20,10 @@
  * returns NULL if not */
 const char *protofix(const char *proto)
 {
-	static const char proto_tcp[4] = { 'T', 'C', 'P', 0};
-	static const char proto_udp[4] = { 'U', 'D', 'P', 0};
-	bool match = true;
-	for (int32_t i = 0; i < strlen(proto_tcp); i++)
+    static const char proto_tcp[4] = {'T', 'C', 'P', 0};
+    static const char proto_udp[4] = {'U', 'D', 'P', 0};
+    bool match = true;
+    for (int32_t i = 0; i < strlen(proto_tcp); i++)
     {
         char ch = toupper(proto[i]);
         match = match && (ch == proto_tcp[i]);
@@ -50,15 +50,15 @@ const char *protofix(const char *proto)
  * 2 - get extenal ip address
  * 3 - Add port mapping
  * 4 - get this port mapping from the IGD */
-static int SetRedirectAndTest(struct UPNPUrls * urls,
-                              struct IGDdatas * data,
-                              const char * iaddr,
-                              const char * iport,
-                              const char * eport,
-                              const char * proto,
-                              const char * leaseDuration,
-                              const char * remoteHost,
-                              const char * description,
+static int SetRedirectAndTest(struct UPNPUrls *urls,
+                              struct IGDdatas *data,
+                              const char *iaddr,
+                              const char *iport,
+                              const char *eport,
+                              const char *proto,
+                              const char *leaseDuration,
+                              const char *remoteHost,
+                              const char *description,
                               int addAny)
 {
     char externalIPAddress[40];
@@ -68,59 +68,66 @@ static int SetRedirectAndTest(struct UPNPUrls * urls,
     char duration[16];
     int r;
 
-    if(!iaddr || !iport || !eport || !proto)
+    if (!iaddr || !iport || !eport || !proto)
     {
         fprintf(stderr, "Wrong arguments\n");
         return -1;
     }
     proto = protofix(proto);
-    if(!proto)
+    if (!proto)
     {
         fprintf(stderr, "invalid protocol\n");
         return -1;
     }
 
     r = UPNP_GetExternalIPAddress(urls->controlURL,
-                        data->first.servicetype,
-                        externalIPAddress);
-    if(r!=UPNPCOMMAND_SUCCESS)
+                                  data->first.servicetype,
+                                  externalIPAddress);
+    if (r != UPNPCOMMAND_SUCCESS)
         printf("GetExternalIPAddress failed.\n");
     else
         printf("ExternalIPAddress = %s\n", externalIPAddress);
 
-    if (addAny) {
+    if (addAny)
+    {
         r = UPNP_AddAnyPortMapping(urls->controlURL, data->first.servicetype,
-                        eport, iport, iaddr, description,
-                        proto, remoteHost, leaseDuration, reservedPort);
-        if(r==UPNPCOMMAND_SUCCESS)
+                                   eport, iport, iaddr, description,
+                                   proto, remoteHost, leaseDuration, reservedPort);
+        if (r == UPNPCOMMAND_SUCCESS)
             eport = reservedPort;
         else
             printf("AddAnyPortMapping(%s, %s, %s) failed with code %d (%s)\n",
-                    eport, iport, iaddr, r, strupnperror(r));
-    } else {
-        r = UPNP_AddPortMapping(urls->controlURL, data->first.servicetype,
-                    eport, iport, iaddr, description,
-                    proto, remoteHost, leaseDuration);
-        if(r!=UPNPCOMMAND_SUCCESS) {
-            printf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
-                    eport, iport, iaddr, r, strupnperror(r));
-            return -2;
+                   eport, iport, iaddr, r, strupnperror(r));
     }
+    else
+    {
+        r = UPNP_AddPortMapping(urls->controlURL, data->first.servicetype,
+                                eport, iport, iaddr, description,
+                                proto, remoteHost, leaseDuration);
+        if (r != UPNPCOMMAND_SUCCESS)
+        {
+            printf("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
+                   eport, iport, iaddr, r, strupnperror(r));
+            return -2;
+        }
     }
 
     r = UPNP_GetSpecificPortMappingEntry(urls->controlURL,
-                            data->first.servicetype,
-                            eport, proto, remoteHost,
-                            intClient, intPort, NULL/*desc*/,
-                            NULL/*enabled*/, duration);
-    if(r!=UPNPCOMMAND_SUCCESS) {
+                                         data->first.servicetype,
+                                         eport, proto, remoteHost,
+                                         intClient, intPort, NULL /*desc*/,
+                                         NULL /*enabled*/, duration);
+    if (r != UPNPCOMMAND_SUCCESS)
+    {
         printf("GetSpecificPortMappingEntry() failed with code %d (%s)\n",
-                r, strupnperror(r));
+               r, strupnperror(r));
         return -2;
-    } else {
+    }
+    else
+    {
         printf("InternalIP:Port = %s:%s\n", intClient, intPort);
         printf("external %s:%s %s is redirected to internal %s:%s (duration=%s)\n",
-                externalIPAddress, eport, proto, intClient, intPort, duration);
+               externalIPAddress, eport, proto, intClient, intPort, duration);
     }
     return 0;
 }
@@ -155,7 +162,8 @@ int main(int argc, char **argv)
 
     int32_t index = 0;
     index = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
-    switch (index) {
+    switch (index)
+    {
     case 1:
         printf("Found valid IGD : %s\n", urls.controlURL);
         break;
