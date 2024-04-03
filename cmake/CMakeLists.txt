@@ -7,7 +7,7 @@ project(getinfo VERSION 1.0.1)
 # 指定的C++编译器版本是必须的
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 指定为C++14 版本
+# 指定为C++11 版本
 set(CMAKE_CXX_STANDARD 11)
 
 # 给CMAKE_MODULE_PATH添加路径, find_package从CMAKE_MODULE_PATH中找Find<PackageName>.cmake
@@ -16,6 +16,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/local/lib/cmake/)
 
 
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
+message(STATUS "CMAKE_CURRENT_LIST_DIR = ${CMAKE_CURRENT_LIST_DIR}")
 
 # 查找OpenSSL包
 find_package(OpenSSL REQUIRED)
@@ -27,8 +28,8 @@ message(STATUS "  libraries: ${OPENSSL_LIBRARIES}")
 message(STATUS "  include path: ${OPENSSL_INCLUDE_DIR}")
 
 # 查找jsoncpp包
-find_package(jsoncpp REQUIRED)
-message(STATUS "jsoncpp:")
+find_package(JsonCpp REQUIRED)
+message(STATUS "JsonCpp:")
 message(STATUS "  version: ${jsoncpp_VERSION}")
 message(STATUS "  libraries: ${jsoncpp_LIBS}")
 message(STATUS "  include path: ${jsoncpp_INCLUDE_DIRS}")

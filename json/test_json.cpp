@@ -22,39 +22,39 @@ void format_end()
     printf("\n");
 }
 
-// ´´½¨¼òµ¥json¶ÔÏó
+// åˆ›å»ºç®€å•jsonå¯¹è±¡
 void test_create_json()
 {
     format_begin(__PRETTY_FUNCTION__);
 
     Json jsonObj;
 
-    jsonObj["name"] = "éğ";
+    jsonObj["name"] = "è½²";
     jsonObj["age"] = 30;
     jsonObj["answer"]["everything"] = 42;
     jsonObj["object"] = { {"currency", "USD"}, {"value", 42.99} };
     jsonObj["pets"] = { "cat", "dog" };
 
     /**
-     * dumpÊä³öµÄÊÇutf8±àÂë¸ñÊ½, ½«ÎÄ¼ş±àÂë·½Ê½ĞŞ¸ÄÎªGBK»áÔÚdumpÊ±´¥·¢±ÀÀ£
-     * ĞŞ¸ÄµÚËÄ¸ö²ÎÊı¿ÉÒÔ·ÀÖ¹, µ«ÊÇname¶ÔÓ¦µÄÖµÎª¿Õ
+     * dumpè¾“å‡ºçš„æ˜¯utf8ç¼–ç æ ¼å¼, å°†æ–‡ä»¶ç¼–ç æ–¹å¼ä¿®æ”¹ä¸ºGBKä¼šåœ¨dumpæ—¶è§¦å‘å´©æºƒ
+     * ä¿®æ”¹ç¬¬å››ä¸ªå‚æ•°å¯ä»¥é˜²æ­¢, ä½†æ˜¯nameå¯¹åº”çš„å€¼ä¸ºç©º
      * 
-     * µÚÒ»¸ö²ÎÊı±íÊ¾Ëõ½ø, µÚ¶ş¸ö²ÎÊı±íÊ¾Ëõ½ø·½Ê½
-     * µÚÈı¸ö²ÎÊı±íÊ¾ÊÇ·ñ±£Ö¤¶¼ÊÇASCIIÂë, ¼´¶Ô·ÇASCIIÂë½øĞĞ×ªÒå
-     * µÚËÄ¸ö²ÎÊı±íÊ¾´íÎó´¦Àí·½Ê½, Ä¬ÈÏstrict, µ±Óöµ½²»ÊÇUTF-8±àÂëÊ±Å×³öÒì³£
-     * replace ÓÃU+FFFDÌæ»»ÎŞĞ§µÄUTF-8ĞòÁĞ
-     * ignore ºöÂÔÎŞĞ§µÄUTF-8ĞòÁĞ
+     * ç¬¬ä¸€ä¸ªå‚æ•°è¡¨ç¤ºç¼©è¿›, ç¬¬äºŒä¸ªå‚æ•°è¡¨ç¤ºç¼©è¿›æ–¹å¼
+     * ç¬¬ä¸‰ä¸ªå‚æ•°è¡¨ç¤ºæ˜¯å¦ä¿è¯éƒ½æ˜¯ASCIIç , å³å¯¹éASCIIç è¿›è¡Œè½¬ä¹‰
+     * ç¬¬å››ä¸ªå‚æ•°è¡¨ç¤ºé”™è¯¯å¤„ç†æ–¹å¼, é»˜è®¤strict, å½“é‡åˆ°ä¸æ˜¯UTF-8ç¼–ç æ—¶æŠ›å‡ºå¼‚å¸¸
+     * replace ç”¨U+FFFDæ›¿æ¢æ— æ•ˆçš„UTF-8åºåˆ—
+     * ignore å¿½ç•¥æ— æ•ˆçš„UTF-8åºåˆ—
      */
 
-    std::string jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::ignore); // ÉèÖÃ³É4¸ö¿Õ¸ñµÄËõ½ø·½Ê½
+    std::string jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::ignore); // è®¾ç½®æˆ4ä¸ªç©ºæ ¼çš„ç¼©è¿›æ–¹å¼
     printf("%s\n", jsonContent.c_str());
 
-    jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::replace); // ÉèÖÃ³É4¸ö¿Õ¸ñµÄËõ½ø·½Ê½
+    jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::replace); // è®¾ç½®æˆ4ä¸ªç©ºæ ¼çš„ç¼©è¿›æ–¹å¼
     printf("%s\n", jsonContent.c_str());
 
     try
     {
-        jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::strict); // ÉèÖÃ³É4¸ö¿Õ¸ñµÄËõ½ø·½Ê½
+        jsonContent = jsonObj.dump(4, ' ', true, nlohmann::detail::error_handler_t::strict); // è®¾ç½®æˆ4ä¸ªç©ºæ ¼çš„ç¼©è¿›æ–¹å¼
         printf("%s\n", jsonContent.c_str());
     }
     catch(const std::exception& e)
@@ -78,7 +78,7 @@ void test_read_json()
 
     try
     {
-        // ÀàĞÍ²»Æ¥Åä»áÅ×³öÒì³£
+        // ç±»å‹ä¸åŒ¹é…ä¼šæŠ›å‡ºå¼‚å¸¸
         jsonObj.at("age").get_to(name);
     }
     catch (const std::exception &e)
@@ -88,7 +88,7 @@ void test_read_json()
 
     try
     {
-        // ÀàĞÍ²»Æ¥Åä»áÅ×³öÒì³£
+        // ç±»å‹ä¸åŒ¹é…ä¼šæŠ›å‡ºå¼‚å¸¸
         std::string temp = jsonObj["age"];
     }
     catch (const std::exception &e)
