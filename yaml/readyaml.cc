@@ -19,16 +19,14 @@ YAML::Node *LoadYamlFile(const char *path = "./config.yml")
 
 const char *CreateYaml()
 {
-    // ma
     const char *path = "./config.yml";
     return path;
 }
 
 void read_write_yaml(YAML::Node *node)
 {
-    
-}
 
+}
 
 int main()
 {
@@ -60,7 +58,7 @@ int main()
             }
         }
     }
-    
+
     {
         std::cout << "*******************************************************\n";
         auto node = (*config)["array"];

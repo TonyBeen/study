@@ -2,7 +2,7 @@ log:
   level: info
   target: stdout
   sync: true
-  test:
+  test: # 序列和数组
     - [1, 2, 3]
     - [4, 5, 6]
 array:
