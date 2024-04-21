@@ -7,9 +7,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <string>
 #include <unistd.h>
 #include <sys/inotify.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+#include <log/log.h>
+
+#define LOG_TAG "watch_file"
 
 #define EVENT_SIZE  (sizeof(struct inotify_event))
 #define BUF_LEN     (1024 * (EVENT_SIZE + 16))
@@ -61,7 +68,7 @@ void dump_event(struct inotify_event *ev)
 
     std::string temp(opTotal.c_str(), opTotal.length() - 3);
 
-    printf("wd: %d, mask: %#x(%s), cookie: %#x, len: %u, name: %s\n",
+    LOGI("wd: %d, mask: %#x(%s), cookie: %#x, len: %u, name: %s\n",
         ev->wd, ev->mask, temp.c_str(), ev->cookie, ev->len, ev->len > 0 ? ev->name : "(null)");
 }
 
@@ -85,11 +92,51 @@ void dump_event(struct inotify_event *ev)
  * IN_ISDIR             表示事件所涉及的路径是一个目录
  */
 
+void WatchRecursive(int inotifyFd, const std::string &path)
+{
+    int32_t wd = inotify_add_watch(inotifyFd, path.c_str(), IN_ALL_EVENTS);
+    assert(wd > 0);
+
+    DIR *pDir = opendir(path.c_str());
+    if (nullptr == pDir) {
+        perror("opendir error");
+        return;
+    }
+
+    struct dirent *pDirEntry;
+    struct stat64 itemStat;
+    while ((pDirEntry = readdir(pDir)) != nullptr) {
+        if (std::string(".") == pDirEntry->d_name || std::string("..") == pDirEntry->d_name) {
+            continue;
+        }
+
+        std::string itemPath = path + "/" + pDirEntry->d_name;
+        if (-1 == lstat64(itemPath.c_str(), &itemStat))
+        {
+            perror("lstat64 error");
+            closedir(pDir);
+            return;
+        }
+
+        if (S_ISDIR(itemStat.st_mode) && !S_ISLNK(itemStat.st_mode))
+        {
+            WatchRecursive(inotifyFd, itemPath);
+        }
+    }
+
+    closedir(pDir);
+}
+
 int main() {
     int length, i = 0;
     int fd;
     int wd;
     char buffer[BUF_LEN];
+
+    eular::log::InitLog();
+    eular::log::EnableLogColor(true);
+    eular::log::SetPath("/home/eular/VSCode/study/check_file_event/");
+    eular::log::addOutputNode(eular::LogWrite::FILEOUT);
 
     // 初始化 inotify 实例
     fd = inotify_init();
@@ -98,12 +145,14 @@ int main() {
         return -1;
     }
 
+    WatchRecursive(fd, "dir");
+
     // 添加要监视的文件或目录
-    wd = inotify_add_watch(fd, "dir", IN_ALL_EVENTS);
-    if (wd < 0) {
-        perror("inotify_add_watch");
-        return -1;
-    }
+    // wd = inotify_add_watch(fd, "dir", IN_ALL_EVENTS);
+    // if (wd < 0) {
+    //     perror("inotify_add_watch");
+    //     return -1;
+    // }
 
     printf("Start monitoring...\n");
 
@@ -115,7 +164,7 @@ int main() {
             return -1;
         }
 
-        printf("read length: %d\n", length);
+        LOGI("read length: %d\n", length);
 
         // 处理每个事件
         while (i < length) {
@@ -124,7 +173,7 @@ int main() {
             i += EVENT_SIZE + event->len;
         }
 
-        printf("\n\n");
+        LOGI("\n");
 
         // 重置索引
         i = 0;
@@ -139,9 +188,10 @@ int main() {
     return 0;
 }
 
-/*
-在dir目录下新建目录, 此时在新目录下操作不会触发事件, 需要调用inotify_add_watch将新目录加到监视器才能继续监视新目录
-*/
+
+// 在dir目录下新建目录, 此时在新目录下操作不会触发事件, 需要调用inotify_add_watch将新目录加到监视器才能继续监视新目录
+
+// NOTE opendir readdir closedir目录操作相关的API会使用的inotify在监控时返回, 携带的信息中len为0, name为空
 
 /**
 删除带有文件的监控目录后触发的事件, IN_IGNORED表示表示监测的对象已经被移除或删除, 即使后面在目录恢复, 也不会在进行监测
@@ -238,3 +288,12 @@ read length: 64
 wd: 1, mask: 0x40000040(IN_MOVED_FROM | IN_ISDIR), cookie: 0x209f, len: 16, name: other_dir
 wd: 1, mask: 0x40000080(IN_MOVED_TO | IN_ISDIR), cookie: 0x209f, len: 16, name: old_dir
 */
+
+/**
+ * 重命名 aaaaa.txt -> abc.txt
+ * 
+ * read length: 64
+ * wd: 1, mask: 0x40(IN_MOVED_FROM), cookie: 0xd85e, len: 16, name: aaaaa.txt
+ * wd: 1, mask: 0x80(IN_MOVED_TO), cookie: 0xd85e, len: 16, name: abc.txt
+ * 
+ */

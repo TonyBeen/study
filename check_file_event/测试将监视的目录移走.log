@@ -1,0 +1,76 @@
+移动前被监视目录结构
+.
+├── AB
+│   └── ab.log
+├── cmake
+│   ├── build
+│   │   ├── CMakeCache.txt
+│   │   └── CMakeFiles
+│   │       ├── 3.16.3
+│   │       │   ├── CMakeCCompiler.cmake
+│   │       │   ├── CMakeCXXCompiler.cmake
+│   │       │   ├── CMakeDetermineCompilerABI_C.bin
+│   │       │   ├── CMakeDetermineCompilerABI_CXX.bin
+│   │       │   ├── CMakeSystem.cmake
+│   │       │   ├── CompilerIdC
+│   │       │   │   ├── a.out
+│   │       │   │   ├── CMakeCCompilerId.c
+│   │       │   │   └── tmp
+│   │       │   └── CompilerIdCXX
+│   │       │       ├── a.out
+│   │       │       ├── CMakeCXXCompilerId.cpp
+│   │       │       └── tmp
+│   │       ├── cmake.check_cache
+│   │       ├── CMakeOutput.log
+│   │       └── CMakeTmp
+│   ├── cmake
+│   │   └── FindJsonCpp.cmake
+│   └── CMakeLists.txt
+└── something.txt
+
+操作: 递归监视此目录下所有文件及目录
+
+用命令将cmake移动到其他位置
+
+mv cmake ../
+
+先产生IN_MOVED_FROM事件, 这个事件是由父目录产生, 而后子目录产生IN_MOVE_SELF事件
+04-21 14:48:50.419 416237 416237 [I] watch_file: read length: 48
+04-21 14:48:50.419 416237 416237 [I] watch_file: wd: 1, mask: 0x40000040(IN_MOVED_FROM | IN_ISDIR), cookie: 0xb77e, len: 16, name: cmake
+04-21 14:48:50.419 416237 416237 [I] watch_file: wd: 3, mask: 0x800(IN_MOVE_SELF), cookie: 0, len: 0, name: (null)
+04-21 14:48:50.419 416237 416237 [I] watch_file: 
+
+无意义事件
+04-21 14:48:50.419 363680 363680 [I] watch_file: read length: 640
+04-21 14:48:50.420 363680 363680 [I] watch_file: 
+
+进入到camke目录, 使用vim修改CMakeLists.txt文件并保存
+04-21 14:48:50.422 363680 363680 [I] watch_file: read length: 480
+04-21 14:48:50.423 363680 363680 [I] watch_file: wd: 3, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:50.424 363680 363680 [I] watch_file: wd: 3, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:50.425 363680 363680 [I] watch_file: wd: 3, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:50.426 363680 363680 [I] watch_file: wd: 3, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:50.427 363680 363680 [I] watch_file: wd: 3, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:50.428 363680 363680 [I] watch_file: 
+04-21 14:48:50.429 363680 363680 [I] watch_file: read length: 64
+04-21 14:48:50.431 363680 363680 [I] watch_file: 
+04-21 14:48:56.575 363680 363680 [I] watch_file: read length: 96
+04-21 14:48:56.580 363680 363680 [I] watch_file: wd: 3, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: 4913
+04-21 14:48:56.582 363680 363680 [I] watch_file: wd: 3, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: 4913
+04-21 14:48:56.583 363680 363680 [I] watch_file: wd: 3, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: 4913
+04-21 14:48:56.584 363680 363680 [I] watch_file: 
+04-21 14:48:56.586 363680 363680 [I] watch_file: read length: 352
+04-21 14:48:56.587 363680 363680 [I] watch_file: wd: 3, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: 4913
+04-21 14:48:56.588 363680 363680 [I] watch_file: wd: 3, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: 4913
+04-21 14:48:56.589 363680 363680 [I] watch_file: wd: 3, mask: 0x40(IN_MOVED_FROM), cookie: 0xb749, len: 16, name: CMakeLists.txt
+04-21 14:48:56.591 363680 363680 [I] watch_file: wd: 3, mask: 0x80(IN_MOVED_TO), cookie: 0xb749, len: 16, name: CMakeLists.txt~
+04-21 14:48:56.592 363680 363680 [I] watch_file: wd: 3, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.593 363680 363680 [I] watch_file: wd: 3, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.594 363680 363680 [I] watch_file: wd: 3, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.595 363680 363680 [I] watch_file: wd: 3, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.596 363680 363680 [I] watch_file: wd: 3, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.597 363680 363680 [I] watch_file: wd: 3, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:48:56.599 363680 363680 [I] watch_file: wd: 3, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: CMakeLists.txt~
+04-21 14:48:56.600 363680 363680 [I] watch_file: 
+
+可见将被监视目录移动它其它位置不会将目录从inotify中删除监视, 故需要手动删除

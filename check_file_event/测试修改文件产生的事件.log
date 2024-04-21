@@ -1,0 +1,18 @@
+04-21 14:35:24.739 345226 345226 [I] watch_file: read length: 96
+04-21 14:35:24.743 345226 345226 [I] watch_file: wd: 2, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: 4913
+04-21 14:35:24.745 345226 345226 [I] watch_file: wd: 2, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: 4913
+04-21 14:35:24.746 345226 345226 [I] watch_file: wd: 2, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: 4913
+04-21 14:35:24.747 345226 345226 [I] watch_file: 
+04-21 14:35:24.748 345226 345226 [I] watch_file: read length: 352
+04-21 14:35:24.749 345226 345226 [I] watch_file: wd: 2, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: 4913
+04-21 14:35:24.750 345226 345226 [I] watch_file: wd: 2, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: 4913
+04-21 14:35:24.751 345226 345226 [I] watch_file: wd: 2, mask: 0x40(IN_MOVED_FROM), cookie: 0xb737, len: 16, name: ab.log
+04-21 14:35:24.752 345226 345226 [I] watch_file: wd: 2, mask: 0x80(IN_MOVED_TO), cookie: 0xb737, len: 16, name: ab.log~
+04-21 14:35:24.753 345226 345226 [I] watch_file: wd: 2, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.754 345226 345226 [I] watch_file: wd: 2, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.755 345226 345226 [I] watch_file: wd: 2, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.756 345226 345226 [I] watch_file: wd: 2, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.757 345226 345226 [I] watch_file: wd: 2, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.758 345226 345226 [I] watch_file: wd: 2, mask: 0x4(IN_ATTRIB), cookie: 0, len: 16, name: ab.log
+04-21 14:35:24.759 345226 345226 [I] watch_file: wd: 2, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: ab.log~
+04-21 14:35:24.760 345226 345226 [I] watch_file: 

@@ -1,0 +1,128 @@
+
+rm -rf ./cmake/*
+
+04-21 14:40:21.621 352642 352642 [I] watch_file: read length: 48
+04-21 14:40:21.626 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.627 352642 352642 [I] watch_file: 
+04-21 14:40:21.628 352642 352642 [I] watch_file: read length: 3920
+04-21 14:40:21.629 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.630 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.631 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.632 352642 352642 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.633 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.634 352642 352642 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.636 352642 352642 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.637 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.638 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.639 352642 352642 [I] watch_file: wd: 4, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: CMakeCache.txt
+04-21 14:40:21.640 352642 352642 [I] watch_file: wd: 4, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.641 352642 352642 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.642 352642 352642 [I] watch_file: wd: 4, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.643 352642 352642 [I] watch_file: wd: 4, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.644 352642 352642 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.645 352642 352642 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.646 352642 352642 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.647 352642 352642 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.648 352642 352642 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.649 352642 352642 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.650 352642 352642 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.651 352642 352642 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.652 352642 352642 [I] watch_file: wd: 6, mask: 0x200(IN_DELETE), cookie: 0, len: 48, name: CMakeDetermineCompilerABI_CXX.bin
+04-21 14:40:21.653 352642 352642 [I] watch_file: wd: 6, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeSystem.cmake
+04-21 14:40:21.655 352642 352642 [I] watch_file: wd: 6, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeCXXCompiler.cmake
+04-21 14:40:21.656 352642 352642 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.657 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.658 352642 352642 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.659 352642 352642 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.660 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.661 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.662 352642 352642 [I] watch_file: wd: 7, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: a.out
+04-21 14:40:21.663 352642 352642 [I] watch_file: wd: 7, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.664 352642 352642 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.665 352642 352642 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.666 352642 352642 [I] watch_file: wd: 7, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.667 352642 352642 [I] watch_file: wd: 7, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.668 352642 352642 [I] watch_file: wd: 7, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeCCompilerId.c
+04-21 14:40:21.669 352642 352642 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.671 352642 352642 [I] watch_file: wd: 6, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+04-21 14:40:21.672 352642 352642 [I] watch_file: wd: 6, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeCCompiler.cmake
+04-21 14:40:21.673 352642 352642 [I] watch_file: wd: 6, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeDetermineCompilerABI_C.bin
+04-21 14:40:21.674 352642 352642 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.675 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.676 352642 352642 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.677 352642 352642 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.678 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.679 352642 352642 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.680 352642 352642 [I] watch_file: wd: 9, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: a.out
+04-21 14:40:21.681 352642 352642 [I] watch_file: wd: 9, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: CMakeCXXCompilerId.cpp
+04-21 14:40:21.682 352642 352642 [I] watch_file: wd: 9, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.683 352642 352642 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.684 352642 352642 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.685 352642 352642 [I] watch_file: wd: 9, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.686 352642 352642 [I] watch_file: wd: 9, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+04-21 14:40:21.687 352642 352642 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.688 352642 352642 [I] watch_file: wd: 6, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+04-21 14:40:21.689 352642 352642 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.690 352642 352642 [I] watch_file: wd: 5, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+04-21 14:40:21.691 352642 352642 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+04-21 14:40:21.692 352642 352642 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+04-21 14:40:21.694 352642 352642 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+04-21 14:40:21.695 352642 352642 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+04-21 14:40:21.696 352642 352642 [I] watch_file: wd: 5, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+04-21 14:40:21.697 352642 352642 [I] watch_file: wd: 5, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: CMakeOutput.log
+04-21 14:40:21.698 352642 352642 [I] watch_file: wd: 5, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: cmake.check_cache
+04-21 14:40:21.699 352642 352642 [I] watch_file: wd: 4, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.700 352642 352642 [I] watch_file: wd: 4, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+04-21 14:40:21.701 352642 352642 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.702 352642 352642 [I] watch_file: wd: 3, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: build
+04-21 14:40:21.703 352642 352642 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.704 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.705 352642 352642 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.706 352642 352642 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.707 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.708 352642 352642 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.709 352642 352642 [I] watch_file: wd: 12, mask: 0x200(IN_DELETE), cookie: 0, len: 32, name: FindJsonCpp.cmake
+04-21 14:40:21.710 352642 352642 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.711 352642 352642 [I] watch_file: wd: 3, mask: 0x40000200(IN_DELETE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:21.712 352642 352642 [I] watch_file: wd: 3, mask: 0x200(IN_DELETE), cookie: 0, len: 16, name: CMakeLists.txt
+04-21 14:40:21.713 352642 352642 [I] watch_file: 
+04-21 14:40:38.602 352642 352642 [I] watch_file: read length: 448
+04-21 14:40:38.606 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:38.608 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:38.609 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:38.610 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:38.611 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:38.612 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:38.614 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:38.615 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:38.616 352642 352642 [I] watch_file: 
+04-21 14:40:43.657 352642 352642 [I] watch_file: read length: 448
+04-21 14:40:43.662 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:43.663 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:43.664 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:43.665 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:43.666 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:43.667 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:43.668 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:43.669 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:43.670 352642 352642 [I] watch_file: 
+04-21 14:40:48.712 352642 352642 [I] watch_file: read length: 448
+04-21 14:40:48.716 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:48.717 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:48.719 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:48.720 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:48.721 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:48.722 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:48.723 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:48.724 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:48.725 352642 352642 [I] watch_file: 
+04-21 14:40:53.761 352642 352642 [I] watch_file: read length: 448
+04-21 14:40:53.765 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:53.767 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:53.768 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:53.769 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+04-21 14:40:53.770 352642 352642 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:53.771 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:53.771 352642 352642 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:53.772 352642 352642 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+04-21 14:40:53.773 352642 352642 [I] watch_file: 
