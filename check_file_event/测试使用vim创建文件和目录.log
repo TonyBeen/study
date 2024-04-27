@@ -1,0 +1,11 @@
+04-22 16:59:04.745 601779 601779 [I] watch_file: read length: 64
+04-22 16:59:04.750 601779 601779 [I] watch_file: wd: 1, mask: 0x100(IN_CREATE), cookie: 0, len: 16, name: abc.log
+04-22 16:59:04.751 601779 601779 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: abc.log
+04-22 16:59:04.752 601779 601779 [I] watch_file: 
+04-22 16:59:04.753 601779 601779 [I] watch_file: read length: 64
+04-22 16:59:04.754 601779 601779 [I] watch_file: wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: abc.log
+04-22 16:59:04.755 601779 601779 [I] watch_file: wd: 1, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: abc.log
+04-22 16:59:04.756 601779 601779 [I] watch_file: 
+04-22 17:05:37.000 611151 611151 [I] watch_file: read length: 32
+04-22 17:05:37.001 611151 611151 [I] watch_file: wd: 1, mask: 0x40000100(IN_CREATE | IN_ISDIR), cookie: 0, len: 16, name: abbb
+04-22 17:05:37.002 611151 611151 [I] watch_file: 

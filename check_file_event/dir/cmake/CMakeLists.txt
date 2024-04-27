@@ -1,6 +1,5 @@
 # cmake的最低版本要求
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-sadasdsadad:wq
 
 # 工程名称和版本
 project(getinfo VERSION 1.0.1)

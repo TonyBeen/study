@@ -227,8 +227,12 @@ void ping_stats_show()
 
 typedef void *(*ThreadRoute)(void *);
 
+
 int main(int argc, char *argv[])
 {
+    printf("sizeof(struct icmp) = %zu\n", sizeof(struct icmp));
+    printf("sizeof(struct icmphdr) = %zu\n", sizeof(struct icmphdr));
+    printf("sizeof(struct ip) = %zu\n", sizeof(struct ip));
     int size = 128 * 1024; // 128k
     struct protoent *protocol = NULL;
     char dest_addr_str[80] = {0};
