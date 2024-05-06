@@ -42,13 +42,15 @@ void thread_1()
             printf("timeout\n");
             continue;
         }
+
+        usleep(100 * 1000);
         uint64_t value;
         int readSize = read(evfd, &value, sizeof(value));
         if (readSize < 0) {
             printf("%d,%s\n", errno, strerror(errno));
         }
         assert(readSize == 8);
-        printf("%lu\n", value);
+        printf("read: %lu\n", value);
     }
 }
 
@@ -60,9 +62,10 @@ int main(int argc, char **argv)
     th.detach();
     uint64_t i = 0;
     while (1) {
-        uint64_t value = ++i;
+        uint64_t value = 1;
+        // NOTE 每次写入的数据会将未读的数据加上, 使用read读会重置为0. 即写快读满的情况下, 一次读到的数据大于1
         write(evfd, &value, sizeof(value));
-        usleep(1000 * 1000);
+        usleep(500 * 1000);
     }
 
     return 0;

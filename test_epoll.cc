@@ -32,7 +32,7 @@ int InitSocket(uint16_t port = 8000)
     int sock = ::socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         LOGE("socket error. error code = %d, error message: %s", errno, strerror(errno));
-        return eular::UNKNOWN_ERROR;
+        return UNKNOWN_ERROR;
     }
     sockaddr_in server_addr;
     bzero(&server_addr, sizeof(server_addr));
@@ -55,7 +55,7 @@ int InitSocket(uint16_t port = 8000)
 
 error_return:
     ::close(sock);
-    return eular::UNKNOWN_ERROR;
+    return UNKNOWN_ERROR;
 }
 
 static int gServerSocket = 0;
