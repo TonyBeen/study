@@ -134,7 +134,7 @@ void save_jpeg(const char *filename, const void *data, int32_t size, int32_t wid
     jpeg_start_compress(&cinfo, TRUE);
 
     while (cinfo.next_scanline < cinfo.image_height) {
-        row_pointer[0] = (JSAMPLE *)(data + cinfo.next_scanline * width * 3);
+        row_pointer[0] = (JSAMPLE *)((uint8_t *)data + cinfo.next_scanline * width * 3);
         jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
 
