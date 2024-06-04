@@ -1,0 +1,17 @@
+#include <type_traits>
+
+std::is_void<T>：如果 T 是 void 类型, 则 value 为 true; 否则为 false。
+std::is_integral<T>：如果 T 是整数类型（包括 bool、字符类型、整数类型等）, 则 value 为 true; 否则为 false。
+std::is_floating_point<T>：如果 T 是浮点数类型（包括 float、double、long double 等）, 则 value 为 true; 否则为 false。
+std::is_array<T>：如果 T 是数组类型, 则 value 为 true; 否则为 false。
+std::is_pointer<T>：如果 T 是指针类型, 则 value 为 true; 否则为 false。
+std::is_reference<T>：如果 T 是引用类型, 则 value 为 true; 否则为 false。
+std::is_enum<T>：如果 T 是枚举类型, 则 value 为 true; 否则为 false。
+std::is_class<T>：如果 T 是类类型（不包括函数类型、数组类型、引用类型、指针类型、枚举类型等）, 则 value 为 true; 否则为 false。
+std::is_union<T>：如果 T 是联合体类型, 则 value 为 true; 否则为 false。
+std::is_function<T>：如果 T 是函数类型, 则 value 为 true; 否则为 false。
+std::is_arithmetic<T>：如果 T 是算术类型（整数类型或浮点数类型）, 则 value 为 true; 否则为 false。
+std::is_const<T>：如果 T 是 const 修饰的类型, 则 value 为 true; 否则为 false。
+std::is_volatile<T>：如果 T 是 volatile 修饰的类型, 则 value 为 true; 否则为 false。
+std::is_signed<T>：如果 T 是有符号整数类型, 则 value 为 true; 否则为 false。
+std::is_unsigned<T>：如果 T 是无符号整数类型, 则 value 为 true; 否则为 false。

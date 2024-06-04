@@ -1,8 +1,8 @@
 
 all: rdtsc
 
-rdtsc : rdtsc.c
-	gcc rdtsc.c -o rdtsc -lpthread
+rdtsc : rdtsc.cc
+	g++ rdtsc.cc -o rdtsc -std=c++11 -lutils -lpthread
 
 .PHONY: rdtsc clean
 
