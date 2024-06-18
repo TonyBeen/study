@@ -36,9 +36,11 @@ struct Data {
 
 struct Data2 {
     int a = 0;
-    char padding[64] = {0};
+    char padding[64];
     int b = 0;
 };
+
+const size_t SIZE = sizeof(Data2);
 
 void thread1(void *p, bool isSame) {
     cpu_set_t cpuset;
