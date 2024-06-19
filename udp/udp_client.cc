@@ -17,6 +17,8 @@
 #include <assert.h>
 #include <getopt.h>
 
+#include <string>
+
 #define BUFF_LEN 1024
 
 int main(int argc, char **argv)
@@ -26,8 +28,8 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    uint16_t port = 0;
-    const char *host = nullptr;
+    uint16_t port = 9000;
+    const char *host = "127.0.0.1";
 
     char ch = 0;
     while ((ch = getopt(argc, argv, "h:p:")) != -1) {
@@ -52,29 +54,24 @@ int main(int argc, char **argv)
     int ufd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     assert(ufd > 0);
 
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr("10.0.24.17"); // IP地址，需要进行网络序转换，INADDR_ANY：本地地址
-    addr.sin_port = htons(10000);  // 端口号，需要网络序转换
-
-    int ret = bind(ufd, (struct sockaddr*)&addr, len);
-    if(ret < 0) {
-        perror("socket bind fail!");
-        return -1;
-    }
-
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(host);
     addr.sin_port = htons(port);
 
-    char buf[128];
+    char buf[1400] = {0};
+    uint32_t i = 0;
+    std::string str;
+    str.reserve(1400);
     while (true) {
-        scanf("%s", buf);
-        if (strcasecmp("quit", buf) == 0) {
-            break;
-        }
+        str.clear();
+        sprintf(buf, "[%d:%d] [1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ]", getpid(), ++i);
+        str.append(buf);
+
         int nsend = sendto(ufd, buf, strlen(buf), 0, (sockaddr *)&addr, len);
         printf("buf %s, nsend %d\n", buf, nsend);
+
+        usleep(300 * 1000);
     }
 
     close(ufd);
