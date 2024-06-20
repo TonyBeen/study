@@ -94,7 +94,6 @@ void onTimeOut()
 {
     double recvSize = static_cast<double>(g_recvSize.load());
     g_recvSize = 0;
-    recvSize *= 2;
     if (recvSize / 1000 / 1000 > 0) {
         LOGW("onTimeOut() %.2f Mb/s", recvSize / 1000 / 1000);
     } else if (recvSize / 1000 > 0) {

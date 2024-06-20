@@ -171,8 +171,8 @@ void ThreadEntry()
         }
 
         sendTimeNow = GetCurrentTimeMS();
-        if (fds[0].revents & POLLOUT && (sendTimeNow - sendTimeOld) > 20) {
-            uint32_t size = 32 * (1400 - 24);
+        if (fds[0].revents & POLLOUT && (sendTimeNow - sendTimeOld) > 10) {
+            uint32_t size = 64 * (1400 - 24);
             static char *buffer = (char *)malloc(size);
             int32_t status = ikcp_send(kcpHandle, buffer, size);
             if (status < 0) {
