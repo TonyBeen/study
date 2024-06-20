@@ -129,6 +129,8 @@ void ThreadEntry()
     uint64_t timeNow = 0;
 
     eular::TimerManager timerMagager;
+    timerMagager.addTimer(1000, &onTimeOut, 1000);
+    timerMagager.startTimer(false);
 
     while (true) {
         int nEvent = poll(fds, sizeof(fds) / sizeof(pollfd), interval);
@@ -186,6 +188,7 @@ void ThreadEntry()
                 char *buffer = (char *)malloc(canReadSize);
                 int32_t nRecv = ikcp_recv(kcpHandle, buffer, canReadSize);
                 LOGD("ikcp_recv size %d", canReadSize);
+                g_recvSize += nRecv;
                 free(buffer);
             }
         }
@@ -203,6 +206,9 @@ int main(int argc, char **argv)
 {
     signal(SIGSEGV, &CatchSignal);
     signal(SIGABRT, &CatchSignal);
+
+    eular::log::InitLog(eular::LogLevel::LEVEL_INFO);
+
     ThreadEntry();
     return 0;
 }

@@ -111,8 +111,6 @@ void ThreadEntry()
     uint64_t sendTimeOld = 0;
     uint64_t sendTimeNow = 0;
 
-
-
     while (true) {
         int nEvent = poll(fds, sizeof(fds) / sizeof(pollfd), interval);
         if (nEvent == -1) {
@@ -131,7 +129,6 @@ void ThreadEntry()
         if ((timeNow - timeOld) > interval) {
             uint64_t timeFuture = ikcp_check(kcpHandle, timeNow);
             interval = timeFuture - timeNow;
-            LOGW("interval = %d", interval);
         }
 
         // 如果<=0则直接调用, 一般不会小于0
@@ -197,6 +194,9 @@ int main(int argc, char **argv)
 {
     signal(SIGSEGV, &CatchSignal);
     signal(SIGABRT, &CatchSignal);
+
+    eular::log::InitLog(eular::LogLevel::LEVEL_INFO);
+
     ThreadEntry();
     return 0;
 }
