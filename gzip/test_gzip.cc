@@ -260,7 +260,7 @@ void test_compress(const char *fileName, const char *mode)
         exit(1);
     }
 
-    ElapsedTime et;
+    eular::ElapsedTime et;
     et.start();
     gz_compress(pFileIn, gzOut);
     et.stop();

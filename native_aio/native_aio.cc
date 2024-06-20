@@ -5,11 +5,9 @@
     > Created Time: Sat 28 Oct 2023 05:39:17 PM CST
  ************************************************************************/
 
-#define _GNU_SOURCE
-
+#include "async_io.h"
 #include <stdlib.h>
 #include <string.h>
-#include <libaio.h>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -19,10 +17,10 @@
 
 int main()
 {
-    io_context_t context;
+    aio_context_t context;
     struct iocb io[1], *p[1] = {&io[0]};
     struct io_event e[1];
-    unsigned nr_events = 10;
+    uint32_t nr_events = 10;
     struct timespec timeout;
     char *wbuf;
     int wbuflen = 1024;
@@ -31,7 +29,7 @@ int main()
     posix_memalign((void **)&wbuf, 512, wbuflen);
 
     memset(wbuf, '@', wbuflen);
-    memset(&context, 0, sizeof(io_context_t));
+    memset(&context, 0, sizeof(aio_context_t));
 
     timeout.tv_sec = 0;
     timeout.tv_nsec = 10000000;
@@ -55,17 +53,11 @@ int main()
         return -1;
     }
 
-    while (1) {
-        ret = io_getevents(context, 1, 1, e, &timeout);     // 5. 获取异步IO的结果
-        if (ret < 0) {
-            printf("io_getevents error: %d\n", ret);
-            break;
-        }
-
-        if (ret > 0) {
-            printf("result, res2: %d, res: %d\n", e[0].res2, e[0].res);
-            break;
-        }
+    ret = io_getevents(context, 1, 1, e, &timeout);     // 5. 获取异步IO的结果
+    if (ret < 0) {
+        printf("io_getevents error: %d\n", ret);
+    } else if (ret > 0) {
+        printf("result, res2: %lld, res: %lld\n", e[0].res2, e[0].res);
     }
 
     return 0;
