@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: native_aio.cc
     > Author: hsz
-    > Brief:
+    > Brief: g++ native_aio.cc async_io.cpp -o native_aio.out
     > Created Time: Sat 28 Oct 2023 05:39:17 PM CST
  ************************************************************************/
 
@@ -13,22 +13,21 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define FILEPATH "./aio.txt"
+#define FILEPATH "./aio.out"
 
-int main()
+void test_write_one()
 {
     aio_context_t context;
     struct iocb io[1], *p[1] = {&io[0]};
     struct io_event e[1];
     uint32_t nr_events = 10;
     struct timespec timeout;
-    char *wbuf;
+    void *wbuf;
     int wbuflen = 1024;
     int ret, num = 0, i;
 
+    wbuf = aligned_alloc(64, wbuflen);
     posix_memalign((void **)&wbuf, 512, wbuflen);
-
-    memset(wbuf, '@', wbuflen);
 
     timeout.tv_sec = 0;
     timeout.tv_nsec = 10000000;
@@ -37,13 +36,13 @@ int main()
     int fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC | O_DIRECT, 0664);
     if (fd < 0) {
         printf("open error: %d\n", errno);
-        return 0;
+        return;
     }
 
     // 2. 创建一个异步IO上下文
     if (0 != io_setup(nr_events, &context)) {
         printf("io_setup error: %d\n", errno);
-        return 0;
+        return;
     }
 
     // 3. 创建一个异步IO任务
@@ -51,18 +50,24 @@ int main()
 
     // 4. 提交异步IO任务
     if ((ret = io_submit(context, 1, p)) != 1) {
-        printf("io_submit error: %d\n", ret);
+        printf("%d: io_submit error: %d\n", i, ret);
         io_destroy(context);
-        return -1;
+        return;
     }
 
     // 5. 获取异步IO的结果(阻塞)
-    ret = io_getevents(context, 1, 1, e, &timeout);
+    ret = io_getevents(context, 0, 1, e, &timeout);
     if (ret < 0) {
         printf("io_getevents error: %d\n", ret);
     } else if (ret > 0) {
         printf("result, res2: %lld, res: %lld\n", e[0].res2, e[0].res);
     }
 
+    io_destroy(context);
+}
+
+int main()
+{
+    test_write_one();
     return 0;
 }

@@ -32,20 +32,17 @@
 extern "C" {
 #endif
 
-/**
- * Provides kernel aio operations.
- */
+typedef void (*io_callback_t)(aio_context_t ctx, struct iocb *iocb, long res, long res2);
 
-int io_setup(unsigned nr, aio_context_t* ctxp);
-int io_destroy(aio_context_t ctx);
-int io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp);
-int io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events,
-                 struct timespec* timeout);
-int io_cancel(aio_context_t ctx, struct iocb*, struct io_event* result);
+int32_t io_setup(uint32_t nr, aio_context_t* ctxp);
+int32_t io_destroy(aio_context_t ctx);
+int32_t io_submit(aio_context_t ctx, long nr, struct iocb** iocbpp);
+int32_t io_getevents(aio_context_t ctx, long min_nr, long max_nr, struct io_event* events, struct timespec* timeout);
+int32_t io_cancel(aio_context_t ctx, struct iocb*, struct io_event* result);
+int32_t io_wait_all(aio_context_t ctx, uint32_t nr, struct iocb* piocb, io_callback_t cb, struct timespec* timeout);
 
-void io_prep_pread(struct iocb* iocb, int fd, void* buf, size_t count, long long offset);
-void io_prep_pwrite(struct iocb* iocb, int fd, void* buf, size_t count, long long offset);
-void io_prep(struct iocb* iocb, int fd, const void* buf, uint64_t count, int64_t offset, bool read);
+void io_prep_pread(struct iocb* iocb, int32_t fd, void* buf, size_t count, long long offset);
+void io_prep_pwrite(struct iocb* iocb, int32_t fd, void* buf, size_t count, long long offset);
 
 #ifdef __cplusplus
 };
