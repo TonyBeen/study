@@ -31,7 +31,7 @@ typedef struct ping_packet_status
 
 ping_packet_status ping_packet[PACKET_SEND_MAX_NUM];
 
-int alive;
+volatile int alive;
 int rawsock;
 int send_count;
 int recv_count;
@@ -190,22 +190,22 @@ void ping_recv()
         case 0:
             break;
         default:
-        {
-            int size = recv(rawsock, recv_buf, sizeof(recv_buf), 0);
-            if (size < 0)
             {
-                fprintf(stderr, "recv data fail!\n");
-                continue;
-            }
+                int size = recv(rawsock, recv_buf, sizeof(recv_buf), 0);
+                if (size < 0)
+                {
+                    fprintf(stderr, "recv data fail!\n");
+                    continue;
+                }
 
-            ret = icmp_unpack(recv_buf, size); // 对接收的包进行解封
-            if (ret == -1)                     // 不是属于自己的icmp包，丢弃不处理
-            {
-                continue;
+                ret = icmp_unpack(recv_buf, size); // 对接收的包进行解封
+                if (ret == -1)                     // 不是属于自己的icmp包，丢弃不处理
+                {
+                    continue;
+                }
+                recv_count++; // 接收包计数
             }
-            recv_count++; // 接收包计数
-        }
-        break;
+            break;
         }
     }
 }
@@ -221,8 +221,8 @@ void ping_stats_show()
 {
     long time = time_interval.tv_sec * 1000 + time_interval.tv_usec / 1000;
     /*注意除数不能为零，这里send_count有可能为零，所以运行时提示错误*/
-    printf("%d packets transmitted, %d recieved, %d%c packet loss, time %ldms\n",
-           send_count, recv_count, (send_count - recv_count) * 100 / send_count, '%', time);
+    printf("%d packets transmitted, %d recieved, %.2f%c packet loss, time %ldms\n",
+           send_count, recv_count, (send_count - recv_count) * 100 / (double)send_count, '%', time);
 }
 
 typedef void *(*ThreadRoute)(void *);

@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: glibc_memmem.cc
     > Author: hsz
-    > Brief:
+    > Brief: g++ glibc_memmem.cc -O2
     > Created Time: Tue 05 Sep 2023 10:07:40 AM CST
  ************************************************************************/
 
@@ -270,11 +270,11 @@ void *glibc_memmem(const void *haystack, size_t hs_len, const void *needle, size
         uint32_t nw = ne[0] << 16 | ne[1], hw = hs[0] << 16 | hs[1];
         for (hs++; hs <= end && hw != nw;)
             hw = hw << 16 | *++hs;
-        return hw == nw ? (void *)hs - 1 : NULL;
+        return hw == nw ? (void *)(hs - 1) : NULL;
     }
 
     /* Use Two-Way algorithm for very long needles.  */
-    if (__builtin_expect(ne_len > 256, 0))
+    if (ne_len > 256)
         return two_way_long_needle(hs, hs_len, ne, ne_len);
 
     uint8_t shift[256];
@@ -323,11 +323,11 @@ uint64_t timenow()
 
 #define NUM_STRINGS     128
 #define MAX_LENGTH      1024 * 10
-#define SUB_MAX_LEN     32 * 10
+#define SUB_MAX_LEN     255
 
-char mainStrings[NUM_STRINGS][MAX_LENGTH + 1];
-char subStrings[NUM_STRINGS][SUB_MAX_LEN + 1];
-void* indexVec[NUM_STRINGS];
+static char mainStrings[NUM_STRINGS][MAX_LENGTH + 1];
+static char subStrings[NUM_STRINGS][SUB_MAX_LEN + 1];
+static char* indexVec[NUM_STRINGS];
 
 void genStringVec()
 {
@@ -365,7 +365,7 @@ int main(int argc, char **argv)
     }
 
     uint64_t timeEnd = timenow();
-    printf("glibc_memmem spend: %3.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));
+    printf("glibc_memmem spend: %.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));
 
     timeBegin = timenow();
     for (int32_t i = 0; i < recyle; ++i)
@@ -373,7 +373,15 @@ int main(int argc, char **argv)
         assert(indexVec[i] == memmem(mainStrings[i], MAX_LENGTH, subStrings[i], SUB_MAX_LEN));
     }
     timeEnd = timenow();
-    printf("memmem spend: %3.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));
+    printf("memmem spend: %.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));
+
+    timeBegin = timenow();
+    for (int32_t i = 0; i < recyle; ++i)
+    {
+        assert(indexVec[i] == strstr(mainStrings[i], subStrings[i]));
+    }
+    timeEnd = timenow();
+    printf("strstr spend: %.2fns\n", (timeEnd - timeBegin) / static_cast<float>(recyle));
 
     return 0;
 }
