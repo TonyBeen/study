@@ -5,8 +5,8 @@
 #include <string>
 #include <iostream>
 
+#include <localcharset.h>
 #include "iconv.h"
-#include "libcharset.h"
 
 #define INVALID_ICONV_HANDLE ((iconv_t)-1)
 #define INVALID_ICONV_RETURN ((size_t)-1)

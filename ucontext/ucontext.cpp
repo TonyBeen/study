@@ -40,6 +40,7 @@ int main(int argc, char **argv)
     mainContext.uc_stack.ss_flags = 0;
     mainContext.uc_link = nullptr; //&tmp;
     makecontext(&mainContext, ContextEntry, 0);
+
     test();
     ucontext_t ucp;
     getcontext(&ucp);

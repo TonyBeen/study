@@ -18,6 +18,13 @@ void Swap(int &a, int &b)
 }
 
 /* 冒泡排序 */
+/**
+ * @brief 冒泡排序(从小到大)
+ * 遇到大的就交换两个元素位置
+ *
+ * @param a
+ * @param n
+ */
 void BubbleSort(int *a, int n)
 {
     for (int i = n - 1; i >= 0; i--)
