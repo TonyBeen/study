@@ -7,6 +7,11 @@
 
 
 #include <stdio.h>
+
+#include <string>
+#include <map>
+#include <signal.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -16,6 +21,20 @@
 
 #define BUFF_LEN        1400
 #define SERVER_PORT     9000
+
+std::map<std::string, int32_t> g_clientHostMap;
+
+void sig_catch(int32_t sig)
+{
+    if (sig == SIGINT) {
+        system("clear");
+        for (auto it = g_clientHostMap.begin(); it != g_clientHostMap.end(); ++it) {
+            printf("[%s:%d]", it->first.c_str(), it->second);
+        }
+    }
+
+    exit(0);
+}
 
 void handle_udp_msg(int fd)
 {
@@ -32,7 +51,11 @@ void handle_udp_msg(int fd)
             break;
         }
 
-        printf("[%s:%d]: %s, %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), buf, count);
+        std::string host = inet_ntoa(client_addr.sin_addr);
+        uint16_t port = ntohs(client_addr.sin_port);
+        printf("[%s:%d] ==> %s\n", host.c_str(), port, buf);
+
+        g_clientHostMap[host] = port;
 
         if (count > 0) {
             int n = sprintf(buf, "I have recieved %d bytes data!\n", count);
@@ -44,6 +67,8 @@ void handle_udp_msg(int fd)
 
 int main(int argc, char* argv[])
 {
+    signal(SIGINT, sig_catch);
+
     int server_fd, ret;
     struct sockaddr_in addr;
     socklen_t len = sizeof(sockaddr_in);
