@@ -61,7 +61,6 @@ void handle_udp_msg(int fd)
             int n = sprintf(buf, "I have recieved %d bytes data!\n", count);
             sendto(fd, buf, n, 0, (struct sockaddr*)&client_addr, len);
         }
-        usleep(1000 * 1000);
     }
 }
 
