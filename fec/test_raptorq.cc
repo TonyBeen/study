@@ -31,7 +31,7 @@ void readFile(const std::string& filename, std::string& data) {
 
 int main()
 {
-    std::string filename = "2m.mp4"; // 输入文件名 2m.mp4 for_test.jpg
+    std::string filename = "for_test.jpg"; // 输入文件名 2m.dat for_test.jpg
     std::string file_data;
 
     // 读取文件内容
@@ -39,7 +39,7 @@ int main()
 
     printf("read '%s' over, size = %zu\n", filename.c_str(), file_data.size());
 
-    uint16_t subsymbol = 40;
+    uint16_t subsymbol = 640;
     uint16_t symbol_size = 1280;
     size_t   max_memory = 1280;
     RaptorQ_ptr *pEncoder = nullptr;
@@ -61,7 +61,7 @@ int main()
 
     RaptorQ_precompute(pEncoder, 1, false);
 
-    printf("symbol_size = %u\n", RaptorQ_symbol_size(pEncoder)); // 为symbol_size
+    printf("symbol_size = %u\n", RaptorQ_symbol_size(pEncoder)); // 结果为 symbol_size
 
     auto blocks = RaptorQ_blocks(pEncoder);
     std::map<uint32_t, std::vector<uint8_t>> symbol_map;
