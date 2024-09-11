@@ -31,15 +31,16 @@ void readFile(const std::string& filename, std::string& data) {
 
 int main()
 {
-    std::string filename = "for_test.jpg"; // 输入文件名 2m.dat for_test.jpg
+    std::string filename = "2m.dat"; // 输入文件名 2m.dat
     std::string file_data;
 
     // 读取文件内容
     readFile(filename, file_data);
 
+    file_data.resize(16 * 1280);
     printf("read '%s' over, size = %zu\n", filename.c_str(), file_data.size());
 
-    uint16_t subsymbol = 640;
+    uint16_t subsymbol = 256;
     uint16_t symbol_size = 1280;
     size_t   max_memory = 1280;
     RaptorQ_ptr *pEncoder = nullptr;
@@ -51,6 +52,8 @@ int main()
      * 一个symbol的大小由 symbol_size控制
      *
      * subsymbol 和 max_memory 以及 源数据大小 影响block中每个symbol个数
+     * 
+     * 区块个数大概计算公式: block = std::ceil(data_size / (max_memory * symbol_size / subsymbol))
      *
      */
     pEncoder = RaptorQ_Enc(ENC_8, (void *)file_data.data(), file_data.size(), subsymbol, symbol_size, max_memory);
