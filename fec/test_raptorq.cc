@@ -38,12 +38,13 @@ int main()
     readFile(filename, file_data);
 
     file_data.resize(16 * 1280);
+    file_data[0] = '\x2';
     printf("read '%s' over, size = %zu\n", filename.c_str(), file_data.size());
 
-    uint16_t subsymbol = 256;
-    uint16_t symbol_size = 1280;
-    size_t   max_memory = 1280;
-    RaptorQ_ptr *pEncoder = nullptr;
+    uint16_t subsymbol = 512;
+    uint16_t symbol_size = 2048;
+    size_t   max_memory = 2048;
+
     /**
      * 一个文件经喷泉码编码生成多个block
      *
@@ -53,9 +54,19 @@ int main()
      *
      * subsymbol 和 max_memory 以及 源数据大小 影响block中每个symbol个数
      * 
-     * 区块个数大概计算公式: block = std::ceil(data_size / (max_memory * symbol_size / subsymbol))
+     * 大概计算公式: 
+     * block个数 = std::ceil(data_size / (max_memory * symbol_size / subsymbol))
+     * 
+     * symbol个数 = std::ceil(data_size / symbol_size);
+     * 
+     * block中含有symbol个数 = symbol个数 / block个数
+     * 
+     * symbol平均分到每个block中, 假设有17个symbol, 4个block, 不会是 [5, 5, 4, 3]这样分配
+     * 而是 [5, 4, 4, 4]
      *
+     * oti_scheme 和 oti_common 只与data_size subsymbol symbol_size max_memory有关, 与数据无关
      */
+    RaptorQ_ptr *pEncoder = nullptr;
     pEncoder = RaptorQ_Enc(ENC_8, (void *)file_data.data(), file_data.size(), subsymbol, symbol_size, max_memory);
     if (pEncoder == NULL) {
         fprintf(stderr, "Coud not initialize encoder.\n");
