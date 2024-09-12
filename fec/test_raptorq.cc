@@ -37,13 +37,12 @@ int main()
     // 读取文件内容
     readFile(filename, file_data);
 
-    file_data.resize(16 * 1280);
-    file_data[0] = '\x2';
+    file_data.resize(32 * 1280);
     printf("read '%s' over, size = %zu\n", filename.c_str(), file_data.size());
 
-    uint16_t subsymbol = 512;
+    uint16_t subsymbol = 1024;
     uint16_t symbol_size = 2048;
-    size_t   max_memory = 2048;
+    size_t   max_memory = file_data.size();
 
     /**
      * 一个文件经喷泉码编码生成多个block
@@ -151,6 +150,8 @@ int main()
             continue;
         }
     }
+
+    RaptorQ_precompute(pDecode, 1, false);
 
     auto decode_size = RaptorQ_bytes(pDecode) / sizeof(uint8_t);
     // 如果是其他类型需要计算是否能整除
