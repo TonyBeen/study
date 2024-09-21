@@ -40,8 +40,8 @@ int main()
     file_data.resize(32 * 1280);
     printf("read '%s' over, size = %zu\n", filename.c_str(), file_data.size());
 
-    uint16_t subsymbol = 1024;
-    uint16_t symbol_size = 2048;
+    uint16_t subsymbol = 560;
+    uint16_t symbol_size = 1280;
     size_t   max_memory = file_data.size();
 
     /**
@@ -71,6 +71,13 @@ int main()
         fprintf(stderr, "Coud not initialize encoder.\n");
         return 0;
     }
+    uint32_t oti_scheme = RaptorQ_OTI_Scheme(pEncoder);
+    uint64_t oti_common = RaptorQ_OTI_Common(pEncoder);
+    printf("oti_scheme = %u, oti_common = %lu\n", oti_scheme, oti_common);
+
+    // 此行代码用于测试oti_scheme和oti_common与数据是否有关系
+    // auto encoder_temp = RaptorQ_Enc(ENC_8, nullptr, file_data.size(), subsymbol, symbol_size, max_memory);
+    // printf("oti_scheme = %u, oti_common = %lu\n", RaptorQ_OTI_Scheme(encoder_temp), RaptorQ_OTI_Common(encoder_temp));
 
     RaptorQ_precompute(pEncoder, 1, false);
 
@@ -122,9 +129,6 @@ int main()
     }
 
     // 编码完毕 释放资源 获取解码所需数据
-    uint32_t oti_scheme = RaptorQ_OTI_Scheme(pEncoder);
-    uint64_t oti_common = RaptorQ_OTI_Common(pEncoder);
-    printf("oti_scheme = %u, oti_common = %lu\n", oti_scheme, oti_common);
     RaptorQ_free(&pEncoder);
 
     printf("\n--------------------------------------------------------------------------------\n\n");
