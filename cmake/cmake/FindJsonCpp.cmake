@@ -75,12 +75,14 @@ unset(_JsonCpp_H_REGEX)
 unset(_JsonCpp_H)
 
 #-----------------------------------------------------------------------------
-include(${CMAKE_CURRENT_LIST_DIR}/../../Modules/FindPackageHandleStandardArgs.cmake)
+# include(${CMAKE_CURRENT_LIST_DIR}/../../Modules/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
+
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(JsonCpp
   FOUND_VAR JsonCpp_FOUND
   REQUIRED_VARS JsonCpp_LIBRARY JsonCpp_INCLUDE_DIR
   VERSION_VAR JsonCpp_VERSION_STRING
-  )
+)
 set(JSONCPP_FOUND ${JsonCpp_FOUND})
 
 #-----------------------------------------------------------------------------

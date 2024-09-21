@@ -11,40 +11,48 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11)
 
 # 给CMAKE_MODULE_PATH添加路径, find_package从CMAKE_MODULE_PATH中找Find<PackageName>.cmake
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/local/lib/cmake/)
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/")
+message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
+
+message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+
+# 通过找到文件的所在位置, 将头文件路径赋值给libhv_INCLUDE_DIRS
+find_path(libhv_INCLUDE_DIRS hv/hv.h)
+message("----> libhv_INCLUDE_DIRS: " ${libhv_INCLUDE_DIRS})
 
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
 message(STATUS "PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
-
-message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
 message(STATUS "CMAKE_CURRENT_LIST_DIR = ${CMAKE_CURRENT_LIST_DIR}")
 
 # 查找OpenSSL包
 find_package(OpenSSL REQUIRED)
 message(STATUS "OpenSSL:")
-message(STATUS "  version: ${OPENSSL_VERSION}")
-message(STATUS "  definition: ${OPENSSL_DEFINITIONS}")
-message(STATUS "  librarie path: ${OPENSSL_LIBRARY}")
-message(STATUS "  libraries: ${OPENSSL_LIBRARIES}")
-message(STATUS "  include path: ${OPENSSL_INCLUDE_DIR}")
+message(STATUS "  version: ${OpenSSL_VERSION}")
+message(STATUS "  definition: ${OpenSSL_DEFINITIONS}")
+message(STATUS "  librarie path: ${OpenSSL_LIBRARY}")
+message(STATUS "  libraries: ${OpenSSL_LIBRARIES}")
+message(STATUS "  include path: ${OpenSSL_INCLUDE_DIR}")
 
 # 查找jsoncpp包
 find_package(JsonCpp REQUIRED)
-message(STATUS "JsonCpp:")
-message(STATUS "  version: ${jsoncpp_VERSION}")
-message(STATUS "  libraries: ${jsoncpp_LIBS}")
-message(STATUS "  include path: ${jsoncpp_INCLUDE_DIRS}")
+message(STATUS "JsonCpp: ${JSONCPP_FOUND} ${JsonCpp_FOUND}")
+message(STATUS "  version: ${JsonCpp_VERSION_STRING}")
+message(STATUS "  libraries: ${JsonCpp_LIBRARIES}")
+message(STATUS "  include path: ${JsonCpp_INCLUDE_DIRS}")
 
 # 查找OpenCV包
-find_package(OpenCV REQUIRED)
-message(STATUS "OpenCV:")
-message(STATUS "  version: ${OpenCV_VERSION}")
-message(STATUS "  libraries: ${OpenCV_LIBS}")
-message(STATUS "  include path: ${OpenCV_INCLUDE_DIRS}")
+find_package(OpenCV QUIET)
+if(${OpenCV_FOUND})
+	message(STATUS "OpenCV:")
+	message(STATUS "  version: ${OpenCV_VERSION}")
+	message(STATUS "  libraries: ${OpenCV_LIBRARIES}")
+	message(STATUS "  include path: ${OpenCV_INCLUDE_DIRS}")
+endif()
 
 message(STATUS "is the C++ compiler loaded? ${CMAKE_CXX_COMPILER_LOADED}")
 if(CMAKE_CXX_COMPILER_LOADED)
