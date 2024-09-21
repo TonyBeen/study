@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 # 工程名称和版本
 project(getinfo VERSION 1.0.1)
 
-# 指定的C++编译器版本是必须的
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # 指定为C++11 版本
 set(CMAKE_CXX_STANDARD 11)
+
+# 指定的C++编译器版本是必须的
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 给CMAKE_MODULE_PATH添加路径, find_package从CMAKE_MODULE_PATH中找Find<PackageName>.cmake
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -45,7 +45,7 @@ message(STATUS "  version: ${JsonCpp_VERSION_STRING}")
 message(STATUS "  libraries: ${JsonCpp_LIBRARIES}")
 message(STATUS "  include path: ${JsonCpp_INCLUDE_DIRS}")
 
-# 查找OpenCV包
+# 查找OpenCV包 QUIET表示找不到时也不输出警告信息
 find_package(OpenCV QUIET)
 if(${OpenCV_FOUND})
 	message(STATUS "OpenCV:")
