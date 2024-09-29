@@ -18,7 +18,7 @@
 
 #define LOG_TAG "mmap_test"
 
-#define FILE_NAME       "file.txt"
+#define FILE_NAME       "file.out"
 #define FILE_MAX_SIZE   (1024 * 10)
 
 void test_mmap_file(int argc, char **argv)
@@ -40,7 +40,7 @@ void test_mmap_file(int argc, char **argv)
     // write(fd, "\0", 1);
 
     // 将参数fd指定的文件大小改为参数length指定的大小, 必须是以写入模式打开的文件
-    assert(ftruncate(fd, FILE_MAX_SIZE) == 0);
+    assert(ftruncate64(fd, FILE_MAX_SIZE) == 0);
 
     // 必须是 MAP_SHARED 才能保存数据到文件
     char *mmapPtr = (char *)mmap(nullptr, FILE_MAX_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -50,9 +50,15 @@ void test_mmap_file(int argc, char **argv)
     }
 
     {
+        // auto pageSize = sysconf(_SC_PAGESIZE);
+        // printf("page size = %d\n", (int32_t)pageSize);
+        // for (auto i = 0; i < FILE_MAX_SIZE / pageSize; ++i) {
+        //     mmapPtr[i * pageSize] = rand() % distance + begin;
+        // }
+
         // 直接修改内存可以读写文件内容，mmap创建的是虚拟内存，linux下交换内存(swap空间)是虚拟内存与物理内存的切换空间
-        int size = FILE_MAX_SIZE;
-        for (int i = 0; i < size; ++i) {
+        auto size = FILE_MAX_SIZE;
+        for (auto i = 0; i < size; ++i) {
             if (i && i % 1024 == 0) {
                 mmapPtr[i] = '\n';
             } else {
