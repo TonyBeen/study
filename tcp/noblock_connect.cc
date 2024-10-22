@@ -31,6 +31,12 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    int32_t flag = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (char*)&flag, sizeof(flag))) {
+        perror("setsockopt(SO_REUSEPORT) error");
+        return 0;
+    }
+
     // 设置套接字为非阻塞模式
     int flags = fcntl(sockfd, F_GETFL, 0);
     fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
