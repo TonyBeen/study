@@ -127,7 +127,9 @@ void start_server(int server_sock) {
         return;
     }
 
-    printf("connect to %s:%u success\n", peer_host.c_str(), peer_port);
+    if (TimeoutConnect(client_sock, address, 1000)) {
+        printf("connect to %s:%u success\n", peer_host.c_str(), peer_port);
+    }
 }
 
 int32_t Server(bool is_client = false, const char *addr = nullptr)
@@ -187,9 +189,9 @@ int32_t Server(bool is_client = false, const char *addr = nullptr)
         }
 
         address.sin_addr.s_addr = inet_addr(addr);
-        TimeoutConnect(client_sock, address, 1000);
-
-        printf("connect to %s success\n", addr);
+        if (TimeoutConnect(client_sock, address, 1000)) {
+            printf("connect to %s success\n", addr);
+        }
     }
 
     std::cout << "Server listening on port " << PORT << std::endl;
