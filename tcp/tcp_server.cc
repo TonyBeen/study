@@ -121,11 +121,7 @@ void start_server(int server_sock) {
         return;
     }
 
-    int ret = connect(client_sock, (struct sockaddr*)&address, sizeof(address));
-    if (ret < 0) {
-        printf("Failed to connect: [%d:%s]\n", errno, strerror(errno));
-        return;
-    }
+    usleep(500 * 1000);
 
     if (TimeoutConnect(client_sock, address, 1000)) {
         printf("connect to %s:%u success\n", peer_host.c_str(), peer_port);
