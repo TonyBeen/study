@@ -153,6 +153,9 @@ int32_t Server(bool is_client = false, const char *addr = nullptr)
     // Set server address and port
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
+    if (!is_client && addr != nullptr) {
+        address.sin_addr.s_addr = inet_addr(addr);
+    }
     address.sin_port = htons(PORT);
 
     // Bind the socket to the network address and port
