@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <sys/inotify.h>
 #include <sys/types.h>
@@ -136,7 +138,7 @@ int main() {
     eular::log::InitLog();
     eular::log::EnableLogColor(true);
     eular::log::SetPath("/home/eular/VSCode/study/check_file_event/");
-    eular::log::addOutputNode(eular::LogWrite::FILEOUT);
+    eular::log::addOutputNode((int32_t)eular::OutputType::FILEOUT);
 
     // 初始化 inotify 实例
     fd = inotify_init();

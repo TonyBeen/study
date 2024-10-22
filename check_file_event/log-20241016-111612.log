@@ -1,0 +1,446 @@
+10-16 11:16:12.754 25000 25000 [I] watch_file: read length: 2176
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.754 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: build
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 4, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: build
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 4, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 8, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 8, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 8, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 8, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+10-16 11:16:12.755 25000 25000 [I] watch_file: wd: 7, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdC
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 7, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 10, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 10, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 10, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: tmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 10, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CompilerIdCXX
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 9, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: 3.16.3
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 6, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 11, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 11, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 11, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CMakeTmp
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 11, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 5, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.756 25000 25000 [I] watch_file: wd: 4, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: CMakeFiles
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 5, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: build
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 4, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: build
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 4, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:12.757 25000 25000 [I] watch_file: 
+10-16 11:16:13.895 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:13.895 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:13.895 25000 25000 [I] watch_file: 
+10-16 11:16:13.895 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:13.895 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:13.895 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:13.895 25000 25000 [I] watch_file: 
+10-16 11:16:13.896 25000 25000 [I] watch_file: read length: 640
+10-16 11:16:13.896 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.896 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.896 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:13.896 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:13.897 25000 25000 [I] watch_file: 
+10-16 11:16:17.015 25000 25000 [I] watch_file: read length: 48
+10-16 11:16:17.015 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:17.015 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:17.015 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:17.016 25000 25000 [I] watch_file: 
+10-16 11:16:18.887 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:18.887 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.887 25000 25000 [I] watch_file: 
+10-16 11:16:18.887 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:18.887 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.887 25000 25000 [I] watch_file: 
+10-16 11:16:18.888 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:18.888 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.888 25000 25000 [I] watch_file: 
+10-16 11:16:18.944 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:18.945 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.945 25000 25000 [I] watch_file: 
+10-16 11:16:18.945 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:18.945 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.945 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:18.945 25000 25000 [I] watch_file: 
+10-16 11:16:18.948 25000 25000 [I] watch_file: read length: 80
+10-16 11:16:18.948 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.948 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: 
+10-16 11:16:18.949 25000 25000 [I] watch_file: read length: 560
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.949 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.950 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:18.950 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.950 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.950 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:18.950 25000 25000 [I] watch_file: 
+10-16 11:16:23.063 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:23.063 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.063 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.063 25000 25000 [I] watch_file: 
+10-16 11:16:23.063 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:23.063 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.063 25000 25000 [I] watch_file: 
+10-16 11:16:23.065 25000 25000 [I] watch_file: read length: 80
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: 
+10-16 11:16:23.065 25000 25000 [I] watch_file: read length: 560
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.065 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.066 25000 25000 [I] watch_file: 
+10-16 11:16:23.994 25000 25000 [I] watch_file: read length: 96
+10-16 11:16:23.994 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.995 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.995 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:23.995 25000 25000 [I] watch_file: 
+10-16 11:16:23.997 25000 25000 [I] watch_file: read length: 640
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.997 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.998 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:23.998 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.998 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.998 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:23.998 25000 25000 [I] watch_file: 
+10-16 11:16:26.317 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:26.317 25000 25000 [I] watch_file: wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.317 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.317 25000 25000 [I] watch_file: 
+10-16 11:16:26.317 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:26.317 25000 25000 [I] watch_file: wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.317 25000 25000 [I] watch_file: 
+10-16 11:16:26.323 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:26.323 25000 25000 [I] watch_file: wd: 1, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.323 25000 25000 [I] watch_file: 
+10-16 11:16:26.394 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:26.394 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.394 25000 25000 [I] watch_file: 
+10-16 11:16:26.394 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:26.394 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.394 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:26.395 25000 25000 [I] watch_file: 
+10-16 11:16:29.038 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:29.038 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:29.038 25000 25000 [I] watch_file: 
+10-16 11:16:29.038 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:29.038 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:29.038 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:29.038 25000 25000 [I] watch_file: 
+10-16 11:16:29.042 25000 25000 [I] watch_file: read length: 224
+10-16 11:16:29.042 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.042 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.042 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: 
+10-16 11:16:29.043 25000 25000 [I] watch_file: read length: 416
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.043 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.044 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:29.044 25000 25000 [I] watch_file: 
+10-16 11:16:31.665 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:31.666 25000 25000 [I] watch_file: wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.666 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.666 25000 25000 [I] watch_file: 
+10-16 11:16:31.666 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:31.666 25000 25000 [I] watch_file: wd: 1, mask: 0x2(IN_MODIFY), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.666 25000 25000 [I] watch_file: 
+10-16 11:16:31.671 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:31.671 25000 25000 [I] watch_file: wd: 1, mask: 0x8(IN_CLOSE_WRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.671 25000 25000 [I] watch_file: 
+10-16 11:16:31.723 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:31.723 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.723 25000 25000 [I] watch_file: 
+10-16 11:16:31.723 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:31.723 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.723 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:31.723 25000 25000 [I] watch_file: 
+10-16 11:16:34.087 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:34.087 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:34.087 25000 25000 [I] watch_file: 
+10-16 11:16:34.087 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:34.087 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:34.087 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:34.087 25000 25000 [I] watch_file: 
+10-16 11:16:34.091 25000 25000 [I] watch_file: read length: 128
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: 
+10-16 11:16:34.091 25000 25000 [I] watch_file: read length: 512
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.091 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:34.092 25000 25000 [I] watch_file: 
+10-16 11:16:39.138 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:39.138 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:39.138 25000 25000 [I] watch_file: 
+10-16 11:16:39.138 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:39.138 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:39.138 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:39.138 25000 25000 [I] watch_file: 
+10-16 11:16:39.140 25000 25000 [I] watch_file: read length: 272
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: 
+10-16 11:16:39.140 25000 25000 [I] watch_file: read length: 368
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.140 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:39.141 25000 25000 [I] watch_file: 
+10-16 11:16:44.184 25000 25000 [I] watch_file: read length: 64
+10-16 11:16:44.184 25000 25000 [I] watch_file: wd: 1, mask: 0x20(IN_OPEN), cookie: 0, len: 16, name: something.txt
+10-16 11:16:44.184 25000 25000 [I] watch_file: wd: 1, mask: 0x1(IN_ACCESS), cookie: 0, len: 16, name: something.txt
+10-16 11:16:44.184 25000 25000 [I] watch_file: 
+10-16 11:16:44.184 25000 25000 [I] watch_file: read length: 32
+10-16 11:16:44.184 25000 25000 [I] watch_file: wd: 1, mask: 0x10(IN_CLOSE_NOWRITE), cookie: 0, len: 16, name: something.txt
+10-16 11:16:44.184 25000 25000 [I] watch_file: 
+10-16 11:16:44.187 25000 25000 [I] watch_file: read length: 640
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 2, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 2, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: AB
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 2, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 12, mask: 0x40000020(IN_OPEN | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 12, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 12, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 16, name: cmake
+10-16 11:16:44.188 25000 25000 [I] watch_file: wd: 3, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.189 25000 25000 [I] watch_file: wd: 1, mask: 0x40000001(IN_ACCESS | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.189 25000 25000 [I] watch_file: wd: 1, mask: 0x40000010(IN_CLOSE_NOWRITE | IN_ISDIR), cookie: 0, len: 0, name: (null)
+10-16 11:16:44.189 25000 25000 [I] watch_file: 
