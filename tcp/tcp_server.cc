@@ -12,6 +12,7 @@
 #include <cstring>
 #include <thread>
 #include <arpa/inet.h>
+#include <getopt.h>
 
 #define PORT 8080
 
@@ -40,7 +41,7 @@ void start_server(int server_sock) {
             std::cerr << "Failed to accept connection\n";
             continue;
         }
-        
+
         std::cout << "New connection from " << inet_ntoa(address.sin_addr) << ":" << ntohs(address.sin_port) << std::endl;
 
         // Handle client in a new thread
@@ -48,13 +49,12 @@ void start_server(int server_sock) {
     }
 }
 
-int main()
+int32_t Server(bool is_client = false, const char *addr = nullptr)
 {
-    int server_sock;
+    int server_sock = 0;
     struct sockaddr_in address;
-
     // Create socket file descriptor
-    if ((server_sock = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    if ((server_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         std::cerr << "Socket creation failed\n";
         return -1;
     }
@@ -86,6 +86,17 @@ int main()
         return -1;
     }
 
+    if (is_client) {
+        address.sin_addr.s_addr = inet_addr(addr);
+        int ret = connect(server_sock, (struct sockaddr*)&address, sizeof(address));
+        if (ret < 0) {
+            printf("Failed to connect: [%d:%s]\n", errno, strerror(errno));
+        }
+
+        printf("connect to %s success\n", addr);
+        return 0;
+    }
+
     std::cout << "Server listening on port " << PORT << std::endl;
 
     // Start handling connections
@@ -93,5 +104,26 @@ int main()
 
     // Close the server socket
     close(server_sock);
+}
+
+int main(int argc, char *argv[])
+{
+    bool is_client = false;
+    const char *addr = nullptr;
+    char c = '\0';
+    while ((c = ::getopt(argc, argv, "a:c")) > 0) {
+        switch (c) {
+        case 'a':
+            addr = optarg;
+            break;
+        case 'c':
+            is_client = true;
+            break;
+        default:
+            break;
+        }
+    }
+
+    Server(is_client, addr);
     return 0;
 }
