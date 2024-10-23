@@ -48,11 +48,13 @@ void start_server(int server_sock) {
         if (peerVec.size() == 2) {
             // 将B的信息发送给A
             PeerMessage msg;
+            msg.is_server = 1;
             strcpy(msg.host, peerVec[1].first.c_str());
             msg.port = peerVec[1].second;
             send(sockVec[0], &msg, sizeof(PeerMessage), 0);
 
             memset(&msg, 0, sizeof(PeerMessage));
+            msg.is_server = 0;
             strcpy(msg.host, peerVec[0].first.c_str());
             msg.port = peerVec[0].second;
             send(sockVec[1], &msg, sizeof(PeerMessage), 0);

@@ -22,6 +22,7 @@
 
 struct PeerMessage
 {
+    uint16_t    is_server;
     char        host[32];
     uint16_t    port;
 };

@@ -76,13 +76,13 @@ int main(int argc, char **argv)
 
     // 连接成功
     PeerMessage msg;
-    int32_t n = recv(sockfd, &msg, sizeof(PeerMessage), 0);
-    if (n < 0) {
+    int32_t nRecv = recv(sockfd, &msg, sizeof(PeerMessage), 0);
+    if (nRecv < 0) {
         perror("recv error");
         return 0;
     }
 
-    printf("Peer Info: %s:%u\n", msg.host, msg.port);
+    printf("Peer Info: %s:%u, IsServer = %s\n", msg.host, msg.port, msg.is_server ? "true" : "false");
 
     close(sockfd);
 
@@ -101,6 +101,32 @@ int main(int argc, char **argv)
     s_addr.sin_family = AF_INET;
     s_addr.sin_addr.s_addr = inet_addr(msg.host);
     s_addr.sin_port = htons(msg.port);
+
+    if (msg.is_server) {
+        TimeoutConnect(sockfd, s_addr, 100);
+        TimeoutConnect(sockfd, s_addr, 100);
+
+        int32_t code = bind(sockfd, (sockaddr *)&loacl_addr, addr_len);
+        if (code < 0) {
+            perror("bind error");
+            return 0;
+        }
+
+        code = listen(sockfd, 100);
+        if (code < 0) {
+            perror("listen error");
+            return 0;
+        }
+
+        sockaddr_in peer_addr;
+        code = accept(sockfd, (sockaddr *)&peer_addr, &addr_len);
+        if (code < 0) {
+            perror("accept error");
+            return 0;
+        }
+
+        return 0;
+    }
 
     int32_t i = 0;
     for (i = 0; i < 10; ++i) {
