@@ -20,58 +20,18 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "common.h"
+
 #define PORT 13999
-
-bool TimeoutConnect(int32_t sockfd, sockaddr_in addr, uint32_t timeoutMS)
-{
-    int flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-
-    // 连接到目标地址
-    int ret = connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
-    if (ret < 0 && errno != EINPROGRESS) { // 连接失败且不是EINPROGRESS
-        // EINPROGRESS 表示仍在进行连接
-        printf("Failed to connect: [%d:%s]\n", errno, strerror(errno));
-        return false;
-    }
-
-    // 在非阻塞模式下，需要使用 select() 或 epoll() 等函数来等待连接完成
-    fd_set fdset;
-    FD_ZERO(&fdset);
-    FD_SET(sockfd, &fdset);
-    struct timeval timeout;
-    timeout.tv_sec = timeoutMS / 1000;
-    timeout.tv_usec = timeoutMS % 1000 * 1000;
-    ret = select(sockfd + 1, nullptr, &fdset, nullptr, &timeout);
-    if (ret < 0) {
-        printf("Failed to select: [%d:%s]\n", errno, strerror(errno));
-        return false;
-    } else if (ret == 0) { // 超时了
-        printf("Connection timed out\n");
-        return false;
-    } else {  // 连接成功或失败
-        int valopt;
-        socklen_t optlen = sizeof(valopt);
-        getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (void*)&valopt, &optlen);  // 获取连接结果
-        if (valopt != 0) {  // 连接失败
-            printf("Failed to connect: [%d:%s]\n", valopt, strerror(valopt));
-            return false;
-        }
-    }
-
-    // 恢复套接字为阻塞模式
-    fcntl(sockfd, F_SETFL, flags);
-
-    return true;
-}
 
 void start_server(int server_sock) {
     struct sockaddr_in address;
     socklen_t addrlen = sizeof(address);
-    
+
     std::string peer_host;
     uint16_t peer_port = 0;
     std::vector<std::pair<std::string, uint16_t>> peerVec;
+    std::vector<int32_t> sockVec;
     while (true) {
         int client_sock = accept(server_sock, (struct sockaddr*)&address, &addrlen);
         if (client_sock < 0) {
@@ -82,6 +42,22 @@ void start_server(int server_sock) {
         peer_host = inet_ntoa(address.sin_addr);
         peer_port = ntohs(address.sin_port);
         std::cout << "New connection from " << peer_host << ":" << peer_port << std::endl;
+
+        sockVec.push_back(client_sock);
+        peerVec.emplace_back(std::move(peer_host), peer_port);
+        if (peerVec.size() == 0) {
+            // 将B的信息发送给A
+            PeerMessage msg;
+            strcpy(msg.host, peerVec[1].first.c_str());
+            msg.port = peerVec[1].second;
+            send(sockVec[0], &msg, sizeof(PeerMessage), 0);
+
+            memset(&msg, 0, sizeof(PeerMessage));
+            strcpy(msg.host, peerVec[0].first.c_str());
+            msg.port = peerVec[0].second;
+            send(sockVec[1], &msg, sizeof(PeerMessage), 0);
+            break;
+        }
     }
 }
 
@@ -139,7 +115,7 @@ int main(int argc, char *argv[])
     bool is_client = false;
     const char *addr = nullptr;
     char c = '\0';
-    while ((c = ::getopt(argc, argv, "a")) > 0) {
+    while ((c = ::getopt(argc, argv, "a:")) > 0) {
         switch (c) {
         case 'a':
             addr = optarg;
