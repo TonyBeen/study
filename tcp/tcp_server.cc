@@ -45,7 +45,7 @@ void start_server(int server_sock) {
 
         sockVec.push_back(client_sock);
         peerVec.emplace_back(std::move(peer_host), peer_port);
-        if (peerVec.size() == 0) {
+        if (peerVec.size() == 2) {
             // 将B的信息发送给A
             PeerMessage msg;
             strcpy(msg.host, peerVec[1].first.c_str());
