@@ -54,7 +54,7 @@ void start_server(int server_sock) {
             send(sockVec[0], &msg, sizeof(PeerMessage), 0);
 
             memset(&msg, 0, sizeof(PeerMessage));
-            msg.is_server = 0;
+            msg.is_server = 1;
             strcpy(msg.host, peerVec[0].first.c_str());
             msg.port = peerVec[0].second;
             send(sockVec[1], &msg, sizeof(PeerMessage), 0);
