@@ -58,10 +58,15 @@ bool TimeoutConnect(int32_t sockfd, sockaddr_in addr, uint32_t timeoutMS)
 
     // 连接到目标地址
     int ret = connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
-    if (ret < 0 && errno != EINPROGRESS) { // 连接失败且不是EINPROGRESS
-        // EINPROGRESS 表示仍在进行连接
-        printf("Failed to connect: [%d:%s]\n", errno, strerror(errno));
-        return false;
+    if (ret < 0) {
+        if (errno == EISCONN) { // 已连接的套接字
+            return true;
+        }
+
+        if (errno != EINPROGRESS) { // EINPROGRESS 表示仍在进行连接
+            printf("Failed to connect: [%d:%s]\n", errno, strerror(errno));
+            return false;
+        }
     }
 
     // 在非阻塞模式下，需要使用 select() 或 epoll() 等函数来等待连接完成

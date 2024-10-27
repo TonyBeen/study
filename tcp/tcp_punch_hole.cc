@@ -54,6 +54,16 @@ int main(int argc, char **argv)
     }
 
     ReusePortAddr(sockfd);
+    sockaddr_in local_addr;
+    memset(&local_addr, 0, sizeof(local_addr));
+    local_addr.sin_family = AF_INET;
+    local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    local_addr.sin_port = htons(local_port);
+    if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+        perror("bind error");
+        close(sockfd);
+        return -1;
+    }
 
     sockaddr_in s_addr;
     memset(&s_addr, 0, sizeof(s_addr));
