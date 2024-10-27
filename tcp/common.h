@@ -29,10 +29,27 @@ struct PeerMessage
 
 auto size = sizeof(PeerMessage);
 
+bool ReusePortAddr(int32_t sock, int32_t reuse = 1)
+{
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char*)&reuse, sizeof(reuse))) {
+        perror("setsockopt(SO_REUSEPORT) error");
+        return false;
+    }
+
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse))) {
+        perror("setsockopt(SO_REUSEPORT) error");
+        return false;
+    }
+
+    return true;
+}
+
 bool TimeoutConnect(int32_t sockfd, sockaddr_in addr, uint32_t timeoutMS)
 {
     int flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+    if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        perror("fcntl error");
+    }
 
     std::shared_ptr<void>(nullptr, [&](void *) {
         // 恢复套接字为阻塞模式
@@ -52,8 +69,8 @@ bool TimeoutConnect(int32_t sockfd, sockaddr_in addr, uint32_t timeoutMS)
     FD_ZERO(&fdset);
     FD_SET(sockfd, &fdset);
     struct timeval timeout;
-    timeout.tv_sec = timeoutMS / 1000;
-    timeout.tv_usec = timeoutMS % 1000 * 1000;
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 0;
     ret = select(sockfd + 1, nullptr, &fdset, nullptr, &timeout);
     if (ret < 0) {
         printf("Failed to select: [%d:%s]\n", errno, strerror(errno));
@@ -62,7 +79,7 @@ bool TimeoutConnect(int32_t sockfd, sockaddr_in addr, uint32_t timeoutMS)
         printf("Connection timed out\n");
         return false;
     } else {  // 连接成功或失败
-        int valopt;
+        int valopt = -1;
         socklen_t optlen = sizeof(valopt);
         getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (void*)&valopt, &optlen);  // 获取连接结果
         if (valopt != 0) {  // 连接失败

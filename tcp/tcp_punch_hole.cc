@@ -53,11 +53,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    int32_t flag = 1;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (char*)&flag, sizeof(flag))) {
-        perror("setsockopt(SO_REUSEPORT) error");
-        return 0;
-    }
+    ReusePortAddr(sockfd);
 
     sockaddr_in s_addr;
     memset(&s_addr, 0, sizeof(s_addr));
@@ -71,7 +67,7 @@ int main(int argc, char **argv)
 
     sockaddr_in loacl_addr;
     socklen_t addr_len = sizeof(loacl_addr);
-    getpeername(sockfd, (sockaddr *)&loacl_addr, &addr_len);
+    getsockname(sockfd, (sockaddr *)&loacl_addr, &addr_len);
     printf("local info: %s:%u\n", inet_ntoa(loacl_addr.sin_addr), ntohs(loacl_addr.sin_port));
 
     // 连接成功
@@ -86,31 +82,31 @@ int main(int argc, char **argv)
 
     close(sockfd);
 
-    // 创建套接字
+    // 创建新的套接字
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         printf("socket error, errno: %d, errstr: %s\n", errno, strerror(errno));
         return 0;
     }
 
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (char*)&flag, sizeof(flag))) {
-        perror("setsockopt(SO_REUSEPORT) error");
-        return 0;
-    }
+    ReusePortAddr(sockfd);
+
     memset(&s_addr, 0, sizeof(s_addr));
     s_addr.sin_family = AF_INET;
     s_addr.sin_addr.s_addr = inet_addr(msg.host);
     s_addr.sin_port = htons(msg.port);
 
-    if (msg.is_server) {
-        TimeoutConnect(sockfd, s_addr, 100);
-        TimeoutConnect(sockfd, s_addr, 100);
+    int32_t code = bind(sockfd, (sockaddr *)&loacl_addr, addr_len);
+    if (code < 0) {
+        perror("bind error");
+        return 0;
+    }
 
-        int32_t code = bind(sockfd, (sockaddr *)&loacl_addr, addr_len);
-        if (code < 0) {
-            perror("bind error");
-            return 0;
-        }
+    getsockname(sockfd, (sockaddr *)&loacl_addr, &addr_len);
+    printf("local info: %s:%u\n", inet_ntoa(loacl_addr.sin_addr), ntohs(loacl_addr.sin_port));
+
+    if (msg.is_server) {
+        TimeoutConnect(sockfd, s_addr, 200);
 
         code = listen(sockfd, 100);
         if (code < 0) {
@@ -125,6 +121,9 @@ int main(int argc, char **argv)
             return 0;
         }
 
+        const char *helloMsg = "Hello";
+        send(sockfd, helloMsg, strlen(helloMsg) + 1, 0);
+        sleep(1);
         return 0;
     }
 
@@ -134,7 +133,7 @@ int main(int argc, char **argv)
             printf("connect success\n");
             break;
         }
-        usleep(500 * 1000);
+        usleep(5000 * 1000);
     }
 
     if (i == 10) {

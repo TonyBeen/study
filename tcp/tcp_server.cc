@@ -81,6 +81,14 @@ int32_t Server(const char *addr = nullptr)
         return -1;
     }
 
+    // 绑定的网卡接口名称
+    // const char *interface = "eth0";
+    // if (setsockopt(server_sock, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0) {
+    //     perror("SO_BINDTODEVICE failed");
+    //     close(server_sock);
+    //     return -1;
+    // }
+
     // Set server address and port
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
