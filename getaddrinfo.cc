@@ -21,7 +21,7 @@ int main()
 
     eular::ElapsedTime elapsedTime(eular::ElapsedTimeType::MICROSECOND);
     elapsedTime.start();
-    int status = getaddrinfo("www.baidu.com", NULL, &hints, &result);
+    int status = getaddrinfo("mail.example.com", NULL, &hints, &result);
     elapsedTime.stop();
     printf("%lu ns\n", elapsedTime.elapsedTime());
     if (status != 0) {
