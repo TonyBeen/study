@@ -97,8 +97,8 @@ bench: http_parser.o bench.o
 bench.o: bench.c http_parser.h Makefile
 	$(CC) $(CPPFLAGS_BENCH) $(CFLAGS_BENCH) -c bench.c -o $@
 
-http_parser.o: http_parser.c http_parser.h Makefile
-	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_FAST) -c http_parser.c
+http_parser.o: http_parser.c http_parser.h
+	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_DEBUG) -c http_parser.c
 
 test-run-timed: test_fast
 	while(true) do time $(HELPER) ./test_fast$(BINEXT) > /dev/null; done
@@ -121,8 +121,8 @@ url_parser: http_parser.o contrib/url_parser.c
 url_parser_g: http_parser_g.o contrib/url_parser.c
 	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o $@
 
-parsertrace: http_parser.o contrib/parsertrace.c
-	$(CC) $(CPPFLAGS_FAST) $(CFLAGS_FAST) $^ -o parsertrace$(BINEXT)
+parsertrace: http_parser.o parsertrace.c
+	$(CC) $(CFLAGS_DEBUG) $^ -o parsertrace$(BINEXT)
 
 parsertrace_g: http_parser_g.o contrib/parsertrace.c
 	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o parsertrace_g$(BINEXT)
