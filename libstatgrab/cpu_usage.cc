@@ -1,11 +1,11 @@
 /*************************************************************************
     > File Name: test_libstatgrab.cc
     > Author: hsz
-    > Brief:
+    > Brief: g++ cpu_usage.cc helpers.c -lstatgrab
     > Created Time: Thu 14 Nov 2024 02:13:57 PM CST
  ************************************************************************/
 
-/*
+/**
  * libstatgrab
  * https://libstatgrab.org
  * Copyright (C) 2003-2004 Peter Saunders
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
     {
         int ch;
         sg_snapshot();
-        printf("\033[1;2H%-14s : %lld (%6.2f)", "User CPU", cpu_diff_stats->user, cpu_percent->user);
+        printf("\033[2;2H%-14s : %lld (%6.2f)", "User CPU", cpu_diff_stats->user, cpu_percent->user);
         printf("\033[3;2H%-14s : %lld (%6.2f)", "Kernel CPU", cpu_diff_stats->kernel, cpu_percent->kernel);
         printf("\033[4;2H%-14s : %lld (%6.2f)", "IOWait CPU", cpu_diff_stats->iowait, cpu_percent->iowait);
         printf("\033[5;2H%-14s : %lld (%6.2f)", "Swap CPU", cpu_diff_stats->swap, cpu_percent->swap);

@@ -23,13 +23,15 @@
  */
 
 #include "helpers.h"
-#include <tools.h>
+#include <stdio.h>
 #include <statgrab.h>
 #include <poll.h>
 #ifdef WITH_LIBLOG4CPLUS
 #include <libgen.h>
 #endif
 #include <stdarg.h>
+
+#include <unistd.h>
 
 int *sig_flags[NSIG];
 
