@@ -52,3 +52,4 @@ tests/single_threaded/full_stats.t
 tests/testlib/libtestlib.a
 stamp-h1
 INSTALL
+ChangeLog
