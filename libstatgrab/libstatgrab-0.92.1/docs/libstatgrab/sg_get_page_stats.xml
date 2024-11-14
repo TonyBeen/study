@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+
+<refentry id="sg_get_page_stats">
+
+  <refmeta>
+    <refentrytitle>sg_get_page_stats</refentrytitle>
+    <manvolnum>3</manvolnum>
+    <refmiscinfo>libstatgrab</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>sg_get_page_stats</refname>
+    <refname>sg_get_page_stats_r</refname>
+    <refname>sg_get_page_stats_diff</refname>
+    <refname>sg_get_page_stats_diff_between</refname>
+    <refname>sg_free_page_stats</refname>
+    <refpurpose>get paging statistics</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <funcsynopsis>
+      <funcsynopsisinfo>#include &lt;statgrab.h&gt;</funcsynopsisinfo>
+      <funcprototype>
+        <funcdef>sg_page_stats *<function>sg_get_page_stats</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_page_stats *<function>sg_get_page_stats_r</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_page_stats *<function>sg_get_page_stats_diff</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_page_stats *<function>sg_get_page_stats_diff_between</function></funcdef>
+        <paramdef>const sg_page_stats *<parameter>cur</parameter></paramdef>
+        <paramdef>const sg_page_stats *<parameter>last</parameter></paramdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_free_page_stats</function></funcdef>
+        <paramdef>sg_page_stats *<parameter>data</parameter></paramdef>
+      </funcprototype>
+    </funcsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+      The page stats module deliver the number of pages swapped in and out,
+      either since the machine has been booted (by the
+      <function>sg_get_page_stats</function>() and
+      <function>sg_get_page_stats_r</function>() functions) or the
+      difference between two measured statistics (by the
+      <function>sg_get_page_stats_diff</function>() and
+      <function>sg_get_page_stats_diff_between</function>() functions).
+    </para>
+    <para>
+      The <function>sg_get_page_stats_diff</function>() function calculates
+      the difference between the last call to the function
+      <function>sg_get_page_stats</function>() in this thread (the
+      statistics of the earlier call are saved and
+      <function>sg_get_page_stats</function>() is called immediately after
+      this).
+    </para>
+    <para>
+      <table frame='all'><title>API Shortcut</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+        <colspec colname='function'/>
+        <colspec colname='returns'/>
+        <colspec colname='data owner'/>
+      <thead>
+      <row>
+        <entry>function</entry>
+        <entry>returns</entry>
+        <entry>data owner</entry>
+      </row>
+      </thead>
+      <tbody>
+      <row>
+        <entry>sg_get_page_stats</entry>
+        <entry><structname>sg_page_stats</structname> *</entry>
+        <entry>libstatgrab (thread local)</entry>
+      </row>
+      <row>
+        <entry>sg_get_page_stats_r</entry>
+        <entry><structname>sg_page_stats</structname> *</entry>
+        <entry>caller</entry>
+      </row>
+      <row>
+        <entry>sg_get_page_stats_diff</entry>
+        <entry><structname>sg_page_stats</structname> *</entry>
+        <entry>libstatgrab (thread local)</entry>
+      </row>
+      <row>
+        <entry>sg_get_page_stats_diff_between</entry>
+        <entry><structname>sg_page_stats</structname> *</entry>
+        <entry>caller</entry>
+      </row>
+      </tbody>
+      </tgroup>
+      </table>
+    </para>
+    <para>
+      The <structname>sg_page_stats</structname> buffer received from
+      <function>sg_get_page_stats_r</function>() and the
+      <function>sg_get_page_stats_diff_between</function>() must be freed
+      using <function>sg_free_page_stats</function>() when not
+      needed any more. The caller is responsible for doing it.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Return Values</title>
+
+    <programlisting>
+typedef struct{
+        unsigned long long pages_pagein;
+        unsigned long long pages_pageout;
+        time_t systime;
+}sg_page_stats;
+    </programlisting>
+
+    <variablelist>
+      <varlistentry>
+        <term>
+          <structfield>pages_pagein</structfield>
+        </term>
+        <listitem>
+          <para>
+            The number of pages swapped into memory.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>pages_pageout</structfield>
+        </term>
+        <listitem>
+          <para>
+            The number of pages swapped out of memory (to swap).
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>systime</structfield>
+        </term>
+        <listitem>
+          <para>
+            The timestamp when the above stats where collected in seconds
+            since epoch or the time period over which <parameter>pages_pagein</parameter>
+            and <parameter>pages_pageout</parameter> were transferred.
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Bugs</title>
+    <para>
+      Solaris doesn't seem to report accurately. It reports the number
+      of pages swapped into memory, not necessarily from swap. This
+      feature isn't deemed entirely reliable.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>3</manvolnum>
+        </citerefentry>
+      </member>
+    </simplelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Website</title>
+
+    <simplelist type="vert">
+      <member>
+        <ulink url="https://libstatgrab.org/">
+          https://libstatgrab.org/
+        </ulink>
+      </member>
+    </simplelist>
+  </refsect1>
+
+</refentry>

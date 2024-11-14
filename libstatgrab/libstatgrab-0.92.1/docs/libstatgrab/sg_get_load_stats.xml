@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<refentry id="sg_get_load_stats">
+
+  <refmeta>
+    <refentrytitle>sg_get_load_stats</refentrytitle>
+    <manvolnum>3</manvolnum>
+    <refmiscinfo>libstatgrab</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>sg_get_load_stats</refname>
+    <refname>sg_get_load_stats_r</refname>
+    <refname>sg_free_load_stats</refname>
+    <refpurpose>get system load</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <funcsynopsis>
+      <funcsynopsisinfo>#include &lt;statgrab.h&gt;</funcsynopsisinfo>
+      <funcprototype>
+        <funcdef>sg_load_stats *<function>sg_get_load_stats</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_load_stats *<function>sg_get_load_stats_r</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_free_load_stats</function></funcdef>
+        <paramdef>sg_load_stats *<parameter>data</parameter></paramdef>
+      </funcprototype>
+    </funcsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+      These calls returns a pointer to a buffer containing information
+      about cumulated machine load.
+    </para>
+    <para>
+      <table frame='all'><title>API Shortcut</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+        <colspec colname='function'/>
+        <colspec colname='returns'/>
+        <colspec colname='data owner'/>
+      <thead>
+      <row>
+        <entry>function</entry>
+        <entry>returns</entry>
+        <entry>data owner</entry>
+      </row>
+      </thead>
+      <tbody>
+      <row>
+        <entry>sg_get_load_stats</entry>
+        <entry><structname>sg_load_stats</structname> *</entry>
+        <entry>libstatgrab (thread local)</entry>
+      </row>
+      <row>
+        <entry>sg_get_load_stats_r</entry>
+        <entry><structname>sg_load_stats</structname> *</entry>
+        <entry>caller</entry>
+      </row>
+      </tbody>
+      </tgroup>
+      </table>
+    </para>
+    <para>
+      The <structname>sg_load_stats</structname> buffer received from
+      <function>sg_get_load_stats_r</function>() must be freed using
+      <function>sg_free_load_stats</function>() when not needed any more. The
+      caller is responsible for doing it.
+    </para>
+    <para>
+      On most systems this function is just a wrapper to the
+      <function>getloadavg</function> system call.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Return Values</title>
+
+    <para>
+      The structure returned is of type
+      <structname>sg_load_stats</structname>.
+    </para>
+
+    <programlisting>
+typedef struct{
+        double min1;
+        double min5;
+        double min15;
+        time_t systime;
+}sg_load_stats;
+    </programlisting>
+
+    <variablelist>
+      <varlistentry>
+        <term><structfield>min1</structfield></term>
+        <listitem>
+          <para>
+            The load average over 1 minute.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><structfield>min5</structfield></term>
+        <listitem>
+          <para>
+            The load average over 5 minutes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><structfield>min15</structfield></term>
+        <listitem>
+          <para>
+            The load average over 15 minutes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><structfield>systime</structfield></term>
+        <listitem>
+          <para>
+            The timestamp when the above stats where collected in seconds
+            since epoch
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>3</manvolnum>
+        </citerefentry>
+      </member>
+    </simplelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Website</title>
+
+    <simplelist type="vert">
+      <member>
+        <ulink url="https://libstatgrab.org/">
+          https://libstatgrab.org/
+        </ulink>
+      </member>
+    </simplelist>
+  </refsect1>
+
+</refentry>

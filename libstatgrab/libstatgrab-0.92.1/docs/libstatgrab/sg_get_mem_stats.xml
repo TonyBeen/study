@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+
+<refentry id="sg_get_mem_stats">
+
+  <refmeta>
+    <refentrytitle>sg_get_mem_stats</refentrytitle>
+    <manvolnum>3</manvolnum>
+    <refmiscinfo>libstatgrab</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>sg_get_mem_stats</refname>
+    <refname>sg_get_mem_stats_r</refname>
+    <refname>sg_free_mem_stats</refname>
+    <refname>sg_get_swap_stats</refname>
+    <refname>sg_get_swap_stats_r</refname>
+    <refname>sg_free_swap_stats</refname>
+    <refpurpose>get VM statistics</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <funcsynopsis>
+      <funcsynopsisinfo>#include &lt;statgrab.h&gt;</funcsynopsisinfo>
+      <funcprototype>
+        <funcdef>sg_mem_stats *<function>sg_get_mem_stats</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_mem_stats *<function>sg_get_mem_stats_r</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_free_mem_stats</function></funcdef>
+        <paramdef>sg_mem_stats *<parameter>data</parameter></paramdef>
+      </funcprototype>
+
+      <funcprototype>
+        <funcdef>sg_swap_stats *<function>sg_get_swap_stats</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_swap_stats *<function>sg_get_swap_stats_r</function></funcdef>
+        <paramdef>size_t *<parameter>entries</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_free_swap_stats</function></funcdef>
+        <paramdef>sg_swap_stats *<parameter>data</parameter></paramdef>
+      </funcprototype>
+    </funcsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+      Memory statistics are accessed through the
+      <function>sg_get_mem_stats</function>() function and the
+      <function>sg_get_mem_stats_r</function>() function. Both return a
+      pointer to a <structname>sg_mem_stats</structname> buffer.
+      Note that this statistic doesn't need to map the entire physical
+      memory usage, it represents the real memory usable by the operating
+      system.
+    </para>
+    <para>
+      Memory statistics are accessed through the
+      <function>sg_get_swap_stats</function>() function and the
+      <function>sg_get_swap_stats_r</function>() function. Both return a
+      pointer to a <structname>sg_swap_stats</structname> buffer.
+    </para>
+    <para>
+      <table frame='all'><title>API Shortcut</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+        <colspec colname='function'/>
+        <colspec colname='returns'/>
+        <colspec colname='data owner'/>
+      <thead>
+      <row>
+        <entry>function</entry>
+        <entry>returns</entry>
+        <entry>data owner</entry>
+      </row>
+      </thead>
+      <tbody>
+      <row>
+        <entry>sg_get_mem_stats</entry>
+        <entry><structname>sg_mem_stats</structname> *</entry>
+        <entry>libstatgrab (thread local)</entry>
+      </row>
+      <row>
+        <entry>sg_get_mem_stats_r</entry>
+        <entry><structname>sg_mem_stats</structname> *</entry>
+        <entry>caller</entry>
+      </row>
+      <row>
+        <entry>sg_get_swap_stats</entry>
+        <entry><structname>sg_swap_stats</structname> *</entry>
+        <entry>libstatgrab (thread local)</entry>
+      </row>
+      <row>
+        <entry>sg_get_swap_stats_r</entry>
+        <entry><structname>sg_swap_stats</structname> *</entry>
+        <entry>caller</entry>
+      </row>
+      </tbody>
+      </tgroup>
+      </table>
+    </para>
+    <para>
+      The <structname>sg_mem_stats</structname> buffer received from
+      <function>sg_get_mem_stats_r</function>() and the
+      <structname>sg_swap_stats</structname> buffer received from
+      <function>sg_get_swap_stats_r</function>() must be freed using
+      <function>sg_free_mem_stats</function>() or the
+      <function>sg_free_swap_stats</function>(), respectively, when not
+      needed any more. The caller is responsible for doing it.
+    </para>
+    <para>
+      On the FreeBSD operating system elevated privileges are required
+      to access the swap statistics. Making the program setgid kmem
+      should be sufficient. Programs running as root will not have this
+      problem.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Return Values</title>
+
+    <para>
+      The VM system calls can return a pointer to either a
+      <structname>sg_mem_stats</structname> or a
+      <structname>sg_swap_stats</structname>.
+    </para>
+
+    <programlisting>
+typedef struct{
+        unsigned long long total;
+        unsigned long long free;
+        unsigned long long used;
+        unsigned long long cache;
+        time_t systime;
+} sg_mem_stats;
+    </programlisting>
+
+    <variablelist>
+      <varlistentry>
+        <term>
+          <structfield>total</structfield>
+        </term>
+        <listitem>
+          <para>
+            The total amount of real memory in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>free</structfield>
+        </term>
+        <listitem>
+          <para>
+            The free amount of real memory in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>used</structfield>
+        </term>
+        <listitem>
+          <para>
+            The used amount of real memory in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>cache</structfield>
+        </term>
+        <listitem>
+          <para>
+            The amount of real memory in bytes used for caching.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><structfield>systime</structfield></term>
+        <listitem>
+          <para>
+            the timestamp when the above stats where collected in seconds
+            since epoch
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <programlisting>
+typedef struct {
+        unsigned long long total;
+        unsigned long long used;
+        unsigned long long free;
+        time_t systime;
+} sg_swap_stats;
+    </programlisting>
+
+    <variablelist>
+      <varlistentry>
+        <term>
+          <structfield>total</structfield>
+        </term>
+        <listitem>
+          <para>
+            The total swap space in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>used</structfield>
+        </term>
+        <listitem>
+          <para>
+            The used swap in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <structfield>free</structfield>
+        </term>
+        <listitem>
+          <para>
+            The free swap in bytes.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><structfield>systime</structfield></term>
+        <listitem>
+          <para>
+            The timestamp when the above stats where collected in seconds
+            since epoch
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Todo</title>
+    <para>
+      Add a function to hold open the file descriptor to the kernel
+      memory structures. Doing this would allow the elevated privileges
+      to be dropped early on.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>3</manvolnum>
+        </citerefentry>
+      </member>
+    </simplelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Website</title>
+
+    <simplelist type="vert">
+      <member>
+        <ulink url="https://libstatgrab.org/">
+          https://libstatgrab.org/
+        </ulink>
+      </member>
+    </simplelist>
+  </refsect1>
+
+</refentry>

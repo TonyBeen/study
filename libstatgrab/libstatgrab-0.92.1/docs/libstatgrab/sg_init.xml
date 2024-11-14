@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+
+<refentry id="sg_init">
+
+  <refmeta>
+    <refentrytitle>sg_init</refentrytitle>
+    <manvolnum>3</manvolnum>
+    <refmiscinfo>libstatgrab</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>sg_init</refname>
+    <refname>sg_snapshot</refname>
+    <refname>sg_shutdown</refname>
+    <refname>sg_drop_privileges</refname>
+    <refpurpose>initialise libstatgrab</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <funcsynopsis>
+      <funcsynopsisinfo>#include &lt;statgrab.h&gt;</funcsynopsisinfo>
+      <funcprototype>
+        <funcdef>void <function>sg_log_init</function></funcdef>
+        <paramdef>const char *<parameter>properties_pfx</parameter></paramdef>
+        <paramdef>const char *<parameter>env_name</parameter></paramdef>
+        <paramdef>const char *<parameter>argv0</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_init</function></funcdef>
+        <paramdef>int <parameter>ignore_init_errors</parameter></paramdef>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_snapshot</function></funcdef>
+        <void/>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_shutdown</function></funcdef>
+        <void/>
+      </funcprototype>
+      <funcprototype>
+        <funcdef>sg_error <function>sg_drop_privileges</function></funcdef>
+        <void/>
+      </funcprototype>
+    </funcsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+      <function>sg_init</function>() either initialises the statgrab
+      library and sets the initialisation counter to 1, if not already done,
+      or increases the initialisation counter.
+      If called for the first time (in fact: if called when the initialisation
+      counter is 0), the constructor (initialisation routine) of each
+      registered component is invoked, some global variables are
+      initialised, requested mutual exclusion semaphores are initialised
+      and so on.
+      <function>sg_init</function>() is protected by the mutex named
+      &quot;statgrab&quot;.
+    </para>
+    <para>
+      <function>sg_log_init</function>() allows some application-individual
+      logging configuration. It's intended for projects with several applications
+      or commands which might have different appenders.
+      Mind that <function>sg_log_init</function> must be called before
+      <function>sg_init</function>, but after your application initialized
+      logging framework.
+    </para>
+    <para>
+      <function>sg_snapshot</function>() is Win32 only and will probably disappear.
+    </para>
+    <para>
+      <function>sg_shutdown</function>() decrements the initialisation
+      counter. If the counter reaches zero, components' destructors are
+      called, mutual exclusion semaphores (except &quot;statgrab&quot;) are
+      destroyed etc.
+      <function>sg_shutdown</function>() is protected by the mutex named
+      &quot;statgrab&quot;.
+    </para>
+    <para>
+      <function>sg_drop_privileges</function>() drops elevated privileges.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Return values</title>
+    <para>
+      All functions return a statgrab error code. Either
+      <errorcode>SG_ERROR_NONE</errorcode> when everything was ok or the
+      appropriate error code from an constructor/destructor.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Example</title>
+    <para>
+      Typical initialization/deinitialization sequence when using with log4cplus:
+      <programlisting>
+static void *l4cplus_initializer;
+
+static void
+cleanup_logging(void)
+{
+       log4cplus_deinitialize(l4cplus_initializer);
+}
+
+int
+main(int argc, char const *argv[])
+{
+    l4cplus_initializer = log4cplus_initialize();
+    atexit((void (*)(void))cleanup_logging);
+
+    sg_log_init("saidar", "SAIDAR_LOG_PROPERTIES", argv[0]);
+    sg_init(1);
+    if(sg_drop_privileges() != 0) {
+	die("Failed to drop setuid/setgid privileges");
+    }
+
+    do_something();
+
+    sg_shutdown();
+
+    return 0;
+}
+      </programlisting>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>3</manvolnum>
+        </citerefentry>
+      </member>
+    </simplelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Website</title>
+
+    <simplelist type="vert">
+      <member>
+        <ulink url="https://libstatgrab.org/">
+          https://libstatgrab.org/
+        </ulink>
+      </member>
+    </simplelist>
+  </refsect1>
+
+</refentry>

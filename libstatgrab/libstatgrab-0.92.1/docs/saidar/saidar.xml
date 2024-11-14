@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+
+<refentry id="saidar">
+
+  <refmeta>
+    <refentrytitle>saidar</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>libstatgrab</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>saidar</refname>
+    <refpurpose>a curses-based tool for viewing system statistics</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>saidar</command>
+      <arg choice='opt'>-d <replaceable>delay</replaceable></arg>
+      <arg choice='opt'>-c</arg>
+      <arg choice='opt'>-v</arg>
+      <arg choice='opt'>-h</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>
+      <command>saidar</command> is a curses-based tool for viewing the
+      system statistics available through libstatgrab. Statistics include
+      CPU, processes, load, memory, swap, network I/O, disk I/O, and file
+      system information.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Options</title>
+    <para>
+      The following options are supported.
+    </para>
+    <variablelist>
+      <varlistentry>
+        <term><option>-d</option> <replaceable>DELAY</replaceable></term>
+        <listitem>
+          <para>
+            Wait DELAY seconds between updates (default 3)
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-c</option></term>
+        <listitem>
+          <para>
+            Enables coloured output
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-v</option></term>
+        <listitem>
+          <para>
+            Prints the version number
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-h</option></term>
+        <listitem>
+          <para>
+            Display help and exits
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Coloured Output</title>
+    <para>
+      When the <option>-c</option> option is used saidar uses colours
+      to display the data. Each area has a different colour to
+      distinguish it from the nearby fields. Bold and reverse video
+      effects are used to emphasis fields where necessary.
+    </para>
+    <para>
+      The load average figures are displayed in bold when they're
+      notably (greater that 1) different to each other. This purely
+      shows that a change in the load is occurring.
+    </para>
+    <para>
+      When CPU usage goes over 60% it will be displayed in bold.
+      At 90% the field is displayed using reverse video. Likewise
+      for memory, swap and disk usage at 75% and 90%. Zombie
+      processes are also highlighted.
+    </para>
+    <para>
+      Other values (paging, disk I/O and network I/O) are not
+      highlighted due to the nature of the values; it's not easy
+      to determine what thresholds are significant.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <simplelist type="inline">
+      <member>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>1</manvolnum>
+        </citerefentry>
+        <citerefentry>
+          <refentrytitle>statgrab</refentrytitle>
+          <manvolnum>3</manvolnum>
+        </citerefentry>
+      </member>
+    </simplelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Authors</title>
+    <para>
+      This man page was derived from the man page written by Bartosz
+      Fenski for the Debian GNU/Linux distribution.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Website</title>
+
+    <simplelist type="vert">
+      <member>
+        <ulink url="https://libstatgrab.org/">
+          https://libstatgrab.org/
+        </ulink>
+      </member>
+    </simplelist>
+  </refsect1>
+
+</refentry>
