@@ -10,6 +10,8 @@ buffer data, it can be interrupted at anytime. Depending on your
 architecture, it only requires about 40 bytes of data per message
 stream (in a web server that is per connection).
 
+V2.9.4
+
 Features:
 
   * No dependencies
