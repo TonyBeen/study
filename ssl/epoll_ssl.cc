@@ -30,12 +30,12 @@
 
 #define LOG_TAG "epoll ssl"
 
-#define LOCAL_IP "192.168.3.10"
+#define LOCAL_IP "10.0.8.3"
 #define LOCAL_PORT 8000
 
 #define CA_CERT_FILE        "ca.crt"
 #define SERVER_KEY_FILE     "server.key"
-#define SERVER_CERT_FILE    "server.crt"
+#define SERVER_CERT_FILE    "server.pem"
 
 int CreateSocket()
 {
@@ -64,7 +64,7 @@ int CreateSocket()
 
 void catch_signal(int sig)
 {
-    LOG_ASSERT(false, "");
+    LOG_ASSERT(false, "sig = %d", sig);
 }
 
 int main(int argc, char **argv)
