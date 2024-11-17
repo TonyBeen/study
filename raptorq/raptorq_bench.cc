@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: raptorq_bench.cc
     > Author: hsz
-    > Brief:
+    > Brief: g++ raptorq_bench.cc -std=c++17 -lraptorq
     > Created Time: Fri 15 Nov 2024 06:01:26 PM CST
  ************************************************************************/
 
