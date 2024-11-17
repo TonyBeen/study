@@ -18,9 +18,9 @@
 
 #include <liburing.h>
 
-#define MAX_CONNECTIONS     4096
+#define MAX_CONNECTIONS     512
 #define BACKLOG             512
-#define MAX_MESSAGE_LEN     2048
+#define MAX_MESSAGE_LEN     4096
 #define BUFFERS_COUNT       MAX_CONNECTIONS
 
 void add_accept(struct io_uring *ring, int fd, struct sockaddr *client_addr, socklen_t *client_len, unsigned flags);
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     // setup socket
     int sock_listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-    const int val = 1;
+    int val = 1;
     setsockopt(sock_listen_fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
 
     memset(&serv_addr, 0, sizeof(serv_addr));
@@ -182,7 +182,7 @@ void add_accept(struct io_uring *ring, int fd, struct sockaddr *client_addr, soc
     io_uring_sqe_set_flags(sqe, flags);
 
     conn_info conn_i = {
-        .fd = fd,
+        .fd = (uint32_t)fd,
         .type = ACCEPT,
     };
     memcpy(&sqe->user_data, &conn_i, sizeof(conn_i));
@@ -195,7 +195,7 @@ void add_socket_read(struct io_uring *ring, int fd, unsigned gid, size_t message
     sqe->buf_group = gid;
 
     conn_info conn_i = {
-        .fd = fd,
+        .fd = (uint32_t)fd,
         .type = READ,
     };
     memcpy(&sqe->user_data, &conn_i, sizeof(conn_i));
@@ -207,7 +207,7 @@ void add_socket_write(struct io_uring *ring, int fd, __u16 bid, size_t message_s
     io_uring_sqe_set_flags(sqe, flags);
 
     conn_info conn_i = {
-        .fd = fd,
+        .fd = (uint32_t)fd,
         .type = WRITE,
         .bid = bid,
     };

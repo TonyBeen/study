@@ -8,7 +8,7 @@
 #include <errno.h>
 
 #define MAXLINE 10
-#define SERV_PORT 8000
+#define SERV_PORT 9000
 #define SERV_HOST "127.0.0.1"
 
 int main(int argc, char *argv[])
