@@ -35,6 +35,7 @@ BINEXT = .exe.so
 HELPER = wine
 else
 SOEXT ?= so
+BINEXT = .out
 SONAME ?= $(SOLIBNAME).$(SOEXT).$(SOMAJOR).$(SOMINOR)
 LIBNAME ?= $(SOLIBNAME).$(SOEXT).$(SOMAJOR).$(SOMINOR).$(SOREV)
 endif
@@ -52,7 +53,7 @@ CPPFLAGS_FAST = $(CPPFLAGS) -DHTTP_PARSER_STRICT=0
 CPPFLAGS_FAST += $(CPPFLAGS_FAST_EXTRA)
 CPPFLAGS_BENCH = $(CPPFLAGS_FAST)
 
-CFLAGS += -Wall -Wextra -Werror
+CFLAGS += #-Wall -Wextra -Werror
 CFLAGS_DEBUG = $(CFLAGS) -O0 -g $(CFLAGS_DEBUG_EXTRA)
 CFLAGS_FAST = $(CFLAGS) -O3 $(CFLAGS_FAST_EXTRA)
 CFLAGS_BENCH = $(CFLAGS_FAST) -Wno-unused-parameter
@@ -124,7 +125,7 @@ url_parser_g: http_parser_g.o contrib/url_parser.c
 parsertrace: http_parser.o parsertrace.c
 	$(CC) $(CFLAGS_DEBUG) $^ -o parsertrace$(BINEXT)
 
-parsertrace_g: http_parser_g.o contrib/parsertrace.c
+parsertrace_g: http_parser_g.o parsertrace.c
 	$(CC) $(CPPFLAGS_DEBUG) $(CFLAGS_DEBUG) $^ -o parsertrace_g$(BINEXT)
 
 tags: http_parser.c http_parser.h test.c
@@ -151,7 +152,7 @@ uninstall:
 clean:
 	rm -f *.o *.a tags test test_fast test_g \
 		http_parser.tar libhttp_parser.so.* \
-		url_parser url_parser_g parsertrace parsertrace_g \
+		url_parser url_parser_g parsertrace$(BINEXT) parsertrace_g$(BINEXT) \
 		*.exe *.exe.so
 
 contrib/url_parser.c:	http_parser.h

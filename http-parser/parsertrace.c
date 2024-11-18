@@ -21,10 +21,12 @@
 
 /* Dump what the parser finds to stdout as it happen */
 
-#include "http_parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#include "http_parser.h"
 
 int on_message_begin(http_parser *_)
 {
@@ -137,11 +139,50 @@ int main()
     settings.on_body = on_body;
     settings.on_message_complete = on_message_complete;
 
+    srand(time(NULL));
     {
+        // http-parser 支持分段解析, 如果body过长时可以采用此中方式
+        // 然而会出现同一个接口调用两次情况, 需要使用append方式进行处理
+        /**
+            Url: /templet
+            Url: s/new/script/jquery?user=1&password=123#fragment
+            Header field: Host
+            Header value:   c.biancheng.net
+            Header field: Content-Length
+            Header value:   0
+            Header field: Proxy-Connection
+            Header value:   keep-alive
+            Header field: Pragma
+            Header value:   no-cache
+            Header field: Cache-Control
+            Header value:   no-cache
+            Header field: Accept
+            Header value:   text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, *\/*; q=0.01
+            Header field: User-Agent
+            Header value:   Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36
+            Header field: X-Requested-With
+            Header value:   XMLHttpRequest
+            Header field: Referer
+            Header value:   http://c.biancheng.net/view/7918.html
+            Header field: Accept-Encoding
+            Header value:   gzip, deflate
+            Header field: Accept-Language
+            Header value:   zh-CN,zh;q=0.9
+         */
+        int32_t firstSize = rand() % (int32_t)getRequestLen + 1;
         http_parser parser;
         http_parser_init(&parser, file_type);
-        size_t nparsed = http_parser_execute(&parser, &settings, getRequest, getRequestLen);
-        if (nparsed != getRequestLen)
+        size_t nparsed = http_parser_execute(&parser, &settings, getRequest, firstSize);
+        if (nparsed != firstSize)
+        {
+            fprintf(stderr,
+                    "Error: %s (%s)\n",
+                    http_errno_description(HTTP_PARSER_ERRNO(&parser)),
+                    http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+        }
+
+        nparsed = http_parser_execute(&parser, &settings, getRequest + firstSize, getRequestLen - firstSize);
+        if (nparsed != (getRequestLen - firstSize))
         {
             fprintf(stderr,
                     "Error: %s (%s)\n",

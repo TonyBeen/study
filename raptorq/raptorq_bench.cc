@@ -7,7 +7,6 @@
 
 #include <assert.h>
 #include <iostream>
-#include <filesystem>
 #include <map>
 
 #include <raptorq/encoder.h>
@@ -30,10 +29,10 @@ int main(int argc, char *argv[])
     }
 
     const char *filePath = argv[1];
-    if (!std::filesystem::is_regular_file(filePath)) {
-        printf("Not a regular file: %s\n", filePath);
-        return 0;
-    }
+    // if (!std::filesystem::is_regular_file(filePath)) {
+    //     printf("Not a regular file: %s\n", filePath);
+    //     return 0;
+    // }
 
     std::map<int32_t, Block> file_block_map;
 
@@ -46,14 +45,13 @@ int main(int argc, char *argv[])
     raptorq::Decoder::SP decoder = std::make_shared<raptorq::Decoder>();
 
     std::string file_content;
-    file_content.resize((ppb + repair_piece) * piece_size);
+    file_content.resize(ppb * piece_size);
     FILE *fp = fopen(filePath, "r");
     while (!feof(fp)) {
         auto read_size = fread(file_content.data(), 1, file_content.size(), fp);
         Block block;
         block.file_id = file_id++;
         block.file_size = read_size;
-        printf("read_size = %zu\n", read_size);
 
         encoder->reset(ppb, piece_size, repair_piece, file_content.data());
         encoder->precompute(1);
@@ -78,7 +76,6 @@ int main(int argc, char *argv[])
             free(block_it);
             block_it = nullptr;
         }
-        printf("file_content = %zu\n", file_content.size());
 
         assert(file_content.size() >= it.second.file_size);
         fwrite(file_content.c_str(), it.second.file_size, 1, fp);
