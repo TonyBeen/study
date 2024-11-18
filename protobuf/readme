@@ -1,20 +1,20 @@
 #### proto3 与 proto2 的区别
-> proto3 比 proto2 支持更多语言但 更简洁。去掉了一些复杂的语法和特性，更强调约定而弱化语法
-> 在第一行非空白非注释行，必须写：syntax = “proto3”;
-> 字段规则移除了 “required”，并把 “optional” 改名为 “singular”；
-> proto3 repeated标量数值类型默认packed，而proto2默认不开启
+> proto3 比 proto2 支持更多语言但 更简洁。去掉了一些复杂的语法和特性, 更强调约定而弱化语法
+> 在第一行非空白非注释行, 必须写: syntax = "proto3";
+> 字段规则移除了 “required”, 并把 “optional” 改名为 “singular”;
+> proto3 repeated标量数值类型默认packed, 而proto2默认不开启
 
 |proto文件消息类型   | C++ 类型      |说明  |
 |double             | double        |双精度浮点型   |
 |float              | float         |单精度浮点型   |
-|int32              | int32         |使用可变长编码方式，负数时不够高效，应该使用sint32 |
-|int64              | int64         |使用可变长编码方式，负数时不够高效，应该使用sint32 |
+|int32              | int32         |使用可变长编码方式, 负数时不够高效, 应该使用sint32 |
+|int64              | int64         |使用可变长编码方式, 负数时不够高效, 应该使用sint32 |
 |unit32             | unit32        |使用可变长编码方式 |
 |unit64             | unit64        |使用可变长编码方式 |
-|sint32             | int32         |使用可变长编码方式，有符号的整型值，负数编码时比通常的int32高效    |
-|sint64             | sint64        |使用可变长编码方式，有符号的整型值，负数编码时比通常的int64    |
-|fixed32            | unit32        |总是4个字节，如果数值总是比2^28大的话，这个类型会比uint32高效  |
-|fixed64            | unit64        |总是8个字节，如果数值总是比2^56大的话，这个类型会比uint64高效  |
+|sint32             | int32         |使用可变长编码方式, 有符号的整型值, 负数编码时比通常的int32高效    |
+|sint64             | sint64        |使用可变长编码方式, 有符号的整型值, 负数编码时比通常的int64    |
+|fixed32            | unit32        |总是4个字节, 如果数值总是比2^28大的话, 这个类型会比uint32高效  |
+|fixed64            | unit64        |总是8个字节, 如果数值总是比2^56大的话, 这个类型会比uint64高效  |
 |sfixed32           | int32         |总是4个字节    |
 |sfixed64           | int64         |总是8个字节    |
 |bool               | bool          |布尔类型   |
