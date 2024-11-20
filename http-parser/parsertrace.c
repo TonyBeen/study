@@ -83,6 +83,19 @@ int on_body(http_parser *_, const char *at, size_t length)
     return 0;
 }
 
+int on_chunk_header(http_parser* parser)
+{
+    // NOTE trunk的内容会通过on_body回调
+    printf("on_chunk_header: %lu\n", parser->content_length);
+    return 0;
+}
+
+int on_chunk_complete(http_parser* parser)
+{
+    printf("Chunk complete\n");
+    return 0;
+}
+
 void usage(const char *name)
 {
     fprintf(stderr,
@@ -95,8 +108,6 @@ void usage(const char *name)
 
 int main()
 {
-    enum http_parser_type file_type = HTTP_REQUEST;
-
     const char *getRequest = 
         "GET /templets/new/script/jquery?user=1&password=123#fragment HTTP/1.1\r\n"
         "Host: c.biancheng.net\r\n"
@@ -128,6 +139,18 @@ int main()
         "user=1&password=123";
     size_t postRequestLen = strlen(postRequest);
 
+    const char *chunkResponse =
+        "HTTP/1.1 200 OK\r\n"
+        "Transfer-Encoding: chunked\r\n"
+        "\r\n"
+        "4\r\n"
+        "Wiki\r\n"
+        "5\r\n"
+        "pedia\r\n"
+        "0\r\n"
+        "\r\n";
+    size_t chunkResponseLen = strlen(chunkResponse);
+
     http_parser_settings settings;
     memset(&settings, 0, sizeof(settings));
     settings.on_message_begin = on_message_begin;
@@ -138,6 +161,8 @@ int main()
     settings.on_headers_complete = on_headers_complete;
     settings.on_body = on_body;
     settings.on_message_complete = on_message_complete;
+    settings.on_chunk_header = on_chunk_header;
+    settings.on_chunk_complete = on_chunk_complete;
 
     srand(time(NULL));
     {
@@ -171,12 +196,11 @@ int main()
          */
         int32_t firstSize = rand() % (int32_t)getRequestLen + 1;
         http_parser parser;
-        http_parser_init(&parser, file_type);
+        http_parser_init(&parser, HTTP_REQUEST);
         size_t nparsed = http_parser_execute(&parser, &settings, getRequest, firstSize);
         if (nparsed != firstSize)
         {
-            fprintf(stderr,
-                    "Error: %s (%s)\n",
+            fprintf(stderr, "Error: %s (%s)\n",
                     http_errno_description(HTTP_PARSER_ERRNO(&parser)),
                     http_errno_name(HTTP_PARSER_ERRNO(&parser)));
         }
@@ -184,8 +208,7 @@ int main()
         nparsed = http_parser_execute(&parser, &settings, getRequest + firstSize, getRequestLen - firstSize);
         if (nparsed != (getRequestLen - firstSize))
         {
-            fprintf(stderr,
-                    "Error: %s (%s)\n",
+            fprintf(stderr, "Error: %s (%s)\n",
                     http_errno_description(HTTP_PARSER_ERRNO(&parser)),
                     http_errno_name(HTTP_PARSER_ERRNO(&parser)));
         }
@@ -193,12 +216,23 @@ int main()
 
     {
         http_parser parser;
-        http_parser_init(&parser, file_type);
+        http_parser_init(&parser, HTTP_REQUEST);
         size_t nparsed = http_parser_execute(&parser, &settings, postRequest, postRequestLen);
         if (nparsed != getRequestLen)
         {
-            fprintf(stderr,
-                    "Error: %s (%s)\n",
+            fprintf(stderr, "Error: %s (%s)\n",
+                    http_errno_description(HTTP_PARSER_ERRNO(&parser)),
+                    http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+        }
+    }
+
+    {
+        http_parser parser;
+        http_parser_init(&parser, HTTP_RESPONSE);
+        size_t nparsed = http_parser_execute(&parser, &settings, chunkResponse, chunkResponseLen);
+        if (nparsed != chunkResponseLen)
+        {
+            fprintf(stderr, "Error: %s (%s)\n",
                     http_errno_description(HTTP_PARSER_ERRNO(&parser)),
                     http_errno_name(HTTP_PARSER_ERRNO(&parser)));
         }
