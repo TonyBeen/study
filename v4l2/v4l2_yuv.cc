@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: v4l2.cc
     > Author: hsz
-    > Brief: g++ v4l2.cc -pthread -ljpeg
+    > Brief: g++ v4l2_yuv.cc -pthread -ljpeg -lyuv
     > Created Time: Thu 11 Jan 2024 04:15:11 PM CST
  ************************************************************************/
 
@@ -14,6 +14,7 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include <getopt.h>
 
@@ -27,6 +28,7 @@
 #include <sys/ioctl.h>
 
 #include <jpeglib.h>
+#include <libyuv.h>
 #include <linux/videodev2.h>
 
 // #include <log/log.h>
@@ -66,7 +68,7 @@ static inline int32_t process_in_scope(int32_t v, int32_t maxV = 255, int32_t mi
     return v;
 }
 
-void yuyv_to_rgb(uint8_t *yuyvdata, uint8_t *rgbdata, int32_t w, int32_t h)
+void yuyv_to_rgb(const uint8_t *yuyvdata, uint8_t *rgbdata, int32_t w, int32_t h)
 {
     // 码流Y0 U0 Y1 V1 Y2 U2 Y3 V3 --> YUYV像素[Y0 U0 V1] [Y1 U0 V1] [Y2 U2 V3] [Y3 U2 V3]-> RGB像素
     int32_t r1, g1, b1; 
@@ -109,13 +111,16 @@ void yuyv_to_rgb(uint8_t *yuyvdata, uint8_t *rgbdata, int32_t w, int32_t h)
 
 void save_jpeg(const char *filename, const void *data, int32_t size, int32_t width, int32_t height)
 {
+    uint8_t *rgb_data = (uint8_t *)malloc(width * height * 3);
+    yuyv_to_rgb((const uint8_t *)data, rgb_data, width, height);
+
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
-    JSAMPROW row_pointer[1];
+    uint8_t *rgb = rgb_data;
 
-    FILE *outfile = fopen(filename, "wb");
+    FILE* outfile = fopen(filename, "wb");
     if (!outfile) {
-        perror("Failed to open output file");
+        perror("fopen error");
         return;
     }
 
@@ -125,21 +130,22 @@ void save_jpeg(const char *filename, const void *data, int32_t size, int32_t wid
 
     cinfo.image_width = width;
     cinfo.image_height = height;
-    cinfo.input_components = 3;
-    cinfo.in_color_space = JCS_YCbCr;
+    cinfo.input_components = 3;  // RGB
+    cinfo.in_color_space = JCS_RGB;  // RGB color space
 
     jpeg_set_defaults(&cinfo);
-    jpeg_set_quality(&cinfo, 80, TRUE);
-
+    jpeg_set_quality(&cinfo, 90, TRUE);
     jpeg_start_compress(&cinfo, TRUE);
 
+    int row_stride = width * 3;
     while (cinfo.next_scanline < cinfo.image_height) {
-        row_pointer[0] = (JSAMPLE *)((uint8_t *)data + cinfo.next_scanline * width * 3);
-        jpeg_write_scanlines(&cinfo, row_pointer, 1);
+        uint8_t* row = rgb + cinfo.next_scanline * row_stride;
+        jpeg_write_scanlines(&cinfo, &row, 1);
     }
 
     jpeg_finish_compress(&cinfo);
     fclose(outfile);
+    delete rgb_data;
     jpeg_destroy_compress(&cinfo);
 }
 
@@ -224,7 +230,7 @@ int32_t main(int32_t argc, char *argv[])
     v4l2_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;        // 摄像头采集
     v4l2_fmt.fmt.pix.width = WIDTH;                     // 设置宽(不能任意)
     v4l2_fmt.fmt.pix.height = HEIGHT;                   // 设置高
-    v4l2_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;  // 设置视频采集格式
+    v4l2_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;   // 设置视频采集格式
 
     int32_t errorCode = xioctl(deviceFd, VIDIOC_S_FMT, &v4l2_fmt);
     if (errorCode < 0) {
@@ -300,20 +306,16 @@ int32_t main(int32_t argc, char *argv[])
 
     // 7、获取数据, 从队列中提取一帧数据
     printf("read data\n");
-    struct v4l2_buffer  v4l2_read_buffer;
+    struct v4l2_buffer v4l2_read_buffer;
     v4l2_read_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     errorCode = xioctl(deviceFd, VIDIOC_DQBUF, &v4l2_read_buffer);
     if (errorCode < 0) {
         errno_exit("ioctl VIDIOC_DQBUF error");
     }
 
-    FILE *file = fopen("my.jpg", "w+");
-    fwrite(mmapPtrVec[v4l2_read_buffer.index], v4l2_read_buffer.bytesused, 1, file);
-    fclose(file);
-
     printf("%p bytesused: %u, length: %u\n",
         mmapPtrVec[v4l2_read_buffer.index], v4l2_read_buffer.bytesused, v4l2_read_buffer.length);
-    // save_jpeg("output.jpg", mmapPtrVec[v4l2_read_buffer.index], v4l2_read_buffer.bytesused, WIDTH, HEIGHT);
+    save_jpeg("output.jpg", mmapPtrVec[v4l2_read_buffer.index], v4l2_read_buffer.bytesused, WIDTH, HEIGHT);
 
     // 通知内核使用完毕
     errorCode = ioctl(deviceFd, VIDIOC_QBUF, &v4l2_read_buffer);
