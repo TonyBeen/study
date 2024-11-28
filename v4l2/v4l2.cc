@@ -14,6 +14,7 @@
 
 #include <string>
 #include <sstream>
+#include <map>
 
 #include <getopt.h>
 
@@ -146,7 +147,6 @@ void save_jpeg(const char *filename, const void *data, int32_t size, int32_t wid
 int32_t main(int32_t argc, char *argv[])
 {
     const char *devicePath = "/dev/video0";
-
     if (argc > 1) {
         devicePath = argv[1];
     }
@@ -183,6 +183,7 @@ int32_t main(int32_t argc, char *argv[])
 
         uint8_t *p = (uint8_t *)&v4l2_fmt_desc.pixelformat;
         printf("- %s; %c%c%c%c\n", v4l2_fmt_desc.description, p[0], p[1], p[2], p[3]);
+
 
         struct v4l2_frmsizeenum v4l2_frmsize;
         v4l2_frmsize.index = 0;
