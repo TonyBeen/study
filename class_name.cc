@@ -41,15 +41,22 @@ struct StInfo
 int main(int argc, char **argv)
 {
     // 使用-m分别编译32和64位程序
+    std::cout << ClassNameHelper<signed char>::name << std::endl;   // signed char
+    std::cout << ClassNameHelper<char>::name << std::endl;          // char
+    std::cout << ClassNameHelper<unsigned char>::name << std::endl; // unsigned char
+
     std::cout << ClassNameHelper<int8_t>::name << std::endl;    // signed char
     std::cout << ClassNameHelper<uint8_t>::name << std::endl;   // unsigned char
 
+    std::cout << ClassNameHelper<short>::name << std::endl;     // short
     std::cout << ClassNameHelper<int16_t>::name << std::endl;   // short
     std::cout << ClassNameHelper<uint16_t>::name << std::endl;  // unsigned short
 
+    std::cout << ClassNameHelper<int>::name << std::endl;       // int
     std::cout << ClassNameHelper<int32_t>::name << std::endl;   // int
     std::cout << ClassNameHelper<uint32_t>::name << std::endl;  // unsigned int
 
+    std::cout << ClassNameHelper<long>::name << std::endl;      // long
     std::cout << ClassNameHelper<int64_t>::name << std::endl;   // 32: long long, 64: long
     std::cout << ClassNameHelper<uint64_t>::name << std::endl;  // 32: unsigned long long, 64: unsigned long
 
