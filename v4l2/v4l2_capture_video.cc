@@ -267,8 +267,6 @@ int main()
                 }
             }
 
-            // 处理帧数据
-            printf("Frame %d captured\n", buf.index);
             // TODO 处理一帧图像
 
             // 可选：将缓冲区放回队列

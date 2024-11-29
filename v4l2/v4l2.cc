@@ -108,6 +108,48 @@ void yuyv_to_rgb(uint8_t *yuyvdata, uint8_t *rgbdata, int32_t w, int32_t h)
     }
 }
 
+void print_v4l2_buffer(const v4l2_buffer *buf)
+{
+    auto memory_to_string = [] (uint32_t memory) {
+        switch (memory) {
+            case V4L2_MEMORY_MMAP:
+                return "V4L2_MEMORY_MMAP (Memory-mapped)";
+            case V4L2_MEMORY_USERPTR:
+                return "V4L2_MEMORY_USERPTR (User pointer)";
+            case V4L2_MEMORY_DMABUF:
+                return "V4L2_MEMORY_DMABUF (DMA buffer)";
+            default:
+                return "Unknown memory type";
+        }
+    };
+
+    // 打印基本字段
+    printf("struct v4l2_buffer {\n");
+    printf("    index: %u\n", buf->index);
+    printf("    type: %u\n", buf->type);
+    printf("    bytesused: %u\n", buf->bytesused);
+    printf("    flags: 0x%x\n", buf->flags);
+    printf("    field: %u\n", buf->field);
+
+    // 打印时间戳（timestamp）
+    printf("    struct timeval{tv_sec = %ld, tv_usec = %06ld}\n", buf->timestamp.tv_sec, buf->timestamp.tv_usec);
+
+    printf("    sequence: %u\n", buf->sequence);
+    printf("    memory: %s\n", memory_to_string(buf->memory));
+
+    // 根据 memory 类型打印缓冲区的内容
+    if (buf->memory == V4L2_MEMORY_MMAP) {
+        printf("    offset: %u\n", buf->m.offset);  // m.offset
+    } else if (buf->memory == V4L2_MEMORY_USERPTR) {
+        printf("    userptr: %p\n", (void *)buf->m.userptr);  // m.userptr
+    } else if (buf->memory == V4L2_MEMORY_DMABUF) {
+        // m.dmabuf
+    }
+
+    printf("    length: %u\n", buf->length);  // length
+    printf("}\n");
+}
+
 void save_jpeg(const char *filename, const void *data, int32_t size, int32_t width, int32_t height)
 {
     struct jpeg_compress_struct cinfo;
