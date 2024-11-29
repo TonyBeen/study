@@ -176,7 +176,7 @@ bool MakeMapBuffer(int32_t deviceFd, std::shared_ptr<MapBuffer> spMapBuffer)
 int main()
 {
     // 打开设备
-    int32_t deviceFd = open(VIDEO_DEVICE, O_RDWR);
+    int32_t deviceFd = ::open(VIDEO_DEVICE, O_RDWR);
     if (deviceFd == -1) {
         perror("Failed to open device");
         return -1;
