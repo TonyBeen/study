@@ -1,5 +1,5 @@
 /*************************************************************************
-    > File Name: v4l2_capture_video.cc
+    > File Name: v4l2_async_capture_video.cc
     > Author: hsz
     > Brief:
     > Created Time: 2024年11月29日 星期五 17时36分56秒
@@ -114,7 +114,14 @@ public:
 
     ~MapBuffer()
     {
+        for (auto i = 0; i < _buffer_vec.size(); ++i) {
+            if (_buffer_vec[i] != nullptr) {
+                ::munmap(_buffer_vec[i], _size_vec[i]);
+            }
+        }
 
+        _buffer_vec.clear();
+        _size_vec.clear();
     }
 
     std::vector<void *>     _buffer_vec;
