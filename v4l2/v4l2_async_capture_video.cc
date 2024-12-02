@@ -5,6 +5,7 @@
     > Created Time: 2024年11月29日 星期五 17时36分56秒
  ************************************************************************/
 
+#define __STDC_CONSTANT_MACROS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,6 +15,7 @@
 
 #include <vector>
 #include <memory>
+#include <chrono>
 
 #include <sched.h>
 #include <unistd.h>
@@ -25,7 +27,19 @@
 
 #include <linux/videodev2.h>
 
-#define VIDEO_DEVICE "/dev/video0"
+#include <utils/utils.h>
+
+#include <libyuv.h>
+
+EXTERN_C_BEGIN
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/avutil.h>
+#include <libavutil/opt.h>
+EXTERN_C_END
+
+#define CAPTURE_DURATION    60 // 采集视频的时长，单位：秒
+#define VIDEO_DEVICE        "/dev/video0"
 
 static void errno_exit(const char *s)
 {
@@ -175,6 +189,10 @@ bool MakeMapBuffer(int32_t deviceFd, std::shared_ptr<MapBuffer> spMapBuffer)
 
 int main()
 {
+    // 初始化 libavformat 和 libavcodec
+    av_register_all();
+    avformat_network_init();
+
     // 打开设备
     int32_t deviceFd = ::open(VIDEO_DEVICE, O_RDWR);
     if (deviceFd == -1) {
@@ -209,6 +227,7 @@ int main()
     v4l2_fmt.fmt.pix.width = WIDTH;                     // 设置宽(不能任意)
     v4l2_fmt.fmt.pix.height = HEIGHT;                   // 设置高
     v4l2_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;   // 设置视频采集格式
+    v4l2_fmt.fmt.pix.field = V4L2_FIELD_NONE;
     int32_t errorCode = xioctl(deviceFd, VIDIOC_S_FMT, &v4l2_fmt);
     if (errorCode < 0) {
         errno_exit("ioctl VIDIOC_S_FMT error");
@@ -235,6 +254,102 @@ int main()
         return 0;
     }
 
+    // 打开输出文件（目标视频文件）
+    AVFormatContext* pFormatContext = nullptr;
+    int32_t status = avformat_alloc_output_context2(&pFormatContext, nullptr, nullptr, "output.mp4");
+    if (!pFormatContext) {
+        char error_buf[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(status, error_buf, sizeof(error_buf));
+        printf("Could not create output context: %s\n", error_buf);
+        close(deviceFd);
+        return -1;
+    }
+
+    // 创建视频流
+    AVStream* pVideoStream = avformat_new_stream(pFormatContext, nullptr);
+    if (!pVideoStream) {
+        std::cerr << "Failed to create video stream!" << std::endl;
+        close(deviceFd);
+        return -1;
+    }
+
+    AVCodec* pCodec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    if (!pCodec) {
+        std::cerr << "Codec not found!" << std::endl;
+        close(deviceFd);
+        return -1;
+    }
+
+    // 设置编码器参数
+    AVCodecContext* pCodecContext = avcodec_alloc_context3(pCodec);
+    // pCodecContext->codec_id = AV_CODEC_ID_H264;  // 使用 H.264 编码
+    // pCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
+    pCodecContext->bit_rate = 1000000; // 1000kbps
+    pCodecContext->width = WIDTH;
+    pCodecContext->height = HEIGHT;
+    pCodecContext->time_base = {1, 30};  // 设置帧率为 30 fps
+    pCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;  // 设置像素格式
+    pCodecContext->framerate = (AVRational){30, 1};\
+    pCodecContext->gop_size = 10;
+
+    // 设置预设和配置文件
+    if (av_opt_set(pCodecContext->priv_data, "preset", "medium", 0) < 0) {
+        std::cerr << "Error setting x264 preset!" << std::endl;
+        return -1;
+    }
+
+    // 可选地设置 profile (例如：baseline, main, high)
+    if (av_opt_set(pCodecContext->priv_data, "profile", "high", 0) < 0) {
+        std::cerr << "Error setting x264 profile!" << std::endl;
+        return -1;
+    }
+
+    // 打开编码器
+    status = avcodec_open2(pCodecContext, pCodec, nullptr);
+    if (status < 0) {
+        char error_buf[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(status, error_buf, sizeof(error_buf));
+        printf("Could not open codec: %s\n", error_buf);
+        close(deviceFd);
+        return -1;
+    }
+
+    // 将编码器上下文绑定到流
+    status = avcodec_parameters_from_context(pVideoStream->codecpar, pCodecContext);
+    if (status < 0) {
+        char error_buf[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(status, error_buf, sizeof(error_buf));
+        printf("Error copying codec parameters to stream: %s\n", error_buf);
+        return -1;
+    }
+
+    // 打开输出文件
+    if (!(pFormatContext->oformat->flags & AVFMT_NOFILE)) {
+        if (avio_open(&pFormatContext->pb, "output.mp4", AVIO_FLAG_WRITE) < 0) {
+            std::cerr << "Could not open output file!" << std::endl;
+            close(deviceFd);
+            return -1;
+        }
+    }
+
+    // 写入文件头
+    if (avformat_write_header(pFormatContext, nullptr) < 0) {
+        std::cerr << "Could not write header!" << std::endl;
+        close(deviceFd);
+        return -1;
+    }
+
+    // 采集并编码帧
+    AVFrame* pFrame = av_frame_alloc();
+    pFrame->format = pCodecContext->pix_fmt;
+    pFrame->width = pCodecContext->width;
+    pFrame->height = pCodecContext->height;
+    if (av_frame_get_buffer(pFrame, 32) < 0) {
+        std::cerr << "Could not allocate frame buffer!" << std::endl;
+        close(deviceFd);
+        return -1;
+    }
+
     // 开始采集
     int32_t type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     errorCode = xioctl(deviceFd, VIDIOC_STREAMON, &type);
@@ -252,11 +367,22 @@ int main()
     fds[0].fd = deviceFd;
     fds[0].events = POLLIN;  // 等待可读事件
 
+    // 记录开始时间
+    auto start_time = std::chrono::steady_clock::now();
+
+    int32_t frame_count = 0;
     while (1) {
         // 等待文件描述符变为可读
         int32_t ret = poll(fds, 1, -1);
         if (ret == -1) {
             perror("poll failed");
+            break;
+        }
+
+        auto current_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_time = current_time - start_time;
+        if (elapsed_time.count() >= CAPTURE_DURATION) {
+            std::cout << "Captured 1 minute of video. Exiting..." << std::endl;
             break;
         }
 
@@ -274,15 +400,65 @@ int main()
                 }
             }
 
-            // TODO 处理一帧图像
+            // 从 YUYV 到 YUV420P 转换的函数
+            auto convert_yuyv_to_yuv420p = [] (uint8_t* yuyv_data, AVFrame* pFrame, int width, int height) {
+                int y_index = 0, u_index = 0, v_index = 0;
+                for (int i = 0; i < width * height; i++) {
+                    pFrame->data[0][y_index++] = yuyv_data[i * 2]; // Y
+                    if (i % 2 == 0) { // U 和 V 每两个像素共享
+                        pFrame->data[1][u_index++] = yuyv_data[i * 2 + 1]; // U
+                        pFrame->data[2][v_index++] = yuyv_data[i * 2 + 3]; // V
+                    }
+                }
+            };
+
+            // YUYV 转 YUV420P
+            uint8_t *yuyv_data = static_cast<uint8_t *>(spMapBuffer->_buffer_vec[buf.index]);
+
+            // 转换 YUYV 到 YUV420P
+            convert_yuyv_to_yuv420p(yuyv_data, pFrame, WIDTH, HEIGHT);
+
+            // 编码帧
+            ret = avcodec_send_frame(pCodecContext, pFrame);
+            if (ret < 0) {
+                std::cerr << "Error sending frame to encoder!" << std::endl;
+                break;
+            }
+
+            // 将帧编码成视频并写入文件
+            AVPacket pkt;
+            av_init_packet(&pkt);
+            ret = avcodec_receive_packet(pCodecContext, &pkt);
+            if (ret == 0) {
+                pkt.stream_index = pVideoStream->index;
+                ret = av_write_frame(pFormatContext, &pkt);
+                av_packet_unref(&pkt);
+            } else if (ret == AVERROR(EAGAIN)) {
+                continue;
+            } else if (ret < 0) {
+                std::cerr << "Error receiving packet!" << std::endl;
+                break;
+            }
 
             // 可选：将缓冲区放回队列
             if (ioctl(deviceFd, VIDIOC_QBUF, &buf) == -1) {
                 perror("VIDIOC_QBUF failed");
                 break;
             }
+
+            ++frame_count;
         }
     }
+
+    // 写入文件尾
+    av_write_trailer(pFormatContext);
+
+    // 清理资源
+    av_frame_free(&pFrame);
+    avcodec_close(pCodecContext);
+    avformat_close_input(&pFormatContext);
+
+    spMapBuffer.reset();
 
     close(deviceFd);
     return 0;
