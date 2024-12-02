@@ -38,8 +38,8 @@ EXTERN_C_BEGIN
 #include <libavutil/opt.h>
 EXTERN_C_END
 
-#define CAPTURE_DURATION    60 // 采集视频的时长，单位：秒
-#define VIDEO_DEVICE        "/dev/video0"
+#define CAPTURE_DURATION    30 // 采集视频的时长，单位：秒
+#define VIDEO_DEVICE        "/dev/video1"
 
 static void errno_exit(const char *s)
 {
@@ -386,7 +386,13 @@ int main()
             break;
         }
 
+        if (av_compare_ts(frame_count, pCodecContext->time_base, CAPTURE_DURATION, (AVRational){1, 1}) >= 0)
+            break;
+
+        av_frame_make_writable(pFrame);
+
         if (fds[0].revents & POLLIN) {
+            printf("event POLLIN\n");
             // 在非阻塞模式下，尝试从队列中获取数据
             int32_t err = ioctl(deviceFd, VIDIOC_DQBUF, &buf);
             if (err == -1) {
@@ -401,22 +407,67 @@ int main()
             }
 
             // 从 YUYV 到 YUV420P 转换的函数
-            auto convert_yuyv_to_yuv420p = [] (uint8_t* yuyv_data, AVFrame* pFrame, int width, int height) {
-                int y_index = 0, u_index = 0, v_index = 0;
-                for (int i = 0; i < width * height; i++) {
-                    pFrame->data[0][y_index++] = yuyv_data[i * 2]; // Y
-                    if (i % 2 == 0) { // U 和 V 每两个像素共享
-                        pFrame->data[1][u_index++] = yuyv_data[i * 2 + 1]; // U
-                        pFrame->data[2][v_index++] = yuyv_data[i * 2 + 3]; // V
+            // auto convert_yuyv_to_yuv420p = [] (uint8_t* yuyv_data, AVFrame* pFrame, int width, int height) {
+            //     int y_index = 0, u_index = 0, v_index = 0;
+            //     for (int i = 0; i < width * height; i++) {
+            //         pFrame->data[0][y_index++] = yuyv_data[i * 2]; // Y
+            //         if (i % 2 == 0) { // U 和 V 每两个像素共享
+            //             pFrame->data[1][u_index++] = yuyv_data[i * 2 + 1]; // U
+            //             pFrame->data[2][v_index++] = yuyv_data[i * 2 + 3]; // V
+            //         }
+            //     }
+            // };
+
+            auto convert_yuyv_to_yuv420p = [] (const uint8_t *in, uint8_t *out, uint32_t width, uint32_t height) {
+                unsigned char *y = out;
+                unsigned char *u = out + width * height;
+                unsigned char *v = out + width * height + width * height / 4;
+                unsigned int i, j;
+                unsigned int base_h;
+                unsigned int is_u = 1;
+                unsigned int y_index = 0, u_index = 0, v_index = 0;
+                unsigned long yuv422_length = 2 * width * height;
+                // 序列为YU YV YU YV，一个yuv422帧的长度 width * height * 2 个字节
+                // 丢弃偶数行 u v
+                for (i = 0; i < yuv422_length; i += 2)
+                {
+                    *(y + y_index) = *(in + i);
+                    y_index++;
+                }
+                for (i = 0; i < height; i += 2)
+                {
+                    base_h = i * width * 2;
+                    for (j = base_h + 1; j < base_h + width * 2; j += 2)
+                    {
+                        if (is_u)
+                        {
+                            *(u + u_index) = *(in + j);
+                            u_index++;
+                            is_u = 0;
+                        }
+                        else
+                        {
+                            *(v + v_index) = *(in + j);
+                            v_index++;
+                            is_u = 1;
+                        }
                     }
                 }
+                return 1;
             };
 
             // YUYV 转 YUV420P
             uint8_t *yuyv_data = static_cast<uint8_t *>(spMapBuffer->_buffer_vec[buf.index]);
+            uint8_t *yuv420p_buffer = new uint8_t[WIDTH * HEIGHT * 3 / 2];
 
             // 转换 YUYV 到 YUV420P
-            convert_yuyv_to_yuv420p(yuyv_data, pFrame, WIDTH, HEIGHT);
+            convert_yuyv_to_yuv420p(yuyv_data, yuv420p_buffer, WIDTH, HEIGHT);
+
+            // 将YUV数据拷贝到缓冲区
+            int y_size = WIDTH * HEIGHT;
+            memcpy(pFrame->data[0], yuv420p_buffer, y_size);
+            memcpy(pFrame->data[1], yuv420p_buffer + y_size, y_size / 4);
+            memcpy(pFrame->data[2], yuv420p_buffer + y_size + y_size / 4, y_size / 4);
 
             // 编码帧
             ret = avcodec_send_frame(pCodecContext, pFrame);
@@ -428,17 +479,37 @@ int main()
             // 将帧编码成视频并写入文件
             AVPacket pkt;
             av_init_packet(&pkt);
-            ret = avcodec_receive_packet(pCodecContext, &pkt);
-            if (ret == 0) {
+            int got_packet = 0;
+            ret = avcodec_encode_video2(pCodecContext, &pkt, pFrame, &got_packet);
+            if (got_packet) {
+                /*将输出数据包时间戳值从编解码器重新调整为流时基 */
+                av_packet_rescale_ts(&pkt, pCodecContext->time_base, pVideoStream->time_base);
                 pkt.stream_index = pVideoStream->index;
-                ret = av_write_frame(pFormatContext, &pkt);
-                av_packet_unref(&pkt);
-            } else if (ret == AVERROR(EAGAIN)) {
-                continue;
-            } else if (ret < 0) {
-                std::cerr << "Error receiving packet!" << std::endl;
+
+                // 将压缩的帧写入媒体文件
+                av_interleaved_write_frame(pFormatContext, &pkt);
+            } 
+            else
+            {
+                printf("got_packet = false\n");
                 break;
             }
+
+            // ret = avcodec_receive_packet(pCodecContext, &pkt);
+            // if (ret == 0) {
+            //     pkt.stream_index = pVideoStream->index;
+            //     ret = av_write_frame(pFormatContext, &pkt);
+            //     av_packet_unref(&pkt);
+            // } else if (ret == AVERROR(EAGAIN)) {
+            //     if (ioctl(deviceFd, VIDIOC_QBUF, &buf) == -1) {
+            //         perror("VIDIOC_QBUF failed");
+            //         break;
+            //     }
+            //     continue;
+            // } else if (ret < 0) {
+            //     std::cerr << "Error receiving packet!" << std::endl;
+            //     break;
+            // }
 
             // 可选：将缓冲区放回队列
             if (ioctl(deviceFd, VIDIOC_QBUF, &buf) == -1) {
