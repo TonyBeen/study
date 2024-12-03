@@ -287,22 +287,10 @@ int main()
     pCodecContext->bit_rate = 1000000; // 1000kbps
     pCodecContext->width = WIDTH;
     pCodecContext->height = HEIGHT;
-    pCodecContext->time_base = {1, 30};  // 设置帧率为 30 fps
+    pCodecContext->time_base = {1, 30}; // 时基：这是基本的时间单位（以秒为单位） 表示其中的帧时间戳。 对于固定fps内容，时基应为1 / framerate，时间戳增量应为等于1。
     pCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;  // 设置像素格式
-    pCodecContext->framerate = (AVRational){30, 1};\
-    pCodecContext->gop_size = 10;
-
-    // 设置预设和配置文件
-    if (av_opt_set(pCodecContext->priv_data, "preset", "medium", 0) < 0) {
-        std::cerr << "Error setting x264 preset!" << std::endl;
-        return -1;
-    }
-
-    // 可选地设置 profile (例如：baseline, main, high)
-    if (av_opt_set(pCodecContext->priv_data, "profile", "high", 0) < 0) {
-        std::cerr << "Error setting x264 profile!" << std::endl;
-        return -1;
-    }
+    pCodecContext->framerate = (AVRational){30, 1};
+    pCodecContext->gop_size = 10; // 最多每十二帧发射一帧内帧
 
     // 打开编码器
     status = avcodec_open2(pCodecContext, pCodec, nullptr);
