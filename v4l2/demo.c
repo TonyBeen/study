@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: demo.c
     > Author: hsz
-    > Brief:
+    > Brief: gcc demo.c -lavcodec -lavfilter -lswresample -lavdevice -lavformat -lswscale -lavutil -lm -pthread
     > Created Time: 2024年12月02日 星期一 16时51分26秒
  ************************************************************************/
 
@@ -320,6 +320,7 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
     avcodec_open2(c, codec, &opt);
     av_dict_free(&opt);
     /* allocate and init a re-usable frame */
+    printf("pix_fmt = %d\n", c->pix_fmt);
     ost->frame = alloc_picture(c->pix_fmt, c->width, c->height);
     ost->tmp_frame = NULL;
     /* 将流参数复制到多路复用器 */
@@ -417,6 +418,8 @@ int video_audio_encode(char *filename)
     int encode_video = 0, encode_audio = 0;
     AVDictionary *opt = NULL;
     int i;
+
+    printf("next_pts = %ld\n", video_st.next_pts);
 
     /* 分配输出环境 */
     avformat_alloc_output_context2(&oc, NULL, NULL, filename);
@@ -548,8 +551,8 @@ int VideoDeviceInit(char *DEVICE_NAME)
     return 0;
 }
 
-// YUYV==YUV422
 int yuyv_to_yuv420p(const unsigned char *in, unsigned char *out, unsigned int width, unsigned int height)
+// YUYV==YUV422
 {
     unsigned char *y = out;
     unsigned char *u = out + width * height;
@@ -614,6 +617,10 @@ void *pthread_read_video_data(void *arg)
         yuyv_to_yuv420p(image_buffer[video_buffer.index], YUV420P_Buffer, VIDEO_WIDTH, VIDEO_HEIGHT);
         pthread_mutex_unlock(&mutex);  /*互斥锁解锁*/
         pthread_cond_broadcast(&cond); /*广播方式唤醒休眠的线程*/
+
+        FILE *fp = fopen("yuyv.yuv", "w+");
+        fwrite(image_buffer[video_buffer.index], video_buffer.bytesused, 1, fp);
+        fclose(fp);
 
         /*(4)将缓冲区再放入队列*/
         ioctl(video_fd, VIDIOC_QBUF, &video_buffer);

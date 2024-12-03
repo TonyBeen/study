@@ -282,9 +282,9 @@ int main()
 
     // 设置编码器参数
     AVCodecContext* pCodecContext = avcodec_alloc_context3(pCodec);
-    // pCodecContext->codec_id = AV_CODEC_ID_H264;  // 使用 H.264 编码
+    pCodecContext->codec_id = AV_CODEC_ID_H264;  // 使用 H.264 编码
     // pCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
-    pCodecContext->bit_rate = 1000000; // 1000kbps
+    pCodecContext->bit_rate = 400000; // 400kbps
     pCodecContext->width = WIDTH;
     pCodecContext->height = HEIGHT;
     pCodecContext->time_base = {1, 30}; // 时基：这是基本的时间单位（以秒为单位） 表示其中的帧时间戳。 对于固定fps内容，时基应为1 / framerate，时间戳增量应为等于1。
@@ -311,6 +311,8 @@ int main()
         return -1;
     }
 
+    av_dump_format(pFormatContext, 0, "output.mp4", 1);
+
     // 打开输出文件
     if (!(pFormatContext->oformat->flags & AVFMT_NOFILE)) {
         if (avio_open(&pFormatContext->pb, "output.mp4", AVIO_FLAG_WRITE) < 0) {
@@ -327,6 +329,7 @@ int main()
         return -1;
     }
 
+    printf("pix_fmt = %d\n", pCodecContext->pix_fmt);
     // 采集并编码帧
     AVFrame* pFrame = av_frame_alloc();
     pFrame->format = pCodecContext->pix_fmt;
@@ -359,6 +362,7 @@ int main()
     auto start_time = std::chrono::steady_clock::now();
 
     int32_t frame_count = 0;
+    int64_t pts = 0;
     while (1) {
         // 等待文件描述符变为可读
         int32_t ret = poll(fds, 1, -1);
@@ -367,17 +371,12 @@ int main()
             break;
         }
 
-        auto current_time = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_time = current_time - start_time;
-        if (elapsed_time.count() >= CAPTURE_DURATION) {
-            std::cout << "Captured 1 minute of video. Exiting..." << std::endl;
-            break;
-        }
-
-        if (av_compare_ts(frame_count, pCodecContext->time_base, CAPTURE_DURATION, (AVRational){1, 1}) >= 0)
-            break;
-
-        av_frame_make_writable(pFrame);
+        // auto current_time = std::chrono::steady_clock::now();
+        // std::chrono::duration<double> elapsed_time = current_time - start_time;
+        // if (elapsed_time.count() >= CAPTURE_DURATION) {
+        //     std::cout << "Captured 1 minute of video. Exiting..." << std::endl;
+        //     break;
+        // }
 
         if (fds[0].revents & POLLIN) {
             printf("event POLLIN\n");
@@ -405,6 +404,11 @@ int main()
             //         }
             //     }
             // };
+
+            if (av_compare_ts(pts, pCodecContext->time_base, CAPTURE_DURATION, (AVRational){1, 1}) >= 0)
+                break;
+
+            av_frame_make_writable(pFrame);
 
             auto convert_yuyv_to_yuv420p = [] (const uint8_t *in, uint8_t *out, uint32_t width, uint32_t height) {
                 unsigned char *y = out;
@@ -456,13 +460,7 @@ int main()
             memcpy(pFrame->data[0], yuv420p_buffer, y_size);
             memcpy(pFrame->data[1], yuv420p_buffer + y_size, y_size / 4);
             memcpy(pFrame->data[2], yuv420p_buffer + y_size + y_size / 4, y_size / 4);
-
-            // 编码帧
-            ret = avcodec_send_frame(pCodecContext, pFrame);
-            if (ret < 0) {
-                std::cerr << "Error sending frame to encoder!" << std::endl;
-                break;
-            }
+            pFrame->pts = pts++;
 
             // 将帧编码成视频并写入文件
             AVPacket pkt;
@@ -476,7 +474,7 @@ int main()
 
                 // 将压缩的帧写入媒体文件
                 av_interleaved_write_frame(pFormatContext, &pkt);
-            } 
+            }
             else
             {
                 printf("got_packet = false\n");
