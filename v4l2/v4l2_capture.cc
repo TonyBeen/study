@@ -65,12 +65,9 @@ typedef struct OutputStream
 
     /* 下一帧的点数*/
     int64_t next_pts;
-    int samples_count;
 
     AVFrame *frame;
     AVFrame *tmp_frame;
-
-    float t, tincr, tincr2;
 
     struct SwsContext *sws_ctx;
     struct SwrContext *swr_ctx;
@@ -87,9 +84,7 @@ static int write_frame(AVFormatContext *fmt_ctx, const AVRational *time_base, AV
 }
 
 /* 添加输出流。 */
-static void add_stream(OutputStream *ost, AVFormatContext *oc,
-                       AVCodec **codec,
-                       enum AVCodecID codec_id)
+static void add_stream(OutputStream *ost, AVFormatContext *oc, AVCodec **codec, AVCodecID codec_id)
 {
     AVCodecContext *c;
     int i;
@@ -159,142 +154,6 @@ static void add_stream(OutputStream *ost, AVFormatContext *oc,
     /* 某些格式希望流头分开。 */
     if (oc->oformat->flags & AVFMT_GLOBALHEADER)
         c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-}
-
-/**************************************************************/
-/* audio output */
-
-static AVFrame *alloc_audio_frame(enum AVSampleFormat sample_fmt,
-                                  uint64_t channel_layout,
-                                  int sample_rate, int nb_samples)
-{
-    AVFrame *frame = av_frame_alloc();
-    frame->format = sample_fmt;
-    frame->channel_layout = channel_layout;
-    frame->sample_rate = sample_rate;
-    frame->nb_samples = nb_samples;
-    if (nb_samples)
-    {
-        av_frame_get_buffer(frame, 0);
-    }
-    return frame;
-}
-
-static void open_audio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg)
-{
-    AVCodecContext *c;
-    int nb_samples;
-    int ret;
-    AVDictionary *opt = NULL;
-    c = ost->enc;
-    av_dict_copy(&opt, opt_arg, 0);
-    ret = avcodec_open2(c, codec, &opt);
-    av_dict_free(&opt);
-
-    /*下面3行代码是为了生成虚拟的声音设置的频率参数*/
-    ost->t = 0;
-    ost->tincr = 2 * M_PI * 110.0 / c->sample_rate;
-    ost->tincr2 = 2 * M_PI * 110.0 / c->sample_rate / c->sample_rate;
-
-    // AAC编码这里就固定为1024
-    nb_samples = c->frame_size;
-
-    ost->frame = alloc_audio_frame(c->sample_fmt, c->channel_layout,
-                                   c->sample_rate, nb_samples);
-    ost->tmp_frame = alloc_audio_frame(AV_SAMPLE_FMT_S16, c->channel_layout,
-                                       c->sample_rate, nb_samples);
-
-    /* copy the stream parameters to the muxer */
-    avcodec_parameters_from_context(ost->st->codecpar, c);
-
-    /* create resampler context */
-    ost->swr_ctx = swr_alloc();
-
-    /* set options */
-    av_opt_set_int(ost->swr_ctx, "in_channel_count", c->channels, 0);
-    av_opt_set_int(ost->swr_ctx, "in_sample_rate", c->sample_rate, 0);
-    av_opt_set_sample_fmt(ost->swr_ctx, "in_sample_fmt", AV_SAMPLE_FMT_S16, 0);
-    av_opt_set_int(ost->swr_ctx, "out_channel_count", c->channels, 0);
-    av_opt_set_int(ost->swr_ctx, "out_sample_rate", c->sample_rate, 0);
-    av_opt_set_sample_fmt(ost->swr_ctx, "out_sample_fmt", c->sample_fmt, 0);
-
-    /* initialize the resampling context */
-    swr_init(ost->swr_ctx);
-}
-
-/*
-准备虚拟音频帧
-这里可以替换成从声卡读取的PCM数据
-*/
-static AVFrame *get_audio_frame(OutputStream *ost)
-{
-    AVFrame *frame = ost->tmp_frame;
-    int j, i, v;
-    int16_t *q = (int16_t *)frame->data[0];
-
-    /* 检查我们是否要生成更多帧，用于判断是否结束*/
-    if (av_compare_ts(ost->next_pts, ost->enc->time_base, STREAM_DURATION, (AVRational){1, 1}) >= 0)
-        return NULL;
-
-    for (j = 0; j < frame->nb_samples; j++) // nb_samples: 此帧描述的音频样本数（每个通道）
-    {
-        v = (int)(sin(ost->t) * 1000);
-        for (i = 0; i < ost->enc->channels; i++) // channels:音频通道数
-        {
-            *q++ = v; // 音频数据
-        }
-        ost->t += ost->tincr;
-        ost->tincr += ost->tincr2;
-    }
-
-    frame->pts = ost->next_pts;
-    ost->next_pts += frame->nb_samples;
-
-    return frame;
-}
-
-/*
- *编码一个音频帧并将其发送到多路复用器
- *编码完成后返回1，否则返回0
- */
-static int write_audio_frame(AVFormatContext *oc, OutputStream *ost)
-{
-    AVCodecContext *c;
-    AVPacket pkt = {0};
-    AVFrame *frame;
-    int ret;
-    int got_packet;
-    int dst_nb_samples;
-
-    av_init_packet(&pkt);
-    c = ost->enc;
-
-    frame = get_audio_frame(ost);
-
-    if (frame)
-    {
-        /*使用重采样器将样本从本机格式转换为目标编解码器格式*/
-        /*计算样本的目标数量*/
-        dst_nb_samples = av_rescale_rnd(swr_get_delay(ost->swr_ctx, c->sample_rate) + frame->nb_samples,
-                                        c->sample_rate, c->sample_rate, AV_ROUND_UP);
-        av_assert0(dst_nb_samples == frame->nb_samples);
-        av_frame_make_writable(ost->frame);
-        /*转换为目标格式 */
-        swr_convert(ost->swr_ctx,
-                    ost->frame->data, dst_nb_samples,
-                    (const uint8_t **)frame->data, frame->nb_samples);
-        frame = ost->frame;
-        frame->pts = av_rescale_q(ost->samples_count, (AVRational){1, c->sample_rate}, c->time_base);
-        ost->samples_count += dst_nb_samples;
-    }
-
-    avcodec_encode_audio2(c, &pkt, frame, &got_packet);
-
-    if (got_packet)
-    {
-        write_frame(oc, &c->time_base, ost->st, &pkt);
-    }
-    return (frame || got_packet) ? 0 : 1;
 }
 
 static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
@@ -450,7 +309,10 @@ int video_audio_encode(char *filename)
     }
 
     // 编写流头
-    avformat_write_header(oc, &opt);
+    ret = avformat_write_header(oc, &opt);
+    if (ret < 0) {
+        return 1;
+    }
 
     while (encode_video) {
         encode_video = !write_video_frame(oc, &video_st);
@@ -501,7 +363,6 @@ int VideoDeviceInit(char *DEVICE_NAME)
     video_requestbuffers.memory = V4L2_MEMORY_MMAP;
     if (ioctl(video_fd, VIDIOC_REQBUFS, &video_requestbuffers))
         return -3;
-    printf("video_requestbuffers.count = %d\n", video_requestbuffers.count);
 
     // 4. 获取缓冲区的首地址
     struct v4l2_buffer video_buffer;
@@ -515,7 +376,6 @@ int VideoDeviceInit(char *DEVICE_NAME)
             return -4;
 
         image_buffer[i] = (uint8_t *)mmap(NULL, video_buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED, video_fd, video_buffer.m.offset);
-        printf("image_buffer[%d]=0x%X\n", i, image_buffer[i]);
     }
 
     // 5. 将缓冲区加入到采集队列
