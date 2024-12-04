@@ -39,7 +39,7 @@ EXTERN_C_BEGIN
 EXTERN_C_END
 
 #define CAPTURE_DURATION    30 // 采集视频的时长，单位：秒
-#define VIDEO_DEVICE        "/dev/video1"
+#define VIDEO_DEVICE        "/dev/video0"
 
 static void errno_exit(const char *s)
 {
