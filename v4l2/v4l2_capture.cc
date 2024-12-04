@@ -113,18 +113,7 @@ static void add_stream(OutputStream *ost, AVFormatContext *oc, AVCodec **codec, 
     }
     ost->enc = c;
 
-    switch ((*codec)->type)
-    {
-    case AVMEDIA_TYPE_AUDIO:
-        c->sample_fmt = (*codec)->sample_fmts ? (*codec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-        c->bit_rate = 64000;    // 设置码率
-        c->sample_rate = 44100; // 音频采样率
-        c->channels = av_get_channel_layout_nb_channels(c->channel_layout);
-        c->channel_layout = AV_CH_LAYOUT_MONO; // AV_CH_LAYOUT_MONO 单声道   AV_CH_LAYOUT_STEREO 立体声
-        c->channels = av_get_channel_layout_nb_channels(c->channel_layout);
-        ost->st->time_base = (AVRational){1, c->sample_rate};
-        break;
-
+    switch ((*codec)->type) {
     case AVMEDIA_TYPE_VIDEO:
         c->codec_id = codec_id;
         // 码率：影响体积，与体积成正比：码率越大，体积越大；码率越小，体积越小。

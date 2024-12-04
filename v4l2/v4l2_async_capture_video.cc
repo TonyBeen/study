@@ -39,6 +39,7 @@ EXTERN_C_BEGIN
 EXTERN_C_END
 
 #define CAPTURE_DURATION    30 // 采集视频的时长，单位：秒
+#define STREAM_FRAME_RATE   25 // 25 images/s    avfilter_get_by_name
 #define VIDEO_DEVICE        "/dev/video0"
 
 static void errno_exit(const char *s)
@@ -206,17 +207,17 @@ int main()
     }
 
     // 设置文件描述符为非阻塞模式
-    int32_t flags = fcntl(deviceFd, F_GETFL, 0);
-    if (flags == -1) {
-        perror("fcntl(F_GETFL) failed");
-        close(deviceFd);
-        return -1;
-    }
-    if (fcntl(deviceFd, F_SETFL, flags | O_NONBLOCK) == -1) {
-        perror("fcntl(F_SETFL) failed");
-        close(deviceFd);
-        return -1;
-    }
+    // int32_t flags = fcntl(deviceFd, F_GETFL, 0);
+    // if (flags == -1) {
+    //     perror("fcntl(F_GETFL) failed");
+    //     close(deviceFd);
+    //     return -1;
+    // }
+    // if (fcntl(deviceFd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    //     perror("fcntl(F_SETFL) failed");
+    //     close(deviceFd);
+    //     return -1;
+    // }
 
     static const uint32_t WIDTH = 640;
     static const uint32_t HEIGHT = 480;
@@ -264,6 +265,18 @@ int main()
         close(deviceFd);
         return -1;
     }
+    AVOutputFormat *pOutputFormat = pFormatContext->oformat;
+    if (pOutputFormat->video_codec == AV_CODEC_ID_NONE) {
+        printf("pOutputFormat->video_codec == AV_CODEC_ID_NONE\n");
+        return 0;
+    }
+
+    AVCodec* pCodec = avcodec_find_encoder(pOutputFormat->video_codec);
+    if (!pCodec) {
+        std::cerr << "Codec not found!" << std::endl;
+        close(deviceFd);
+        return -1;
+    }
 
     // 创建视频流
     AVStream* pVideoStream = avformat_new_stream(pFormatContext, nullptr);
@@ -272,25 +285,22 @@ int main()
         close(deviceFd);
         return -1;
     }
-
-    AVCodec* pCodec = avcodec_find_encoder(AV_CODEC_ID_H264);
-    if (!pCodec) {
-        std::cerr << "Codec not found!" << std::endl;
-        close(deviceFd);
-        return -1;
-    }
+    pVideoStream->id = pFormatContext->nb_streams - 1;
+    // 时基：这是基本的时间单位（以秒为单位） 表示其中的帧时间戳。 对于固定fps内容，时基应为1 / framerate，时间戳增量应为等于1。
+    pVideoStream->time_base = (AVRational){1, STREAM_FRAME_RATE};
 
     // 设置编码器参数
     AVCodecContext* pCodecContext = avcodec_alloc_context3(pCodec);
-    pCodecContext->codec_id = AV_CODEC_ID_H264;  // 使用 H.264 编码
+    pCodecContext->codec_id = pOutputFormat->video_codec;
     // pCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
     pCodecContext->bit_rate = 400000; // 400kbps
-    pCodecContext->width = WIDTH;
-    pCodecContext->height = HEIGHT;
-    pCodecContext->time_base = {1, 30}; // 时基：这是基本的时间单位（以秒为单位） 表示其中的帧时间戳。 对于固定fps内容，时基应为1 / framerate，时间戳增量应为等于1。
+    pCodecContext->width = WIDTH; // 分辨率必须是2的倍数。
+    pCodecContext->height = HEIGHT; // 分辨率必须是2的倍数。
+    pCodecContext->time_base = pVideoStream->time_base;
     pCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;  // 设置像素格式
-    pCodecContext->framerate = (AVRational){30, 1};
-    pCodecContext->gop_size = 10; // 最多每十二帧发射一帧内帧
+    pCodecContext->framerate = (AVRational){STREAM_FRAME_RATE, 1};
+    pCodecContext->gop_size = 12; // 最多每十二帧发射一帧内帧
+    pCodecContext->max_b_frames = 0;
 
     // 打开编码器
     status = avcodec_open2(pCodecContext, pCodec, nullptr);
@@ -329,7 +339,6 @@ int main()
         return -1;
     }
 
-    printf("pix_fmt = %d\n", pCodecContext->pix_fmt);
     // 采集并编码帧
     AVFrame* pFrame = av_frame_alloc();
     pFrame->format = pCodecContext->pix_fmt;
@@ -360,8 +369,7 @@ int main()
 
     // 记录开始时间
     auto start_time = std::chrono::steady_clock::now();
-
-    int32_t frame_count = 0;
+    av_log_set_level(AV_LOG_DEBUG);
     int64_t pts = 0;
     while (1) {
         // 等待文件描述符变为可读
@@ -393,21 +401,8 @@ int main()
                 }
             }
 
-            // 从 YUYV 到 YUV420P 转换的函数
-            // auto convert_yuyv_to_yuv420p = [] (uint8_t* yuyv_data, AVFrame* pFrame, int width, int height) {
-            //     int y_index = 0, u_index = 0, v_index = 0;
-            //     for (int i = 0; i < width * height; i++) {
-            //         pFrame->data[0][y_index++] = yuyv_data[i * 2]; // Y
-            //         if (i % 2 == 0) { // U 和 V 每两个像素共享
-            //             pFrame->data[1][u_index++] = yuyv_data[i * 2 + 1]; // U
-            //             pFrame->data[2][v_index++] = yuyv_data[i * 2 + 3]; // V
-            //         }
-            //     }
-            // };
-
             if (av_compare_ts(pts, pCodecContext->time_base, CAPTURE_DURATION, (AVRational){1, 1}) >= 0)
                 break;
-
             av_frame_make_writable(pFrame);
 
             auto convert_yuyv_to_yuv420p = [] (const uint8_t *in, uint8_t *out, uint32_t width, uint32_t height) {
@@ -450,6 +445,7 @@ int main()
 
             // YUYV 转 YUV420P
             uint8_t *yuyv_data = static_cast<uint8_t *>(spMapBuffer->_buffer_vec[buf.index]);
+
             uint8_t *yuv420p_buffer = new uint8_t[WIDTH * HEIGHT * 3 / 2];
 
             // 转换 YUYV 到 YUV420P
@@ -461,6 +457,13 @@ int main()
             memcpy(pFrame->data[1], yuv420p_buffer + y_size, y_size / 4);
             memcpy(pFrame->data[2], yuv420p_buffer + y_size + y_size / 4, y_size / 4);
             pFrame->pts = pts++;
+
+            if (pFrame->pts == AV_NOPTS_VALUE) {
+                fprintf(stderr, "Invalid PTS value for the input frame.\n");
+            }
+            if (pFrame->format != pCodecContext->pix_fmt) {
+                fprintf(stderr, "Input frame format mismatch. Expected %d, got %d\n", pCodecContext->pix_fmt, pFrame->format);
+            }
 
             // 将帧编码成视频并写入文件
             AVPacket pkt;
@@ -475,35 +478,12 @@ int main()
                 // 将压缩的帧写入媒体文件
                 av_interleaved_write_frame(pFormatContext, &pkt);
             }
-            else
-            {
-                printf("got_packet = false\n");
-                break;
-            }
 
-            // ret = avcodec_receive_packet(pCodecContext, &pkt);
-            // if (ret == 0) {
-            //     pkt.stream_index = pVideoStream->index;
-            //     ret = av_write_frame(pFormatContext, &pkt);
-            //     av_packet_unref(&pkt);
-            // } else if (ret == AVERROR(EAGAIN)) {
-            //     if (ioctl(deviceFd, VIDIOC_QBUF, &buf) == -1) {
-            //         perror("VIDIOC_QBUF failed");
-            //         break;
-            //     }
-            //     continue;
-            // } else if (ret < 0) {
-            //     std::cerr << "Error receiving packet!" << std::endl;
-            //     break;
-            // }
-
-            // 可选：将缓冲区放回队列
+            // 将缓冲区放回队列
             if (ioctl(deviceFd, VIDIOC_QBUF, &buf) == -1) {
                 perror("VIDIOC_QBUF failed");
                 break;
             }
-
-            ++frame_count;
         }
     }
 
