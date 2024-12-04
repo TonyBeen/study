@@ -657,7 +657,7 @@ int main(int argc, char **argv)
     time_t t;
     struct tm *tme;
     // 开始音频、视频编码
-    while (1)
+    for (int32_t i = 0; i < 3; ++i)
     {
         // 获取本地时间
         t = time(NULL);
