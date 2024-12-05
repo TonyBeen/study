@@ -38,7 +38,7 @@ EXTERN_C_BEGIN
 #include <libavutil/opt.h>
 EXTERN_C_END
 
-#define CAPTURE_DURATION    30 // 采集视频的时长，单位：秒
+#define CAPTURE_DURATION    30 // 采集视频的时长，单位：秒 有两秒的遗漏?
 #define STREAM_FRAME_RATE   25 // 25 images/s    avfilter_get_by_name
 #define VIDEO_DEVICE        "/dev/video0"
 
@@ -387,7 +387,6 @@ int main()
         // }
 
         if (fds[0].revents & POLLIN) {
-            printf("event POLLIN\n");
             // 在非阻塞模式下，尝试从队列中获取数据
             int32_t err = ioctl(deviceFd, VIDIOC_DQBUF, &buf);
             if (err == -1) {
