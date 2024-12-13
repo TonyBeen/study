@@ -207,17 +207,17 @@ int main()
     }
 
     // 设置文件描述符为非阻塞模式
-    // int32_t flags = fcntl(deviceFd, F_GETFL, 0);
-    // if (flags == -1) {
-    //     perror("fcntl(F_GETFL) failed");
-    //     close(deviceFd);
-    //     return -1;
-    // }
-    // if (fcntl(deviceFd, F_SETFL, flags | O_NONBLOCK) == -1) {
-    //     perror("fcntl(F_SETFL) failed");
-    //     close(deviceFd);
-    //     return -1;
-    // }
+    int32_t flags = fcntl(deviceFd, F_GETFL, 0);
+    if (flags == -1) {
+        perror("fcntl(F_GETFL) failed");
+        close(deviceFd);
+        return -1;
+    }
+    if (fcntl(deviceFd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        perror("fcntl(F_SETFL) failed");
+        close(deviceFd);
+        return -1;
+    }
 
     static const uint32_t WIDTH = 640;
     static const uint32_t HEIGHT = 480;
