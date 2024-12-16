@@ -46,7 +46,7 @@ int group_id = 1337;
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Please give a port number: ./io_uring_echo_server [port]\n");
+        printf("Please give a port number: %s port\n", argv[0]);
         exit(0);
     }
 
@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     int sock_listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     int val = 1;
     setsockopt(sock_listen_fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
+    setsockopt(sock_listen_fd, SOL_SOCKET, SO_REUSEPORT, &val, sizeof(val));
 
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
