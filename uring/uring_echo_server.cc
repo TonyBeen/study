@@ -121,13 +121,23 @@ int main(int argc, char *argv[]) {
     // add first accept SQE to monitor for new incoming connections
     add_accept(&ring, sock_listen_fd, (struct sockaddr *)&client_addr, &client_len, 0);
 
+    struct __kernel_timespec ts;
+    // 设置超时时间：2 秒
+    ts.tv_sec = 1;
+    ts.tv_nsec = 0;
+    sqe = io_uring_get_sqe(&ring);
+    if (sqe) {
+        io_uring_prep_timeout(sqe, &ts, 0, 0);
+    }
+
     // start event loop
     while (1) {
-        io_uring_submit_and_wait(&ring, 1);
+        io_uring_submit_and_wait(&ring, 16);
         struct io_uring_cqe *cqe;
         unsigned head;
         unsigned count = 0;
 
+        printf("Timeout event triggered.\n");
         // go through all CQEs
         io_uring_for_each_cqe(&ring, head, cqe) {
             ++count;
@@ -174,6 +184,10 @@ int main(int argc, char *argv[]) {
         }
 
         io_uring_cq_advance(&ring, count);
+        sqe = io_uring_get_sqe(&ring);
+        if (sqe) {
+            io_uring_prep_timeout(sqe, &ts, 0, 0);
+        }
     }
 }
 
