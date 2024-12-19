@@ -20,8 +20,8 @@
 
 #define MAX_CONNECTIONS     512
 #define BACKLOG             512
-#define MAX_MESSAGE_LEN     4096
-#define BUFFERS_COUNT       MAX_CONNECTIONS
+#define MAX_MESSAGE_LEN     128
+#define BUFFERS_COUNT       1
 
 void add_accept(struct io_uring *ring, int fd, struct sockaddr *client_addr, socklen_t *client_len, unsigned flags);
 void add_socket_read(struct io_uring *ring, int fd, unsigned gid, size_t size, unsigned flags);
@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
         printf("IORING_FEAT_FAST_POLL not available in the kernel, quiting...\n");
         exit(0);
     }
+    printf("0x%x\n", params.features);
 
     // check if buffer selection is supported
     struct io_uring_probe *probe;
@@ -166,6 +167,20 @@ int main(int argc, char *argv[]) {
             } else if (type == READ) {
                 int bytes_read = cqe->res;
                 int bid = cqe->flags >> 16;
+                printf("read size = %d\n", bytes_read);
+                if (cqe->flags & IORING_CQE_F_BUFFER) {
+                    printf("IORING_CQE_F_BUFFER buffer id = %d\n", bid);
+                }
+                if (cqe->flags & IORING_CQE_F_MORE) { // 还有cqe需要处理
+                    printf("IORING_CQE_F_MORE\n");
+                }
+                if (cqe->flags & IORING_CQE_F_SOCK_NONEMPTY) { // 套接字仍然有数据
+                    printf("IORING_CQE_F_SOCK_NONEMPTY\n");
+                }
+                if (cqe->flags & IORING_CQE_F_NOTIF) {
+                    printf("IORING_CQE_F_NOTIF\n");
+                }
+
                 if (cqe->res <= 0) {
                     // read failed, re-add the buffer
                     add_provide_buf(&ring, bid, group_id);
@@ -176,9 +191,9 @@ int main(int argc, char *argv[]) {
                     add_socket_write(&ring, conn_i.fd, bid, bytes_read, 0);
                 }
             } else if (type == WRITE) {
-                // write has been completed, first re-add the buffer
+                // 写入已完成，重新添加缓冲区
                 add_provide_buf(&ring, conn_i.bid, group_id);
-                // add a new read for the existing connection
+                // 为现有连接添加新的读取
                 add_socket_read(&ring, conn_i.fd, group_id, MAX_MESSAGE_LEN, IOSQE_BUFFER_SELECT);
             }
         }
