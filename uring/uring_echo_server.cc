@@ -191,6 +191,7 @@ int main(int argc, char *argv[]) {
                     add_socket_write(&ring, conn_i.fd, bid, bytes_read, 0);
                 }
             } else if (type == WRITE) {
+                printf("write size = %d\n", cqe->res);
                 // 写入已完成，重新添加缓冲区
                 add_provide_buf(&ring, conn_i.bid, group_id);
                 // 为现有连接添加新的读取
