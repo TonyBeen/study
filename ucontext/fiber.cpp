@@ -9,6 +9,7 @@
 #include <log/log.h>
 #include <atomic>
 #include <exception>
+#include <inttypes.h>
 
 #ifdef LOG_TAG
 #undef LOG_TAG
@@ -199,6 +200,7 @@ void Fiber::FiberEntry()
 
     Fiber *ptr = curr.get();
     curr.reset();
+    LOGD("id %" PRIu64 " swap out", ptr->mFiberId);
     ptr->SwapOut();
 
     LOG_ASSERT(false, "never reach here");

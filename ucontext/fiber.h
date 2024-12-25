@@ -15,8 +15,8 @@
 
 namespace eular {
 /**
- * @brief 协程类
- */ 
+ * @brief 非对称协程, 无法在协程回调创建协程, 需要将运行权限交回主协程才能执行其他协程
+ */
 class Fiber : public std::enable_shared_from_this<Fiber>
 {
 public:

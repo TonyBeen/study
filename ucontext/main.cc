@@ -11,32 +11,39 @@
 
 #include "fiber.h"
 
+// fiber 1和2循环执行
 void func()
 {
     // 创建主协程
-    eular::Fiber::GetThis();
+    printf("main fiber id = %" PRIu64 "\n", eular::Fiber::GetThis()->FiberId());
 
-    eular::Fiber::sp fiber = std::make_shared<eular::Fiber>([] () {
-        while (true) {
-            printf("%s begin\n", __func__);
-            printf("%s end\n", __func__);
+    uint32_t count = 3;
+    eular::Fiber::sp fiber_1 = std::make_shared<eular::Fiber>([count] () {
+        for (uint32_t i = 0; i < count; ++i) {
+            printf("fiber(%" PRIu64 ")\n", eular::Fiber::GetThis()->FiberId());
             eular::Fiber::Yeild2Hold();
         }
     }, 128 * 1024);
 
-    eular::Fiber::sp temp = std::make_shared<eular::Fiber>([fiber] () {
-        while (true) {
-            printf("-------------%s begin\n", __func__);
-            printf("-------------%s end\n", __func__);
+    eular::Fiber::sp fiber_2 = std::make_shared<eular::Fiber>([count] () {
+        for (uint32_t i = 0; i < count; ++i) {
+            printf("fiber(%" PRIu64 ")\n", eular::Fiber::GetThis()->FiberId());
             eular::Fiber::Yeild2Hold();
         }
     }, 128 * 1024);
 
-    for (size_t i = 0; i < 5; i++) {
-        fiber->Resume();
-        temp->Resume();
+    for (size_t i = 0; i < count; i++) {
+        fiber_1->Resume();
+        fiber_2->Resume();
         sleep(1);
     }
+
+    // 结束回调函数体, 否则增加fiber的引用
+    fiber_1->Resume();
+    fiber_2->Resume();
+
+    printf("fiber_1 use_count = %" PRId64 "\n", fiber_1.use_count());
+    printf("fiber_2 use_count = %" PRId64 "\n", fiber_2.use_count());
 }
 
 void func_2()
