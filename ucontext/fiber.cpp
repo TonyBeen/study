@@ -58,7 +58,7 @@ Fiber::Fiber() :
         LOG_ASSERT(false, "getcontext error, %d %s", errno, strerror(errno));
     }
     SetThis(this);
-    LOGD("Fiber::Fiber() start id = %d, total = %d", mFiberId, gFiberCount.load());
+    LOGD("Fiber::Fiber() main fiber started. id = %d, total = %d", mFiberId, gFiberCount.load());
 }
 
 Fiber::Fiber(std::function<void()> cb, uint64_t stackSize) :
@@ -74,8 +74,7 @@ Fiber::Fiber(std::function<void()> cb, uint64_t stackSize) :
         LOGD("Fiber id = %lu, stack pointer is null", mFiberId);
     }
     if (getcontext(&mCtx)) {
-        LOG_ASSERT(false, "Fiber::Fiber(std::function<void()>, uint64_t) getcontext error, %d %s",
-            errno, strerror(errno));
+        LOG_ASSERT(false, "Fiber::Fiber(std::function<void()>, uint64_t) getcontext error, %d %s", errno, strerror(errno));
     }
     mCtx.uc_stack.ss_sp = mStack;
     mCtx.uc_stack.ss_size = mStackSize;
@@ -168,7 +167,7 @@ void Fiber::Yeild2Hold()
 {
     Fiber::sp ptr = GetThis();
     LOG_ASSERT(ptr != nullptr, "");
-    LOG_ASSERT(ptr->mState == EXEC, "");
+    LOG_ASSERT(ptr->mState == EXEC, "current state = %d", ptr->mState);
     ptr->mState = HOLD;
     ptr->SwapOut();
 }
