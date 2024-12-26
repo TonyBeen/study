@@ -28,7 +28,7 @@ void coroutine()
 
 int main(int argc, char **argv)
 {
-    // ucontext在触发信号后可恢复执行
+    // ucontext在触发信号后可恢复执行, libconcurrent会产生状态异常
     signal(SIGINT, [] (int32_t sig) {
         printf("SIGINT catch. %p\n", eular::Fiber::GetThis().get());
     });
