@@ -32,6 +32,7 @@ public:
     ~Fiber();
 
     uint64_t            FiberId() const { return mFiberId; }
+    FiberState          State() const { return mState; }
 
            void         Reset(std::function<void()> cb);
     static void         SetThis(Fiber *f);  // 设置当前正在执行的协程

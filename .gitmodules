@@ -1,0 +1,3 @@
+[submodule "ucontext/libconcurrent"]
+	path = ucontext/libconcurrent
+	url = git@github.com:sharow/libconcurrent.git
