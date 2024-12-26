@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
     // construct
     for (int32_t i = 0; i < FIBER_COUNT; ++i) {
-        fiber_vec[i] = std::move(std::make_shared<eular::Fiber>(coroutine));
+        fiber_vec[i] = std::move(std::make_shared<eular::Fiber>(coroutine, 1024));
     }
 
     // resume
