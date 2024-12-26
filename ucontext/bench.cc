@@ -1,7 +1,7 @@
 /*************************************************************************
     > File Name: bench.cc
     > Author: hsz
-    > Brief: g++ bench.cc fiber.cpp -o bench.out -llog -lutils -pthread -O2
+    > Brief: g++ bench.cc fiber.cpp -o bench.out -llog -lutils -pthread -O2 -g
     > Created Time: 2024年12月26日 星期四 15时48分44秒
  ************************************************************************/
 
@@ -9,6 +9,7 @@
 #include <inttypes.h>
 #include <vector>
 
+#include <signal.h>
 #include <unistd.h>
 #include <utils/elapsed_time.h>
 #include <log/log.h>
@@ -27,6 +28,10 @@ void coroutine()
 
 int main(int argc, char **argv)
 {
+    // ucontext在触发信号后可恢复执行
+    signal(SIGINT, [] (int32_t sig) {
+        printf("SIGINT catch. %p\n", eular::Fiber::GetThis().get());
+    });
     eular::log::SetLevel(eular::LogLevel::LEVEL_WARN);
     eular::Fiber::sp main_fiber = eular::Fiber::GetThis();
     std::vector<eular::Fiber::sp> fiber_vec(FIBER_COUNT, nullptr);
