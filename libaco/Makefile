@@ -19,9 +19,12 @@ OBJ_LIST += $(patsubst %.S, %.o, $(ASM_LIST))
 
 CXX_OBJ_LIST := $(patsubst %.cc, %.o, $(CXX_SRC_LIST))
 
-all: test_libaco.out benchmark.out
+all: test_libaco.out benchmark.out create_co_in_co.out
 
 test_libaco.out: test_libaco.o $(OBJ_LIST)
+	$(CXX) $^ -o $@
+
+create_co_in_co.out: create_co_in_co.o $(OBJ_LIST)
 	$(CXX) $^ -o $@
 
 benchmark.out: benchmark.o $(OBJ_LIST)
@@ -39,4 +42,4 @@ benchmark.out: benchmark.o $(OBJ_LIST)
 .PHONY: clean test_libaco.out benchmark.out
 
 clean:
-	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out benchmark.out
+	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out benchmark.out create_co_in_co.out
