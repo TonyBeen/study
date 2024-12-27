@@ -37,6 +37,8 @@ int main(int argc, char **argv)
 {
     aco_thread_init(NULL);
     aco_t* main_co = aco_create(NULL, NULL, 0, NULL, NULL);
+    printf("main %p tls = %p\n", main_co, aco_gtls_co);
+
     aco_share_stack_t* sstk = aco_share_stack_new(0);
     int co_ct_arg_point_to_me = 0;
     aco_t* co = aco_create(main_co, sstk, 0, co_fp0, &co_ct_arg_point_to_me);

@@ -17,6 +17,7 @@ namespace eular {
 struct CoSharedStackPrivate;
 class CoSharedStack
 {
+    friend class Coroutine;
 public:
     CoSharedStack() = default;
     CoSharedStack(uint32_t size);
@@ -51,8 +52,9 @@ class Coroutine : public std::enable_shared_from_this<Coroutine>
 public:
     using SP = std::shared_ptr<Coroutine>;
     using WP = std::weak_ptr<Coroutine>;
+    using TaskCB = std::function<void()>;
 
-    enum FiberState {
+    enum CoState {
         HOLD,       // 暂停状态
         EXEC,       // 执行状态
         TERM,       // 结束状态
@@ -60,8 +62,19 @@ public:
         EXCEPT      // 异常状态
     };
 
-    Coroutine();
+    Coroutine(TaskCB cb, const CoSharedStack &stack);
     ~Coroutine();
+
+    static void             SetThis(Coroutine *co); // 设置当前正在执行的协程
+    static Coroutine::SP    GetThis();              // 获取当前正在执行的协程
+           void             Resume();               // 唤醒协程
+    static void             Yeild2Hold();           // 将当前正在执行的协程让出执行权给主协程，并设置状态为HOLD
+
+private:
+    Coroutine();
+    static void CoroutineEntry();
+    void swapIn();              // 切换到前台, 获取执行权限
+    void swapOut();             // 切换到后台, 让出执行权限
 
 private:
     std::shared_ptr<CoroutinePrivate> m_p;

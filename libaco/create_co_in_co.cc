@@ -22,14 +22,14 @@ aco_share_stack_t* sstk = nullptr;
 void foo()
 {
     printf("co: %p: entry foo()\n", aco_get_co());
-    aco_exit();
+    aco_yield();
 }
 
 void co_fp0()
 {
     aco_t* main_co = static_cast<aco_t *>(aco_get_arg());
-    printf("co: %p: entry: %p\n", aco_get_co(), main_co);
-    aco_t *co = aco_create(main_co, sstk, 0, foo, nullptr);
+    aco_t *co = aco_create(aco_get_co(), sstk, 0, foo, nullptr);
+    printf("co: %p: entry: %p next co: %p\n", aco_get_co(), main_co, co);
     aco_resume(co);
     printf("co: %p:  exit to main_co: %p\n", aco_get_co(), main_co);
     aco_exit();
