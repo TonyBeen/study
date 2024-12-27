@@ -17,6 +17,8 @@ CXX_SRC_LIST := $(wildcard *.cc)
 OBJ_LIST := $(patsubst %.c, %.o, $(C_SRC_LIST))
 OBJ_LIST += $(patsubst %.S, %.o, $(ASM_LIST))
 
+CXX_OBJ_LIST := $(patsubst %.cc, %.o, $(CXX_SRC_LIST))
+
 all: test_libaco.out benchmark.out
 
 test_libaco.out: test_libaco.o $(OBJ_LIST)
@@ -37,4 +39,4 @@ benchmark.out: benchmark.o $(OBJ_LIST)
 .PHONY: clean test_libaco.out benchmark.out
 
 clean:
-	-rm -rf $(OBJ_LIST) test_libaco.out bengch.out
+	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out benchmark.out
