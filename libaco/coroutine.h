@@ -9,20 +9,21 @@
 #define __COROURINE_H__
 
 #include <memory>
+#include <functional>
 
 #include <utils/utils.h>
 
 namespace eular {
-struct SharedStackPrivate;
-class SharedStack
+struct CoSharedStackPrivate;
+class CoSharedStack
 {
 public:
-    SharedStack() = default;
-    SharedStack(uint32_t size);
-    ~SharedStack() = default;
+    CoSharedStack() = default;
+    CoSharedStack(uint32_t size);
+    ~CoSharedStack() = default;
 
-    SharedStack(const SharedStack &other) : m_p(other.m_p) { }
-    SharedStack &operator=(const SharedStack &other)
+    CoSharedStack(const CoSharedStack &other) : m_p(other.m_p) { }
+    CoSharedStack &operator=(const CoSharedStack &other)
     {
         if (this != std::addressof(other)) {
             m_p = other.m_p;
@@ -30,27 +31,35 @@ public:
 
         return *this;
     }
-    SharedStack(SharedStack &&other)
+    CoSharedStack(CoSharedStack &&other)
     {
         std::swap(m_p, other.m_p);
     }
-    SharedStack &operator=(SharedStack &&other)
+    CoSharedStack &operator=(CoSharedStack &&other)
     {
         std::swap(m_p, other.m_p);
     }
-
-    void *pointer() const;
-    uint32_t stackSize() const;
 
 private:
-    std::shared_ptr<SharedStackPrivate> m_p;
+    std::shared_ptr<CoSharedStackPrivate> m_p;
 };
 
 struct CoroutinePrivate;
-class Coroutine
+class Coroutine : public std::enable_shared_from_this<Coroutine>
 {
     DISALLOW_COPY_AND_ASSIGN(Coroutine);
 public:
+    using SP = std::shared_ptr<Coroutine>;
+    using WP = std::weak_ptr<Coroutine>;
+
+    enum FiberState {
+        HOLD,       // 暂停状态
+        EXEC,       // 执行状态
+        TERM,       // 结束状态
+        READY,      // 可执行态
+        EXCEPT      // 异常状态
+    };
+
     Coroutine();
     ~Coroutine();
 

@@ -7,19 +7,22 @@
 
 #include "coroutine.h"
 
+#include <atomic>
+#include <inttypes.h>
+
 #include <utils/exception.h>
 
 #include "aco.h"
 
 namespace eular {
-struct SharedStackPrivate
+struct CoSharedStackPrivate
 {
     aco_share_stack_t *shared_stack = nullptr;
 };
-    
-SharedStack::SharedStack(uint32_t size)
+
+CoSharedStack::CoSharedStack(uint32_t size)
 {
-    m_p = std::make_shared<SharedStackPrivate>();
+    m_p = std::make_shared<CoSharedStackPrivate>();
     m_p->shared_stack = aco_share_stack_new(size);
 }
 
