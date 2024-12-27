@@ -1,18 +1,12 @@
 /*************************************************************************
-    > File Name: test_libaco.cc
+    > File Name: coroutine.cpp
     > Author: hsz
     > Brief:
-    > Created Time: 2024年06月17日 星期一 09时52分39秒
+    > Created Time: 2024年12月27日 星期五 11时13分49秒
  ************************************************************************/
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <string.h>
-#include <stdlib.h>
-
-#include <assert.h>
-
-#include "aco.h"
+#include <iostream>
+using namespace std;
 
 int main(int argc, char **argv)
 {
