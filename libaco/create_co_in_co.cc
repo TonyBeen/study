@@ -16,7 +16,7 @@
 
 
 // 经测试 libaco不支持在协程内部创建协程并执行,
-// 故libaco属于非对称协程
+// 故libaco属于非对称协程模型
 aco_share_stack_t* sstk = nullptr;
 
 void foo()
