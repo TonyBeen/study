@@ -5,11 +5,30 @@
     > Created Time: 2024年12月27日 星期五 11时13分49秒
  ************************************************************************/
 
-#include <iostream>
-using namespace std;
+#include "coroutine.h"
 
-int main(int argc, char **argv)
+#include <utils/exception.h>
+
+#include "aco.h"
+
+namespace eular {
+struct SharedStackPrivate
 {
-
-    return 0;
+    aco_share_stack_t *shared_stack = nullptr;
+};
+    
+SharedStack::SharedStack(uint32_t size)
+{
+    m_p = std::make_shared<SharedStackPrivate>();
+    m_p->shared_stack = aco_share_stack_new(size);
 }
+
+Coroutine::Coroutine()
+{
+}
+
+Coroutine::~Coroutine()
+{
+}
+
+} // namespace eular
