@@ -28,6 +28,14 @@ static thread_local Coroutine::SP   g_mainCo = nullptr;     // 一个线程的�
 struct CoSharedStackPrivate
 {
     aco_share_stack_t *shared_stack = nullptr;
+
+    ~CoSharedStackPrivate()
+    {
+        if (shared_stack) {
+            aco_share_stack_destroy(shared_stack);
+            shared_stack = nullptr;
+        }
+    }
 };
 
 struct CoroutinePrivate
@@ -99,16 +107,25 @@ void Coroutine::SetThis(Coroutine *co)
     g_currentCo = co;
 }
 
+Coroutine::SP Coroutine::CreateMainCo()
+{
+    if (g_mainCo == nullptr) {
+        Coroutine::SP co(new Coroutine());
+        LOG_ASSERT(co.get() == g_currentCo, "");
+        g_mainCo = co;
+        LOG_ASSERT(g_mainCo, "main Coroutine should't be null");
+    }
+
+    return g_mainCo;
+}
+
 Coroutine::SP Coroutine::GetThis()
 {
     if (g_currentCo) {
         return g_currentCo->shared_from_this();
     }
 
-    Coroutine::SP co(new Coroutine());
-    LOG_ASSERT(co.get() == g_currentCo, "");
-    g_mainCo = co;
-    LOG_ASSERT(g_mainCo, "");
+    CreateMainCo();
     return g_currentCo->shared_from_this();
 }
 

@@ -14,7 +14,7 @@
 int main(int argc, char **argv)
 {
     // 创建主协程
-    printf("main Coroutine id = %" PRIu64 "\n", eular::Coroutine::GetThis()->fiberId());
+    printf("main Coroutine id = %" PRIu64 "\n", eular::Coroutine::CreateMainCo()->fiberId());
 
     eular::CoSharedStack stack(128 * 1024);
     uint32_t count = 3;
