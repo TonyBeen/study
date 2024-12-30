@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     mainContext.uc_stack.ss_size = 1024;
     mainContext.uc_stack.ss_flags = 0;
     mainContext.uc_link = nullptr; //&tmp;
-    makecontext(&mainContext, ContextEntry, 0);
+    // makecontext(&mainContext, ContextEntry, 0);
 
     test();
     ucontext_t ucp;
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     ucp.uc_stack.ss_sp = stack;
     ucp.uc_stack.ss_size = 1024;
     ucp.uc_stack.ss_flags = 0;
-    ucp.uc_link = &mainContext;
+    ucp.uc_link = nullptr; // &mainContext
     makecontext(&ucp, (user_context_t)test02, 1, nullptr);
     test();
     // ucp未设置uc_link时, 从setcontext处退出线程，不执行test()
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
      * 1、保存当前栈至oucp
      * 2、如果ucp经makecontext, 执行ucp的func
      * 3、执行ucp.uc_link上下文，为空则退出线程
-     * 4、不为空，执行func，uc_link，直到uc_link为空退出线程
+     * 4、不为空，执行func, uc_link, 直到uc_link为空退出线程
      */
 
     // 将mainContext.uc_link赋值tmp时，会执行70行test

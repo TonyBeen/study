@@ -56,16 +56,6 @@ private:
     std::function<void()> mCb;
 };
 
-/**
- * @brief 协程管理类
- */ 
-class Scheduler
-{
-public:
-    Scheduler() {}
-    ~Scheduler() {}
-};
-
 } // namespace eular
 
 #endif // __FIBER_H__
