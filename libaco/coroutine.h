@@ -69,9 +69,12 @@ public:
     Coroutine(TaskCB cb, const CoSharedStack &stack);
     ~Coroutine();
 
+    uint64_t                fiberId() const;
+    CoState                 state() const;
+
     static void             SetThis(Coroutine *co); // 设置当前正在执行的协程
     static Coroutine::SP    GetThis();              // 获取当前正在执行的协程
-           void             Resume();               // 唤醒协程
+           void             resume();               // 唤醒协程
     static void             Yeild2Hold();           // 将当前正在执行的协程让出执行权给主协程，并设置状态为HOLD
 
 private:

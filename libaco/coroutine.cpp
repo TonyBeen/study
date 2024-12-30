@@ -49,6 +49,8 @@ struct CoroutinePrivate
     ~CoroutinePrivate()
     {
         --g_coroutineCount;
+        aco_destroy(co_ctx);
+        co_ctx = nullptr;
     }
 };
 
@@ -60,6 +62,7 @@ CoSharedStack::CoSharedStack(uint32_t size)
 
 Coroutine::Coroutine()
 {
+    aco_thread_init(nullptr);
     m_p = std::make_shared<CoroutinePrivate>();
     m_p->co_ctx = aco_create(nullptr, nullptr, 0, nullptr, nullptr);
     m_p->co_state = CoState::READY;
@@ -81,6 +84,16 @@ Coroutine::~Coroutine()
 {
 }
 
+uint64_t Coroutine::fiberId() const
+{
+    return m_p->co_id;
+}
+
+Coroutine::CoState Coroutine::state() const
+{
+    return m_p->co_state;
+}
+
 void Coroutine::SetThis(Coroutine *co)
 {
     g_currentCo = co;
@@ -99,7 +112,7 @@ Coroutine::SP Coroutine::GetThis()
     return g_currentCo->shared_from_this();
 }
 
-void Coroutine::Resume()
+void Coroutine::resume()
 {
     swapIn();
 }
