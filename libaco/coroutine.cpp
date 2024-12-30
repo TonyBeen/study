@@ -92,7 +92,7 @@ Coroutine::SP Coroutine::GetThis()
         return g_currentCo->shared_from_this();
     }
 
-    Coroutine::SP co = std::make_shared<Coroutine>();
+    Coroutine::SP co(new Coroutine());
     LOG_ASSERT(co.get() == g_currentCo, "");
     g_mainCo = co;
     LOG_ASSERT(g_mainCo, "");

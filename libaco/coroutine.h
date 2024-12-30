@@ -38,7 +38,11 @@ public:
     }
     CoSharedStack &operator=(CoSharedStack &&other)
     {
-        std::swap(m_p, other.m_p);
+        if (this != std::addressof(other)) {
+            std::swap(m_p, other.m_p);
+        }
+
+        return *this;
     }
 
 private:

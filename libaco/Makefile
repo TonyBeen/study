@@ -13,16 +13,21 @@ LIB_LIST := -lutils
 C_SRC_LIST := $(wildcard *.c)
 ASM_LIST := $(wildcard *.S)
 CXX_SRC_LIST := $(wildcard *.cc)
+CPP_SRC_LIST := $(wildcard *.cpp)
 
 OBJ_LIST := $(patsubst %.c, %.o, $(C_SRC_LIST))
 OBJ_LIST += $(patsubst %.S, %.o, $(ASM_LIST))
 
 CXX_OBJ_LIST := $(patsubst %.cc, %.o, $(CXX_SRC_LIST))
+CPP_OBJ_LIST := $(patsubst %.cpp, %.o, $(CPP_SRC_LIST))
 
-all: test_libaco.out benchmark.out create_co_in_co.out
+all: test_libaco.out test_co.out benchmark.out create_co_in_co.out
 
 test_libaco.out: test_libaco.o $(OBJ_LIST)
 	$(CXX) $^ -o $@
+
+test_co.out: test_co.o $(OBJ_LIST) $(CPP_OBJ_LIST)
+	$(CXX) $^ -o $@ -lutils -llog
 
 create_co_in_co.out: create_co_in_co.o $(OBJ_LIST)
 	$(CXX) $^ -o $@
@@ -39,7 +44,10 @@ benchmark.out: benchmark.o $(OBJ_LIST)
 %.o : %.cc
 	$(CXX) $^ -c -o $@ $(CXX_FLAGS) $(INC_PATH)
 
-.PHONY: clean test_libaco.out benchmark.out
+%.o : %.cpp
+	$(CXX) $^ -c -o $@ $(CXX_FLAGS) $(INC_PATH)
+
+.PHONY: clean test_libaco.out test_co.out benchmark.out create_co_in_co.out
 
 clean:
-	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out benchmark.out create_co_in_co.out
+	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out test_co.out benchmark.out create_co_in_co.out
