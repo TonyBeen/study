@@ -50,4 +50,4 @@ benchmark.out: benchmark.o $(OBJ_LIST)
 .PHONY: clean test_libaco.out test_co.out benchmark.out create_co_in_co.out
 
 clean:
-	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) test_libaco.out test_co.out benchmark.out create_co_in_co.out
+	-rm -rf $(OBJ_LIST) $(CXX_OBJ_LIST) $(CPP_OBJ_LIST) test_libaco.out test_co.out benchmark.out create_co_in_co.out
