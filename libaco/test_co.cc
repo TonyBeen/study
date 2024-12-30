@@ -18,14 +18,14 @@ int main(int argc, char **argv)
 
     eular::CoSharedStack stack(128 * 1024);
     uint32_t count = 3;
-    eular::Coroutine::SP fiber_1 = std::make_shared<eular::Coroutine>([count] () {
+    eular::Coroutine::SP co_1 = std::make_shared<eular::Coroutine>([count] () {
         for (uint32_t i = 0; i < count; ++i) {
             printf("Coroutine(%" PRIu64 ")\n", eular::Coroutine::GetThis()->fiberId());
             eular::Coroutine::Yeild2Hold();
         }
     }, stack);
 
-    eular::Coroutine::SP fiber_2 = std::make_shared<eular::Coroutine>([count] () {
+    eular::Coroutine::SP co_2 = std::make_shared<eular::Coroutine>([count] () {
         for (uint32_t i = 0; i < count; ++i) {
             printf("Coroutine(%" PRIu64 ")\n", eular::Coroutine::GetThis()->fiberId());
             eular::Coroutine::Yeild2Hold();
@@ -33,17 +33,17 @@ int main(int argc, char **argv)
     }, stack);
 
     for (size_t i = 0; i < count; i++) {
-        fiber_1->resume();
-        fiber_2->resume();
+        co_1->resume();
+        co_2->resume();
         sleep(1);
     }
 
     // 结束回调函数体, 否则增加fiber的引用
-    fiber_1->resume();
-    fiber_2->resume();
+    co_1->resume();
+    co_2->resume();
 
-    printf("fiber_1 use_count = %" PRId64 "\n", fiber_1.use_count());
-    printf("fiber_2 use_count = %" PRId64 "\n", fiber_2.use_count());
+    printf("co_1 use_count = %" PRId64 "\n", co_1.use_count());
+    printf("co_2 use_count = %" PRId64 "\n", co_2.use_count());
 
     return 0;
 }
