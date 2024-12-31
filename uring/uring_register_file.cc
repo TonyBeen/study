@@ -18,7 +18,8 @@
 int io_uring_file_copy(const char *source, const char *destination)
 {
     struct io_uring ring;
-    struct io_uring_sqe *sqe;
+    struct io_uring_sqe *rsqe;
+    struct io_uring_sqe *wsqe;
     struct io_uring_cqe *cqe;
     int src_fd, dest_fd;
     char *buffer;
@@ -69,61 +70,46 @@ int io_uring_file_copy(const char *source, const char *destination)
         return -1;
     }
 
+    struct stat file_stat;
+    fstat(src_fd, &file_stat);
+
     // 链式操作：读取数据并写入目标文件
-    for (size_t offset = 0; ; offset += BUFFER_SIZE) {
+    for (size_t offset = 0; offset < file_stat.st_size; offset += BUFFER_SIZE) {
         // 提交读取操作
-        sqe = io_uring_get_sqe(&ring);
-        io_uring_prep_read(sqe, src_fd, buffer, BUFFER_SIZE, offset);
-        io_uring_sqe_set_data(sqe, buffer);
-
-        ret = io_uring_submit(&ring);
-        if (ret < 0) {
-            std::cerr << "io_uring_submit failed: " << strerror(-ret) << std::endl;
-            break;
-        }
-
-        // 等待读取操作完成
-        ret = io_uring_wait_cqe(&ring, &cqe);
-        if (ret < 0) {
-            std::cerr << "io_uring_wait_cqe failed: " << strerror(-ret) << std::endl;
-            break;
-        }
-
-        // 检查读取操作是否成功
-        if (cqe->res < 0) {
-            std::cerr << "Read operation failed: " << strerror(-cqe->res) << std::endl;
-            io_uring_cqe_seen(&ring, cqe);
-            break;
-        }
-
-        size_t bytes_read = cqe->res;
-        io_uring_cqe_seen(&ring, cqe);
-        if (bytes_read == 0) break; // 文件结束
+        int32_t read_size = (file_stat.st_size - offset) > BUFFER_SIZE ? BUFFER_SIZE : (file_stat.st_size - offset);
+        rsqe = io_uring_get_sqe(&ring);
+        io_uring_prep_read(rsqe, src_fd, buffer, read_size, offset);
+        io_uring_sqe_set_data(rsqe, 0);
 
         // 提交写入操作
-        sqe = io_uring_get_sqe(&ring);
-        io_uring_prep_write(sqe, dest_fd, buffer, bytes_read, offset);
-        ret = io_uring_submit(&ring);
-        if (ret < 0) {
-            std::cerr << "io_uring_submit failed: " << strerror(-ret) << std::endl;
-            break;
-        }
+        wsqe = io_uring_get_sqe(&ring);
+        io_uring_prep_write(wsqe, dest_fd, buffer, read_size, offset);
+        io_uring_sqe_set_data(rsqe, (void *)1);
 
         // 等待写入操作完成
-        ret = io_uring_wait_cqe(&ring, &cqe);
+        ret = io_uring_submit_and_wait(&ring, 2);
         if (ret < 0) {
             std::cerr << "io_uring_wait_cqe failed: " << strerror(-ret) << std::endl;
             break;
         }
 
-        // 检查写入操作是否成功
-        if (cqe->res < 0) {
-            std::cerr << "Write operation failed: " << strerror(-cqe->res) << std::endl;
-            io_uring_cqe_seen(&ring, cqe);
-            break;
+        uint32_t head;
+        uint32_t count = 0;
+        io_uring_for_each_cqe(&ring, head, cqe) {
+            ++count;
+            if (cqe->user_data) { // write
+                if (cqe->res <= 0) {
+                    printf("write error %d\n", cqe->res);
+                    return -1;
+                }
+            } else {
+                if (cqe->res <= 0) {
+                    printf("read error %d\n", cqe->res);
+                    return -1;
+                }
+            }
         }
-
-        io_uring_cqe_seen(&ring, cqe);
+        io_uring_cq_advance(&ring, count);
     }
 
     // 清理资源
