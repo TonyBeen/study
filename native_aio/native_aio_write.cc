@@ -1,7 +1,7 @@
 /*************************************************************************
-    > File Name: native_aio.cc
+    > File Name: native_aio_write.cc
     > Author: hsz
-    > Brief: g++ native_aio.cc async_io.cpp -o native_aio.out
+    > Brief: g++ native_aio_write.cc async_io.cpp -o native_aio_write.out
     > Created Time: Sat 28 Oct 2023 05:39:17 PM CST
  ************************************************************************/
 
@@ -94,7 +94,7 @@ void test_write_one(int32_t size = 4096)
     if (ret < 0) {
         printf("io_getevents error: %s\n", strerror(-ret));
     } else if (ret > 0) {
-        printf("result, res2: %lld, res: %lld, %s\n", e[0].res2, e[0].res, strerror(std::abs(e[0].res)));
+        printf("result, res2: %lld, res: %lld\n", e[0].res2, e[0].res);
     }
 
     // 使用ftruncate将文件调整大指定大小
