@@ -14,6 +14,8 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <sys/poll.h>
 
@@ -26,7 +28,7 @@
 #define LOG_TAG "kcp-server"
 
 #define BUFF_LEN        4 * 1400
-#define SERVER_PORT     9000
+#define SERVER_PORT     21501
 
 struct KcpUserParam
 {
