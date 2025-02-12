@@ -65,11 +65,6 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <server address>" << std::endl;
-        return 1;
-    }
-
     int opt;
     const char *server_address = "127.0.0.1";
     int32_t port = SERVER_PORT;
