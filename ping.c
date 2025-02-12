@@ -7,17 +7,15 @@
 
 #include <signal.h>
 #include <stdio.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
-#include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include <signal.h>
 #include <arpa/inet.h>
-#include <errno.h>
 #include <sys/time.h>
-#include <string.h>
-#include <netdb.h>
+#include <unistd.h>
 #include <pthread.h>
+#include <netinet/ip_icmp.h>
+#include <netdb.h>
 
 #define PACKET_SEND_MAX_NUM 64
 
@@ -233,6 +231,7 @@ int main(int argc, char *argv[])
     printf("sizeof(struct icmp) = %zu\n", sizeof(struct icmp));
     printf("sizeof(struct icmphdr) = %zu\n", sizeof(struct icmphdr));
     printf("sizeof(struct ip) = %zu\n", sizeof(struct ip));
+
     int size = 128 * 1024; // 128k
     struct protoent *protocol = NULL;
     char dest_addr_str[80] = {0};
