@@ -52,7 +52,9 @@ int main() {
         // 接收数据
         int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&cliaddr, &len);
         buffer[n] = '\0';
-        std::cout << "RX: " << buffer << std::endl;
+        char host_buffer[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &cliaddr.sin_addr, host_buffer, INET_ADDRSTRLEN);
+        printf("RX from [%s:%u] -> %d B\n", host_buffer, ntohs(cliaddr.sin_port), n);
 
         // 发送回显数据
         sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr, len);
