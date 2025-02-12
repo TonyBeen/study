@@ -133,6 +133,8 @@ void ThreadEntry()
             interval = timeFuture - timeNow;
         }
 
+        LOGW("rtt = %d, rto = %d\n", kcpHandle->rx_srtt, kcpHandle->rx_rto);
+
         // 如果<=0则直接调用, 一般不会小于0
         if (interval <= 0)
         {

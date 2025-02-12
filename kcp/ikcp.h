@@ -286,34 +286,89 @@ struct IKCPSEG
 //---------------------------------------------------------------------
 // IKCPCB
 //---------------------------------------------------------------------
-struct IKCPCB
-{
-	IUINT32 conv, mtu, mss, state;
-	IUINT32 snd_una, snd_nxt, rcv_nxt;
-	IUINT32 ts_recent, ts_lastack, ssthresh;
-	IINT32 rx_rttval, rx_srtt, rx_rto, rx_minrto;
-	IUINT32 snd_wnd, rcv_wnd, rmt_wnd, cwnd, probe;
-	IUINT32 current, interval, ts_flush, xmit;
-	IUINT32 nrcv_buf, nsnd_buf;
-	IUINT32 nrcv_que, nsnd_que;
-	IUINT32 nodelay, updated;
-	IUINT32 ts_probe, probe_wait;
-	IUINT32 dead_link, incr;
-	struct IQUEUEHEAD snd_queue;
-	struct IQUEUEHEAD rcv_queue;
-	struct IQUEUEHEAD snd_buf;
-	struct IQUEUEHEAD rcv_buf;
-	IUINT32 *acklist;
-	IUINT32 ackcount;
-	IUINT32 ackblock;
-	void *user;
-	char *buffer;
-	int fastresend;
-	int fastlimit;
-	int nocwnd, stream;
-	int logmask;
-	int (*output)(const char *buf, int len, struct IKCPCB *kcp, void *user);
-	void (*writelog)(const char *log, struct IKCPCB *kcp, void *user);
+struct IKCPCB {
+    // 基础配置
+    IUINT32 conv;          	// 会话ID，用于标识一个会话
+    IUINT32 mtu;          	// 最大传输单元，默认1400字节
+    IUINT32 mss;          	// 最大报文段大小，默认mtu-24字节
+    IUINT32 state;        	// 连接状态，0=正常，-1=断开
+
+    // 发送和接收序号
+    IUINT32 snd_una;      	// 第一个未确认的包序号
+    IUINT32 snd_nxt;      	// 下一个待发送的包序号
+    IUINT32 rcv_nxt;      	// 待接收的下一个包序号
+
+    // 时间戳相关
+    IUINT32 ts_recent;    	// 最近一次收到包的时间戳
+    IUINT32 ts_lastack;   	// 最近一次收到ACK的时间戳
+    IUINT32 ssthresh;     	// 慢启动阈值，默认为IKCP_THRESH_INIT(2)
+
+    // RTT相关
+    IINT32 rx_rttval;     	// RTT 的偏差, 用于计算 RTT 的波动
+    IINT32 rx_srtt;       	// 平滑的 RTT 值, 用于计算平均 RTT
+    IINT32 rx_rto;        	// 超时重传时间，初始为 IKCP_RTO_DEF(200ms)
+    IINT32 rx_minrto;     	// 最小重传超时时间，默认为 IKCP_RTO_MIN(100ms)
+
+    // 窗口相关
+    IUINT32 snd_wnd;      	// 发送窗口大小，默认32
+    IUINT32 rcv_wnd;      	// 接收窗口大小，默认128
+    IUINT32 rmt_wnd;      	// 远端窗口大小，默认128
+    IUINT32 cwnd;         	// 拥塞窗口大小，初始为0
+    IUINT32 probe;        	// 探测标志，用于窗口探测
+
+    // 时间相关
+    IUINT32 current;      	// 当前时间
+    IUINT32 interval;     	// 内部更新时间间隔，默认100ms
+    IUINT32 ts_flush;     	// 下次刷新时间
+    IUINT32 xmit;         	// 总重传次数
+
+    // 队列计数器
+    IUINT32 nrcv_buf;     	// 接收缓存中的包数量
+    IUINT32 nsnd_buf;     	// 发送缓存中的包数量
+    IUINT32 nrcv_que;     	// 接收队列中的包数量
+    IUINT32 nsnd_que;     	// 发送队列中的包数量
+
+    // 配置标志
+    IUINT32 nodelay;      	// 是否启用nodelay模式，0=不启用
+    IUINT32 updated;      	// 是否调用过update
+
+    // 探测相关
+    IUINT32 ts_probe;     	// 下次探测时间
+    IUINT32 probe_wait;   	// 探测等待时间
+
+    // 链路控制
+    IUINT32 dead_link;    	// 最大重传次数，默认为IKCP_DEADLINK(20)
+    IUINT32 incr;         	// 可发送的最大数据量
+
+    // 数据队列
+    struct IQUEUEHEAD snd_queue;  // 发送队列
+    struct IQUEUEHEAD rcv_queue;  // 接收队列
+    struct IQUEUEHEAD snd_buf;    // 发送缓存
+    struct IQUEUEHEAD rcv_buf;    // 接收缓存
+
+    // ACK相关
+    IUINT32 *acklist;     	// ACK列表
+    IUINT32 ackcount;     	// ACK数量
+    IUINT32 ackblock;     	// ACK列表大小
+
+    // 用户相关
+    void *user;           	// 用户数据指针
+    char *buffer;         	// 临时缓存
+
+    // 快速重传相关
+    int fastresend;       	// 触发快速重传的重复ACK个数
+    int fastlimit;        	// 快速重传次数限制，默认IKCP_FASTACK_LIMIT(5)
+
+    // 其他配置
+    int nocwnd;          	// 是否关闭拥塞控制，0=不关闭
+    int stream;          	// 是否为流模式，0=消息模式(默认)，1=流模式
+    int logmask;        	// 日志掩码，控制日志输出级别
+
+    // 回调函数
+    // 数据输出回调，用于发送数据
+    int (*output)(const char *buf, int len, struct IKCPCB *kcp, void *user);
+    // 日志输出回调
+    void (*writelog)(const char *log, struct IKCPCB *kcp, void *user);
 };
 
 
