@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 
     // 填充服务器信息
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(SERVER_PORT);
+    servaddr.sin_port = htons(port);
     memcpy(&servaddr.sin_addr, host->h_addr, host->h_length);
 
     // 探测路径MTU
