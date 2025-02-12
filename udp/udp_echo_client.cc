@@ -9,7 +9,8 @@
 #define SERVER_PORT 12345
 #define BUFFER_SIZE 4096
 
-int discover_path_mtu(const struct sockaddr_in &servaddr) {
+int discover_path_mtu(const struct sockaddr_in &servaddr)
+{
     int sockfd;
     char probe_packet[BUFFER_SIZE];
     int mtu = 1500;
@@ -69,7 +70,23 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    const char* server_address = argv[1];
+    int opt;
+    const char *server_address = "127.0.0.1";
+    int32_t port = SERVER_PORT;
+    while ((opt = getopt(argc, argv, "s:p:")) != -1) {
+        switch (opt) {
+        case 's':
+            server_address = optarg;
+            break;
+        case 'p':
+            port = atoi(optarg);
+            break;
+        default: /* '?' */
+            fprintf(stderr, "Usage: %s -s server_address -p port\n", argv[0]);
+            return 0;
+        }
+    }
+
     // 解析服务器地址
     struct hostent* host = gethostbyname(server_address);
     if (host == nullptr) {
