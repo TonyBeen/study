@@ -14,6 +14,8 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <poll.h>
 
@@ -25,8 +27,8 @@
 
 #define LOG_TAG "kcp-client"
 
-#define BUFF_LEN        4 * 1400
-#define SERVER_PORT     9000
+#define BUFF_LEN        1024
+#define SERVER_PORT     21501
 
 struct KcpUserParam
 {
@@ -172,7 +174,7 @@ void ThreadEntry()
 
         sendTimeNow = GetCurrentTimeMS();
         if (fds[0].revents & POLLOUT && (sendTimeNow - sendTimeOld) > 10) {
-            uint32_t size = 64 * (1400 - 24);
+            uint32_t size = 16 * (1400 - 24);
             static char *buffer = (char *)malloc(size);
             int32_t status = ikcp_send(kcpHandle, buffer, size);
             if (status < 0) {

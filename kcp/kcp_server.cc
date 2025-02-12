@@ -14,6 +14,8 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <sys/poll.h>
 
@@ -26,7 +28,7 @@
 #define LOG_TAG "kcp-server"
 
 #define BUFF_LEN        4 * 1400
-#define SERVER_PORT     9000
+#define SERVER_PORT     21501
 
 struct KcpUserParam
 {
@@ -95,11 +97,11 @@ void onTimeOut()
     double recvSize = static_cast<double>(g_recvSize.load());
     g_recvSize = 0;
     if (recvSize / 1000 / 1000 > 0) {
-        LOGW("onTimeOut() %.2f Mb/s", recvSize / 1000 / 1000);
+        LOGW("onTimeOut() %.2f MB/s", recvSize / 1000 / 1000);
     } else if (recvSize / 1000 > 0) {
-        LOGW("onTimeOut() %.2f Kb/s", recvSize / 1000);
+        LOGW("onTimeOut() %.2f KB/s", recvSize / 1000);
     } else {
-        LOGW("onTimeOut() %.2f b/s", recvSize);
+        LOGW("onTimeOut() %.2f B/s", recvSize);
     }
 }
 
