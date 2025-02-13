@@ -7,13 +7,22 @@
 #include <unistd.h>
 
 #define SERVER_PORT 12345
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 65536
+
+#define IPV4_HEADER_SIZE    20
+#define UDP_HEADER_SIZE     8
 
 int discover_path_mtu(const struct sockaddr_in &servaddr)
 {
     int sockfd;
     char probe_packet[BUFFER_SIZE];
-    int mtu = 1500;
+
+    int32_t mtu_lbound, mtu_current, mtu_ubound, mtu_best;
+    mtu_best = 68;
+    mtu_lbound = 68;
+    mtu_ubound = 65535;
+
+    struct sockaddr_in remote_host;
 
     // 创建UDP套接字
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -30,37 +39,65 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
         return -1;
     }
 
-    while (mtu > 0) {
-        memset(probe_packet, 'a', mtu - 28); // 减去IPv4头（20字节）和UDP头（8字节）
-        probe_packet[mtu - 28] = '\0';
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000; // 500ms
+    // set timeout to input operations
+    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) != 0) {
+        perror("Error in setsockopt(timeout/udp)");
+        return -1;
+    }
+
+    while (mtu_lbound <= mtu_ubound) { // binary search
+        mtu_current = (mtu_lbound + mtu_ubound) / 2;
+        memset(probe_packet, 'a', mtu_current - IPV4_HEADER_SIZE - UDP_HEADER_SIZE); // 减去IPv4头（20字节）和UDP头（8字节）
+        probe_packet[mtu_current - IPV4_HEADER_SIZE - UDP_HEADER_SIZE] = '\0';
 
         // 发送探测数据包
-        int sent_bytes = sendto(sockfd, probe_packet, mtu - 28, 0, (const struct sockaddr *)&servaddr, sizeof(servaddr));
-        if (sent_bytes < 0) {
-            std::cerr << "MTU " << mtu << " Byte size too large, continue to detect smaller MTU" << std::endl;
-            mtu -= 10;
-        } else {
-            struct timeval tv;
-            tv.tv_sec = 1;
-            tv.tv_usec = 0;
-            setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-
-            char buffer[BUFFER_SIZE];
-            socklen_t len = sizeof(servaddr);
-            int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&servaddr, &len);
-            if (n > 0 && strncmp(probe_packet, buffer, n) == 0) {
-                std::cout << "The MTU of the path is: " << mtu << " B" << std::endl;
-                close(sockfd);
-                return mtu;
-            } else {
-                std::cerr << "MTU " << mtu << " No response, continue to detect smaller MTU" << std::endl;
-                mtu -= 10;
+        int bytes = sendto(sockfd, probe_packet, mtu_current - IPV4_HEADER_SIZE - UDP_HEADER_SIZE, 0, (const struct sockaddr *)&servaddr, sizeof(servaddr));
+        if (bytes < 0) {
+            // packet too big for the local interface
+            if (errno == EMSGSIZE) {
+                printf("packet(%d) too big for local interface\n", mtu_current);
+                mtu_ubound = mtu_current - 1; // update range
+                continue;
             }
+
+            perror("Error in sendto()");
+            return -1;
+        }
+
+        char buffer[BUFFER_SIZE];
+        socklen_t len = sizeof(remote_host);
+        bytes = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&remote_host, &len);
+        if (bytes < 0) {
+            // timeout
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                printf("timeout\n");
+                mtu_ubound = mtu_current - 1; // update range
+                continue;
+            }
+
+            perror("Error in recvfrom()");
+            return -1;
+        } else if (bytes > 0) {
+            if (strncmp(probe_packet, buffer, bytes) == 0) {
+                mtu_lbound = mtu_current + 1; // update range
+            } else {
+                mtu_ubound = mtu_current - 1; // update range
+            }
+
+            if (mtu_current > mtu_best)
+				mtu_best = mtu_current;
+        } else {
+            printf("recvfrom() returned 0\n");
+            return -1;
         }
     }
 
     close(sockfd);
-    return -1;
+    std::cout << "The MTU of the path is: " << mtu_best << " B" << std::endl;
+    return mtu_best;
 }
 
 int main(int argc, char* argv[])
@@ -120,8 +157,6 @@ int main(int argc, char* argv[])
     int mtu = discover_path_mtu(servaddr);
     if (mtu <= 0) {
         std::cerr << "Path MTU detection failed" << std::endl;
-        close(sockfd);
-        return 1;
     }
 
     while (true) {
