@@ -5,8 +5,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define PORT 12345
-#define BUFFER_SIZE 4096
+#define PORT                12345
+#define BUFFER_SIZE         4096
+#define IPV4_HEADER_SIZE    20
+#define UDP_HEADER_SIZE     8
 
 int main() {
     int sockfd;
@@ -55,7 +57,7 @@ int main() {
             buffer[n] = '\0';
             char host_buffer[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, &cliaddr.sin_addr, host_buffer, INET_ADDRSTRLEN);
-            printf("RX from [%s:%u] -> %d B\n", host_buffer, ntohs(cliaddr.sin_port), n);
+            printf("RX from [%s:%u] -> %d B, mtu = %d\n", host_buffer, ntohs(cliaddr.sin_port), n, n + IPV4_HEADER_SIZE + UDP_HEADER_SIZE);
 
             // 发送回显数据
             sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr, len);

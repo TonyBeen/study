@@ -58,7 +58,7 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
         if (bytes < 0) {
             // packet too big for the local interface
             if (errno == EMSGSIZE) {
-                printf("packet(%d) too big for local interface\n", mtu_current);
+                printf("packet(%d) [%d, %d] too big for local interface\n", mtu_current, mtu_lbound, mtu_ubound);
                 mtu_ubound = mtu_current - 1; // update range
                 continue;
             }
@@ -67,7 +67,7 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
             return -1;
         }
 
-        char buffer[BUFFER_SIZE];
+        char buffer[BUFFER_SIZE] = {0};
         socklen_t len = sizeof(remote_host);
         bytes = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&remote_host, &len);
         if (bytes < 0) {
@@ -81,14 +81,16 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
             perror("Error in recvfrom()");
             return -1;
         } else if (bytes > 0) {
+            printf("mtu = %d [%d, %d]\n", bytes + IPV4_HEADER_SIZE + UDP_HEADER_SIZE, mtu_lbound, mtu_ubound);
             if (strncmp(probe_packet, buffer, bytes) == 0) {
                 mtu_lbound = mtu_current + 1; // update range
             } else {
                 mtu_ubound = mtu_current - 1; // update range
             }
 
-            if (mtu_current > mtu_best)
-				mtu_best = mtu_current;
+            if (mtu_current > mtu_best) {
+                mtu_best = mtu_current;
+            }
         } else {
             printf("recvfrom() returned 0\n");
             return -1;
