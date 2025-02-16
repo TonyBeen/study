@@ -1,29 +1,36 @@
 # cmake的最低版本要求
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-# 工程名称和版本
-project(getinfo VERSION 1.0.1)
+# 工程名称和版本 默认 c/c++ 工程 不需要指定language
+project(getinfo VERSION 1.0.1) # 可以省略 LANGUAGES C CXX
 
 # 指定c版本为c99
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
+
 # 指定为C++11 版本
 set(CMAKE_CXX_STANDARD 11)
-# 指定的C++编译器版本是必须的
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # 指定的C++编译器版本是必须的
 
 # 给CMAKE_MODULE_PATH添加路径, find_package从CMAKE_MODULE_PATH中找Find<PackageName>.cmake
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
-
 message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 
 # 通过找到文件的所在位置, 将头文件路径赋值给libhv_INCLUDE_DIRS
-find_path(libhv_INCLUDE_DIRS hv/hv.h)
-message("----> libhv_INCLUDE_DIRS: " ${libhv_INCLUDE_DIRS})
+# find_path(libhv_INCLUDE_DIRS hv/hv.h)
+# message("----> libhv_INCLUDE_DIRS: " ${libhv_INCLUDE_DIRS})
 
+find_package(libhv REQUIRED)
+message(STATUS "")
+message(STATUS "libhv:")
+message(STATUS "  version: ${libhv_VERSION}")
+message(STATUS "  libraries: ${libhv_LIBRARIES}")
+message(STATUS "  include path: ${libhv_INCLUDE_DIRS}")
+
+message(STATUS "")
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
