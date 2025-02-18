@@ -60,6 +60,13 @@ message(STATUS "  version: ${libhv_VERSION}")
 message(STATUS "  libraries: ${libhv_LIBRARIES}")
 message(STATUS "  include path: ${libhv_INCLUDE_DIRS}")
 
+find_package(Libevent REQUIRED)
+message(STATUS "")
+message(STATUS "libevent:")
+message(STATUS "  version: ${libevent_VERSION}")
+message(STATUS "  libraries: ${libevent_LIBRARIES}")
+message(STATUS "  include path: ${libevent_INCLUDE_DIRS}")
+
 message(STATUS "")
 message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
