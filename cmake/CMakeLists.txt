@@ -12,16 +12,46 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) # 指定的C++编译器版本是必须的
 
-# 给CMAKE_MODULE_PATH添加路径, find_package从CMAKE_MODULE_PATH中找Find<PackageName>.cmake
+# 给 CMAKE_MODULE_PATH 添加路径, find_package 从 CMAKE_MODULE_PATH 中找 Find<PackageName>.cmake
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# 设置 CMAKE_PREFIX_PATH find_package 从 CMAKE_PREFIX_PATH 中找 <PackageName>Config.cmake
+list(APPEND CMAKE_PREFIX_PATH "/usr/local/lib/cmake/")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
 message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+message(STATUS "CMAKE_ROOT = ${CMAKE_ROOT}")
 
 # 通过找到文件的所在位置, 将头文件路径赋值给libhv_INCLUDE_DIRS
 # find_path(libhv_INCLUDE_DIRS hv/hv.h)
 # message("----> libhv_INCLUDE_DIRS: " ${libhv_INCLUDE_DIRS})
+
+find_package(event_wrapper REQUIRED)
+message(STATUS "")
+if(${event_wrapper_FOUND})
+	if (event_wrapper_VERSION VERSION_LESS "1.0.0")
+		message(STATUS "event_wrapper version is too old")
+	endif()
+	if(TARGET event_wrapper::event_wrapper)
+		message(STATUS "Found event_wrapper::event_wrapper target")
+	else()
+		message(STATUS "event_wrapper::event_wrapper target not found")
+	endif()
+
+	if(TARGET event_wrapper::event_wrapper_static)
+		message(STATUS "Found event_wrapper::event_wrapper_static target")
+	else()
+		message(STATUS "event_wrapper::event_wrapper_static target not found")
+	endif()
+
+	message(STATUS "event_wrapper found:")
+	message(STATUS "  version: ${event_wrapper_VERSION}")
+	message(STATUS "  libraries: ${event_wrapper_LIBRARIES}")
+	message(STATUS "  include path: ${event_wrapper_INCLUDE_DIRS}")
+endif()
 
 find_package(libhv REQUIRED)
 message(STATUS "")
