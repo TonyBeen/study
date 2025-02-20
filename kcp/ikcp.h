@@ -266,20 +266,20 @@ typedef struct IQUEUEHEAD iqueue_head;
 //=====================================================================
 struct IKCPSEG
 {
-	struct IQUEUEHEAD node;
-	IUINT32 conv;
-	IUINT32 cmd;
-	IUINT32 frg;
-	IUINT32 wnd;
-	IUINT32 ts;
-	IUINT32 sn;
-	IUINT32 una;
-	IUINT32 len;
-	IUINT32 resendts;
-	IUINT32 rto;
-	IUINT32 fastack;
-	IUINT32 xmit;
-	char data[1];
+    struct IQUEUEHEAD node;  // 链表节点
+    IUINT32 conv;     // 会话ID
+    IUINT32 cmd;      // 命令类型
+    IUINT32 frg;      // 分片序号
+    IUINT32 wnd;      // 窗口大小
+    IUINT32 ts;       // 时间戳
+    IUINT32 sn;       // 序列号
+    IUINT32 una;      // 待接收的下一个包序号
+    IUINT32 len;      // 数据长度
+    IUINT32 resendts; // 重传时间戳
+    IUINT32 rto;      // 超时重传时间
+    IUINT32 fastack;  // 快速重传计数器
+    IUINT32 xmit;     // 传输次数
+    char data[1];     // 数据
 };
 
 
