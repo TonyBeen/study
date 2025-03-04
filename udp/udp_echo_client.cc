@@ -12,6 +12,8 @@
 #define IPV4_HEADER_SIZE    20
 #define UDP_HEADER_SIZE     8
 
+uint32_t timeout_ms = 1000;
+
 int discover_path_mtu(const struct sockaddr_in &servaddr)
 {
     int sockfd;
@@ -40,8 +42,8 @@ int discover_path_mtu(const struct sockaddr_in &servaddr)
     }
 
     struct timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 500000; // 500ms
+    timeout.tv_sec = timeout_ms / 1000;
+    timeout.tv_usec = timeout_ms % 1000 * 1000;
     // set timeout to input operations
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) != 0) {
         perror("Error in setsockopt(timeout/udp)");
@@ -107,13 +109,16 @@ int main(int argc, char* argv[])
     int opt;
     const char *server_address = "127.0.0.1";
     int32_t port = SERVER_PORT;
-    while ((opt = getopt(argc, argv, "s:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "s:p:t:")) != -1) {
         switch (opt) {
         case 's':
             server_address = optarg;
             break;
         case 'p':
             port = atoi(optarg);
+            break;
+        case 't':
+            timeout_ms = atoi(optarg);
             break;
         default: /* '?' */
             fprintf(stderr, "Usage: %s -s server_address -p port\n", argv[0]);
@@ -137,6 +142,15 @@ int main(int argc, char* argv[])
     if (sockfd < 0) {
         std::cerr << "Socket creation failed" << std::endl;
         return 1;
+    }
+
+    struct timeval timeout;
+    timeout.tv_sec = timeout_ms / 1000;
+    timeout.tv_usec = timeout_ms % 1000 * 1000;
+    // set timeout to input operations
+    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) != 0) {
+        perror("Error in setsockopt(timeout/udp)");
+        return -1;
     }
 
     // 设置不分片选项
@@ -169,14 +183,26 @@ int main(int argc, char* argv[])
             break;
         }
 
+        if (message == "quit" || message == "QUIT" || message == "exit" || message == "EXIT") {
+            break;
+        }
+
         // 发送数据
         sendto(sockfd, message.c_str(), message.size(), 0, (const struct sockaddr *)&servaddr, sizeof(servaddr));
 
         // 接收回显数据
         socklen_t len = sizeof(servaddr);
         int n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&servaddr, &len);
-        buffer[n] = '\0';
-        std::cout << "RX:" << buffer << std::endl;
+        if (n < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                std::cerr << "Timeout" << std::endl;
+            } else {
+                perror("Error in recvfrom()");
+            }
+        } else {
+            buffer[n] = '\0';
+            std::cout << "RX:" << buffer << std::endl;
+        }
     }
 
     close(sockfd);
