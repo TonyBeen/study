@@ -712,11 +712,6 @@ void ikcp_parse_data(ikcpcb *kcp, IKCPSEG *newseg)
 		ikcp_segment_delete(kcp, newseg);
 	}
 
-#if 0
-	ikcp_qprint("rcvbuf", &kcp->rcv_buf);
-	printf("rcv_nxt=%lu\n", kcp->rcv_nxt);
-#endif
-
 	// move available data from rcv_buf -> rcv_queue
 	while (! iqueue_is_empty(&kcp->rcv_buf)) {
 		IKCPSEG *seg = iqueue_entry(kcp->rcv_buf.next, IKCPSEG, node);
@@ -730,16 +725,6 @@ void ikcp_parse_data(ikcpcb *kcp, IKCPSEG *newseg)
 			break;
 		}
 	}
-
-#if 0
-	ikcp_qprint("queue", &kcp->rcv_queue);
-	printf("rcv_nxt=%lu\n", kcp->rcv_nxt);
-#endif
-
-#if 1
-//	printf("snd(buf=%d, queue=%d)\n", kcp->nsnd_buf, kcp->nsnd_que);
-//	printf("rcv(buf=%d, queue=%d)\n", kcp->nrcv_buf, kcp->nrcv_que);
-#endif
 }
 
 
@@ -812,18 +797,8 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 				#endif
 				}
 			}
-			if (ikcp_canlog(kcp, IKCP_LOG_IN_ACK)) {
-				ikcp_log(kcp, IKCP_LOG_IN_ACK, 
-					"input ack: sn=%lu rtt=%ld rto=%ld", (unsigned long)sn, 
-					(long)_itimediff(kcp->current, ts),
-					(long)kcp->rx_rto);
-			}
 		}
 		else if (cmd == IKCP_CMD_PUSH) {
-			if (ikcp_canlog(kcp, IKCP_LOG_IN_DATA)) {
-				ikcp_log(kcp, IKCP_LOG_IN_DATA, 
-					"input psh: sn=%lu ts=%lu", (unsigned long)sn, (unsigned long)ts);
-			}
 			if (_itimediff(sn, kcp->rcv_nxt + kcp->rcv_wnd) < 0) {
 				ikcp_ack_push(kcp, sn, ts);
 				if (_itimediff(sn, kcp->rcv_nxt) >= 0) {
@@ -849,16 +824,9 @@ int ikcp_input(ikcpcb *kcp, const char *data, long size)
 			// ready to send back IKCP_CMD_WINS in ikcp_flush
 			// tell remote my window size
 			kcp->probe |= IKCP_ASK_TELL;
-			if (ikcp_canlog(kcp, IKCP_LOG_IN_PROBE)) {
-				ikcp_log(kcp, IKCP_LOG_IN_PROBE, "input probe");
-			}
 		}
 		else if (cmd == IKCP_CMD_WINS) {
 			// do nothing
-			if (ikcp_canlog(kcp, IKCP_LOG_IN_WINS)) {
-				ikcp_log(kcp, IKCP_LOG_IN_WINS,
-					"input wins: %lu", (unsigned long)(wnd));
-			}
 		}
 		else {
 			return -3;
@@ -972,7 +940,7 @@ void ikcp_flush(ikcpcb *kcp)
 		if (kcp->probe_wait == 0) {
 			kcp->probe_wait = IKCP_PROBE_INIT;
 			kcp->ts_probe = kcp->current + kcp->probe_wait;
-		}	
+		}
 		else {
 			if (_itimediff(kcp->current, kcp->ts_probe) >= 0) {
 				if (kcp->probe_wait < IKCP_PROBE_INIT) 
