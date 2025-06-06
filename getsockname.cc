@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <net/if.h>
+#include <sys/ioctl.h>
 #include <ifaddrs.h>
 #include <unistd.h>
 
@@ -39,6 +40,7 @@ void print_iface_by_ip(const char* ip)
         }
 
         if (!(ifa->ifa_flags & IFF_UP) || !(ifa->ifa_flags & IFF_RUNNING)) {
+            printf("Interface %s is down\n", ifa->ifa_name);
             continue;
         }
 
@@ -94,25 +96,33 @@ int main(int argc, char *argv[])
 
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     sockaddr_in local_addr;
-    local_addr.sin_family = AF_INET;
-    local_addr.sin_port = htons(0); // Bind to any available port
-    local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // local_addr.sin_family = AF_INET;
+    // local_addr.sin_port = htons(6677); // Bind to any available port
+    // local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
-        perror("bind");
-        close(sockfd);
-        return 1;
-    }
+    // if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+    //     perror("bind");
+    //     close(sockfd);
+    //     return 1;
+    // }
 
-    if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE, nic, strlen(nic)) < 0) {
-        perror("setsockopt");
-        close(sockfd);
-        return 1;
+    // if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE, nic, strlen(nic)) < 0) {
+    //     perror("setsockopt");
+    //     close(sockfd);
+    //     return 1;
+    // }
+
+    struct ifreq ifr;
+    strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1); // 替换为你的网卡名
+    if (ioctl(sockfd, SIOCGIFMTU, &ifr) == 0) {
+        printf("MTU of %s: %d\n", ifr.ifr_name, ifr.ifr_mtu);
+    } else {
+        perror("ioctl");
     }
 
     sockaddr_in remote_addr;
     remote_addr.sin_family = AF_INET;
-    remote_addr.sin_port = htons(54321); // Example port
+    remote_addr.sin_port = htons(25); // Example port
     remote_addr.sin_addr.s_addr = inet_addr("114.114.114.114"); // Example IP
 
     const char *message = "Hello, World!";
@@ -121,10 +131,13 @@ int main(int argc, char *argv[])
 
     memset(&local_addr, 0, sizeof(local_addr));
     socklen_t addr_len = sizeof(local_addr);
-    getsockname(sockfd, (struct sockaddr*)&local_addr, &addr_len);
+    int32_t code = getsockname(sockfd, (struct sockaddr*)&local_addr, &addr_len);
+    perror("getsockname");
     char* src_ip = inet_ntoa(local_addr.sin_addr);
     printf("Source IP: %s\n", src_ip);
     print_iface_by_ip(src_ip);
     close(sockfd);
+
+    printf(" ====== %X\n", 1 << 5);
     return 0;
 }
