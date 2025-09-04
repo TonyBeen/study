@@ -103,5 +103,17 @@ int main(int argc, char **argv)
     // std::cout << pointer[1][0] << ", " << pointer[1][1] << std::endl;
     // std::cout << typeid(array_dest_type).name() << std::endl;
     // std::cout << demangle(typeid(array_dest_type).name()) << std::endl;
+    // {
+    //     const std::type_info &type = typeid(std::string);
+    //     printf("%p\n", &type);
+    //     std::cout << type.name() << std::endl;
+    //     std::cout << demangle(type.name()) << std::endl;
+
+    // }
+
+    // {
+    //     const std::type_info *p = &typeid(std::string);
+    //     printf("%p\n", p);
+    // }
     return 0;
 }
