@@ -4,55 +4,30 @@ allow-lan: false
 mode: Rule
 log-level: silent
 external-controller: 127.0.0.1:9090
-secret: ""
+secret: "VPuvxiFKTozic4HNrC"
 dns:
   enable: true
   ipv6: false
   nameserver:
     - 223.5.5.5
-    - 180.76.76.76
-    - 119.29.29.29
-    - 117.50.11.11
-    - 117.50.10.10
-    - 114.114.114.114
     - https://dns.alidns.com/dns-query
-    - https://doh.360.cn/dns-query
   fallback:
     - 8.8.8.8
-    - tls://dns.rubyfish.cn:853
     - tls://1.0.0.1:853
-    - tls://dns.google:853
-    - https://dns.rubyfish.cn/dns-query
-    - https://cloudflare-dns.com/dns-query
     - https://dns.google/dns-query
   fallback-filter:
     geoip: true
     ipcidr:
-      - 240.0.0.0/4
       - 0.0.0.0/32
       - 127.0.0.1/32
     domain:
       - +.google.com
-      - +.facebook.com
       - +.youtube.com
-      - +.xn--ngstr-lra8j.com
-      - +.google.cn
-      - +.googleapis.cn
-      - +.gvt1.com
 proxies:
   - name: 香港-IPLC-HK-BETA1-流量倍率:1.0
     type: trojan
     server: iplc-hk-beta1.trojanwheel.com
     port: 5001
-    password: VPuvxiFKTozic4HNrC
-    alpn:
-      - h2
-      - http/1.1
-    skip-cert-verify: true
-  - name: 德国-DE-1-流量倍率:1.0
-    type: trojan
-    server: de-1.topeinstein.com
-    port: 443
     password: VPuvxiFKTozic4HNrC
     alpn:
       - h2
@@ -82,7 +57,6 @@ proxy-groups:
     proxies:
       - Auto
       - 香港-IPLC-HK-BETA1-流量倍率:1.0
-      - 德国-DE-1-流量倍率:1.0
       - 美国-US-1-流量倍率:1.5
       - 日本-TY-1-流量倍率:1.0
   - name: Auto
@@ -91,35 +65,11 @@ proxy-groups:
     interval: 300
     proxies:
       - 香港-IPLC-HK-BETA1-流量倍率:1.0
-      - 德国-DE-1-流量倍率:1.0
       - 美国-US-1-流量倍率:1.5
       - 日本-TY-1-流量倍率:1.0
 rules:
-  - DOMAIN-SUFFIX,ghcr.io,Proxy
-  - DOMAIN-SUFFIX,googleapis.cn,Proxy
-  - DOMAIN-KEYWORD,googleapis.cn,Proxy
-  - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT
-  - DOMAIN,safebrowsing.googleapis.com,DIRECT
-  - DOMAIN-SUFFIX,angularjs.org,Proxy
-  - DOMAIN-SUFFIX,aolcdn.com,Proxy
-  - DOMAIN-SUFFIX,apkpure.com,Proxy
-  - DOMAIN-SUFFIX,squarespace.com,Proxy
-  - DOMAIN-SUFFIX,sstatic.net,Proxy
-  - DOMAIN-SUFFIX,st.luluku.pw,Proxy
-  - IP-CIDR,91.108.8.0/22,Proxy,no-resolve
-  - IP-CIDR,91.108.12.0/22,Proxy,no-resolve
-  - IP-CIDR,91.108.16.0/22,Proxy,no-resolve
-  - IP-CIDR,91.108.56.0/22,Proxy,no-resolve
-  - IP-CIDR,149.154.160.0/22,Proxy,no-resolve
-  - IP-CIDR,149.154.164.0/22,Proxy,no-resolve
-  - IP-CIDR,149.154.168.0/22,Proxy,no-resolve
-  - IP-CIDR,149.154.172.0/22,Proxy,no-resolve
   - DOMAIN-SUFFIX,local,DIRECT
-  - IP-CIDR,127.0.0.0/8,DIRECT
-  - IP-CIDR,172.16.0.0/12,DIRECT
   - IP-CIDR,192.168.0.0/16,DIRECT
   - IP-CIDR,10.0.0.0/8,DIRECT
-  - IP-CIDR,17.0.0.0/8,DIRECT
-  - IP-CIDR,100.64.0.0/10,DIRECT
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
