@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<root
+    xmlns="urn:schemas-upnp-org:device-1-0">
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <device>
+        <deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>
+        <friendlyName>华为路由 AX6 new</friendlyName>
+        <manufacturer>Huawei Device Co., Ltd.</manufacturer>
+        <manufacturerURL>http://www.huawei.com</manufacturerURL>
+        <modelDescription>Huawei Home Gateway</modelDescription>
+        <modelName>WS8700-13</modelName>
+        <modelNumber>001</modelNumber>
+        <modelURL>http://www.huawei.com</modelURL>
+        <serialNumber>942b0c14afc18635</serialNumber>
+        <UDN>uuid:aba46e93-a1e2-cdc5-61aa-6f9cc1d96234</UDN>
+        <UPC>000000000001</UPC>
+        <serviceList>
+            <service>
+                <serviceType>urn:www-huawei-com:service:NetworkSyncService:1</serviceType>
+                <serviceId>urn:www-huawei-com:serviceId:NetworkSyncService1</serviceId>
+                <SCPDURL>/desc/aba46e93-a1e2-cdc5-61aa-6f9cc1d96234/upnpNetworkSync.xml</SCPDURL>
+                <controlURL>/ctrlu/aba46e93-a1e2-cdc5-61aa-6f9cc1d96234/NetworkSyncService_1</controlURL>
+                <eventSubURL>/evt/NetworkSyncService_1</eventSubURL>
+            </service>
+        </serviceList>
+        <deviceList>
+            <device>
+                <deviceType>urn:schemas-upnp-org:device:WANDevice:1</deviceType>
+                <friendlyName>WANDevice</friendlyName>
+                <manufacturer>Huawei Device Co., Ltd.</manufacturer>
+                <manufacturerURL>http://www.huawei.com</manufacturerURL>
+                <modelDescription>Huawei Home Gateway</modelDescription>
+                <modelName>WS8700-13</modelName>
+                <modelNumber>001</modelNumber>
+                <modelURL>http://www.huawei.com</modelURL>
+                <serialNumber>942b0c14afc18635</serialNumber>
+                <UDN>uuid:e93b035e-ef55-6853-c741-4f5783564e1d</UDN>
+                <UPC>000000000001</UPC>
+                <serviceList>
+                    <service>
+                        <serviceType>urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1</serviceType>
+                        <serviceId>urn:upnp-org:serviceId:WANCommonIFC1</serviceId>
+                        <SCPDURL>/desc/e93b035e-ef55-6853-c741-4f5783564e1d/upnpWANCommonIfc.xml</SCPDURL>
+                        <controlURL>/ctrlu/e93b035e-ef55-6853-c741-4f5783564e1d/WANCommonIFC_1</controlURL>
+                        <eventSubURL>/evt/WANCommonIFC_1</eventSubURL>
+                    </service>
+                </serviceList>
+                <deviceList>
+                    <device>
+                        <deviceType>urn:schemas-upnp-org:device:WANConnectionDevice:1</deviceType>
+                        <friendlyName>WANConnectionDevice</friendlyName>
+                        <manufacturer>Huawei Device Co., Ltd.</manufacturer>
+                        <manufacturerURL>http://www.huawei.com</manufacturerURL>
+                        <modelDescription>Huawei Home Gateway</modelDescription>
+                        <modelName>WS8700-13</modelName>
+                        <modelNumber>001</modelNumber>
+                        <modelURL>http://www.huawei.com</modelURL>
+                        <serialNumber>942b0c14afc18635</serialNumber>
+                        <UDN>uuid:d183ef98-0782-0a33-0220-dbe450457889</UDN>
+                        <UPC>000000000001</UPC>
+                        <serviceList>
+                            <service>
+                                <serviceType>urn:schemas-upnp-org:service:WANPPPConnection:1</serviceType>
+                                <serviceId>urn:upnp-org:serviceId:WANPPPConn1</serviceId>
+                                <SCPDURL>/desc/d183ef98-0782-0a33-0220-dbe450457889/upnpWANPPPConnection.xml</SCPDURL>
+                                <controlURL>/ctrlu/d183ef98-0782-0a33-0220-dbe450457889/WANPPPConn_1</controlURL>
+                                <eventSubURL>/evt/WANPPPConn_1</eventSubURL>
+                            </service>
+                        </serviceList>
+                    </device>
+                </deviceList>
+            </device>
+            <device>
+                <deviceType>urn:schemas-upnp-org:device:LANDevice:1</deviceType>
+                <friendlyName>LANDevice</friendlyName>
+                <manufacturer>Huawei Device Co., Ltd.</manufacturer>
+                <manufacturerURL>http://www.huawei.com</manufacturerURL>
+                <modelDescription>Huawei Home Gateway</modelDescription>
+                <modelName>WS8700-13</modelName>
+                <modelNumber>001</modelNumber>
+                <modelURL>http://www.huawei.com</modelURL>
+                <serialNumber>942b0c14afc18635</serialNumber>
+                <UDN>uuid:2b6a36a5-5e8e-fe04-dd4d-2eb18c3f8a45</UDN>
+                <UPC>000000000001</UPC>
+            </device>
+        </deviceList>
+        <presentationURL>http://192.168.3.1</presentationURL>
+    </device>
+</root>
