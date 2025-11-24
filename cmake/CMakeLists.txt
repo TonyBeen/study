@@ -127,8 +127,6 @@ if(${log2_FOUND})
 	if (${log2_DYNAMIC_LIB} MATCHES "ON")
 		message(STATUS "  dynamic library: ${LIBLOG2_SHARED_LIBRARIES}")
 	endif()
-	message(STATUS "  libraries: ${log2_LIBRARIES}")
-	message(STATUS "  include path: ${log2_INCLUDE_DIRS}")
 endif()
 
 message(STATUS "is the C++ compiler loaded? ${CMAKE_CXX_COMPILER_LOADED}")
