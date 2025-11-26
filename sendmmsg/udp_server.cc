@@ -69,11 +69,11 @@ int main()
         timeout.tv_nsec = 0;
         int n = recvmmsg(sock, msgs, MAX_BATCH, MSG_DONTWAIT, &timeout);
         if (n < 0) {
-            perror("recvmmsg error");
             if (errno == EINTR || errno == ETIMEDOUT || errno == EAGAIN) {
                 usleep(100000); // 100ms
                 continue;
             }
+            perror("recvmmsg error");
             break;
         }
 

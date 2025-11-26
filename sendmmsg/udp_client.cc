@@ -19,7 +19,8 @@
 #endif
 
 
-int main() {
+int main()
+{
     // 配置参数
     const size_t TOTAL_SIZE = 128 * 1024 - 1400; // 128KB
     const int MTU = 1500;
@@ -94,7 +95,10 @@ int main() {
             return 1;
         }
         msg_count += ret;
-        std::cout << "本次发送分片 GSO 包 " << ret << std::endl;
+        for (int i = 0; i < ret; ++i) {
+            printf("Sent message %d, size = %d\n", i, mms[i].msg_len);
+        }
+        printf("This time sending the fragmented GSO packages: %d\n", ret);
     }
     std::cout << "全部分片包批量发送完成，共计 GSO 包数：" << msg_count << std::endl;
 
