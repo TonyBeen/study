@@ -134,9 +134,9 @@ void thread_1()
 {
     struct epoll_event allEvent[EPOLL_EVENT_SIZE];
     while (1) {
-        LOGD("tid %d block", gettid());
+        LOGD("tid %d block", (int32_t)gettid());
         int ret = epoll_wait(gEpollFd, allEvent, EPOLL_EVENT_SIZE, -1);
-        LOGD("tid %d resume", gettid());
+        LOGD("tid %d resume", (int32_t)gettid());
         if (ret < 0) {
             LOGE("epoll_wait error. error code = %d, error message: %s", errno, strerror(errno));
             if (errno == EINTR) {
@@ -169,9 +169,9 @@ void thread_2()
 {
     struct epoll_event allEvent[EPOLL_EVENT_SIZE];
     while (1) {
-        LOGD("tid %d block", gettid());
+        LOGD("tid %d block", (int32_t)gettid());
         int ret = epoll_wait(gEpollFd, allEvent, EPOLL_EVENT_SIZE, -1);
-        LOGD("tid %d resume", gettid());
+        LOGD("tid %d resume", (int32_t)gettid());
         if (ret < 0) {
             LOGE("epoll_wait error. error code = %d, error message: %s", errno, strerror(errno));
             if (errno == EINTR) {
