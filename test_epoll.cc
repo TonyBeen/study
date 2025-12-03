@@ -24,8 +24,8 @@
 
 #define LOG_TAG "测试epoll惊群"
 #define EPOLL_EVENT_SIZE 512
-#define RD_BUF_SIZE 512
-#define WR_BUF_SIZE 512
+#define RD_BUF_SIZE     1500
+#define WR_BUF_SIZE     512
 
 int InitSocket(uint16_t port = 8000)
 {
@@ -106,7 +106,7 @@ void ReadFormClient(int cfd)
     }
     char readBuf[RD_BUF_SIZE] = {0};
     bzero(readBuf, RD_BUF_SIZE);
-    int readSize = ::read(cfd, readBuf, 5);
+    int readSize = ::read(cfd, readBuf, RD_BUF_SIZE);
     if (readSize < 0) {
         LOGE("read error. error code = %d, error message: %s", errno, strerror(errno));
         if (errno == ECONNRESET) {
