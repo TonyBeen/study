@@ -1,0 +1,952 @@
+基于我们整个对话的内容，下面整理一份完整、详细的"UDP + BoringSSL TLS 1.3 握手"流程文档，包含原理说明、时序图、关键接口注释、密钥派生流程、以及完整的代码实现。
+
+一、整体架构与原理
+
+1.1 为什么需要这套方案？
+```
+传统 TLS 握手：
+  客户端 ─── TCP ─── 服务端
+           └─ TLS 直接读写 TCP socket
+
+我们的方案（仿 QUIC）：
+  客户端 ─── UDP ─── 服务端
+           └─ 我们控制传输层
+           └─ TLS 只负责生成/解析握手字节
+           └─ 我们负责加密、封包、收发
+```
+
+1.2 核心思想
+- BoringSSL 提供了 SSL_QUIC_METHOD 接口，允许我们"接管传输层"
+- TLS 库不再直接读写 socket，而是通过回调把握手数据交给我们
+- 我们负责：加密 → 封成 UDP 包 → 发送；接收 → 解密 → 喂回给 TLS
+
+1.3 加密层级（与 BoringSSL 枚举对应）
+```
+┌─────────────────────────────────────────────────────────────┐
+│  枚举值    │  名称                    │  用途                 │
+├─────────────────────────────────────────────────────────────┤
+│    0      │  ssl_encryption_initial   │  Initial 层         │
+│           │                           │  承载 ClientHello   │
+├─────────────────────────────────────────────────────────────┤
+│    1      │  ssl_encryption_early_data│  0-RTT 早期数据     │
+│           │                           │  (本示例未使用)     │
+├─────────────────────────────────────────────────────────────┤
+│    2      │  ssl_encryption_handshake │  握手层             │
+│           │                           │  承载 ServerHello   │
+│           │                           │  Certificate 等     │
+├─────────────────────────────────────────────────────────────┤
+│    3      │  ssl_encryption_application│ 应用层             │
+│           │                           │  承载 Finished      │
+│           │                           │  及应用数据         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+二、握手时序图
+
+```
+    客户端                                              服务端
+      │                                                   │
+      │  ① 安装 Initial 密钥                              │
+      │     install_initial_secrets(Client)               │
+      │                                                   │
+      │  ② SSL_do_handshake()                             │
+      │     └─ 触发 add_handshake_data(level=0)           │
+      │        产出 ClientHello                           │
+      │                                                   │
+      │  ③ 用 Initial 写密钥加密                          │
+      │                                                   │
+      │  ════════════ enc_level=0 (Initial) ═══════════>  │
+      │              [加密的 ClientHello]                 │
+      │                                                   │
+      │                                  ① 安装 Initial 密钥
+      │                                     install_initial_secrets(Server)
+      │                                                   │
+      │                                  ④ 用 Initial 读密钥解密
+      │                                     得到 ClientHello 明文
+      │                                                   │
+      │                                  ⑤ SSL_provide_quic_data(level=0)
+      │                                     + SSL_do_handshake()
+      │                                                   │
+      │                                  ⑥ 触发回调: 
+      │                                     set_write_secret(level=2)
+      │                                     add_handshake_data(level=2)
+      │                                     产出 ServerHello/EE/Cert/Finished
+      │                                                   │
+      │                                  ⑦ 用 Handshake 写密钥加密
+      │                                                   │
+      │  <═══════════ enc_level=2 (Handshake) ══════════  │
+      │              [加密的 ServerHello 等]              │
+      │                                                   │
+      │  ⑧ 用 Handshake 读密钥解密                        │
+      │                                                   │
+      │  ⑨ SSL_provide_quic_data(level=2)                 │
+      │     + SSL_do_handshake()                          │
+      │                                                   │
+      │  ⑩ 触发回调:                                      │
+      │     set_write_secret(level=3)                     │
+      │     add_handshake_data(level=3)                   │
+      │     产出客户端 Finished                           │
+      │                                                   │
+      │  ⑪ 用 Application 写密钥加密                      │
+      │                                                   │
+      │  ═══════════ enc_level=3 (Application) ════════>  │
+      │              [加密的 Finished]                    │
+      │                                                   │
+      │                                  ⑫ 用 Application 读密钥解密
+      │                                     SSL_provide_quic_data(level=3)
+      │                                     + SSL_do_handshake()
+      │                                     返回 1 → 握手完成! 
+      │                                                   │
+      │  <═══════════ enc_level=3 (应用数据) ════════════  │
+      │              [加密的 PING]                        │
+      │                                                   │
+      │  ⑬ 握手完成，收到应用数据                          │
+      ▼                                                   ▼
+```
+
+三、密钥派生流程
+
+3.1 Initial 层密钥（固定算法，不依赖证书）
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    Initial 密钥派生                            │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  固定输入:                                                      │
+│    initial_salt = 0x38762cf7f55934b34d179ae6a4c80cadccbb7f0a  │
+│    client_dcid  = 客户端目的连接ID (双方一致)                  │
+│                                                                │
+│  步骤 1: 提取初始秘密                                          │
+│    initial_secret = HKDF-Extract(initial_salt, client_dcid)   │
+│                                                                │
+│  步骤 2: 扩展出客户端/服务端 secret                            │
+│    client_initial_secret = HKDF-Expand-Label(                 │
+│        initial_secret, "client in", "", 32)                   │
+│    server_initial_secret = HKDF-Expand-Label(                 │
+│        initial_secret, "server in", "", 32)                   │
+│                                                                │
+│  步骤 3: 从 secret 派生 AEAD key/IV/HP                         │
+│    key = HKDF-Expand-Label(secret, "quic key", "", 16)        │
+│    iv  = HKDF-Expand-Label(secret, "quic iv",  "", 12)        │
+│    hp  = HKDF-Expand-Label(secret, "quic hp",  "", 16)        │
+│                                                                │
+│  方向分配:                                                      │
+│    客户端: 写密钥=client_initial, 读密钥=server_initial       │
+│    服务端: 写密钥=server_initial, 读密钥=client_initial       │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+3.2 Handshake/Application 层密钥（由 TLS 计算并回调下发）
+```
+┌────────────────────────────────────────────────────────────────┐
+│              Handshake/Application 密钥派生                    │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  BoringSSL 在握手推进时自动计算 traffic_secret                 │
+│  通过回调 set_read_secret / set_write_secret 下发给我们       │
+│                                                                │
+│  我们在回调中做:                                               │
+│    key = HKDF-Expand-Label(traffic_secret, "quic key", ...)   │
+│    iv  = HKDF-Expand-Label(traffic_secret, "quic iv",  ...)   │
+│    hp  = HKDF-Expand-Label(traffic_secret, "quic hp",  ...)   │
+│                                                                │
+│  保存到 QuicConn 的对应层级 read_*/write_* 槽位               │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+3.3 Nonce 计算
+```
+┌────────────────────────────────────────────────────────────────┐
+│                      Nonce 计算                                │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  AEAD 加解密需要 12 字节的 nonce，每个包不同                   │
+│                                                                │
+│  计算方法:                                                     │
+│    nonce = base_iv XOR packet_number                          │
+│                                                                │
+│  具体:                                                          │
+│    - base_iv 是 12 字节                                        │
+│    - packet_number 编码为 8 字节大端序，左边补 4 个 0 字节     │
+│    - 逐字节 XOR                                                │
+│                                                                │
+│  示例 (iv = 0x... abcdef, PN = 0):                              │
+│    iv:     [b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb]               │
+│    PN:    [00 00 00 00 00 00 00 00 00 00 00 00]               │
+│    nonce: [b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb]               │
+│                                                                │
+│  示例 (iv = 0x...abcdef, PN = 1):                              │
+│    iv:    [b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb]               │
+│    PN:    [00 00 00 00 00 00 00 00 00 00 00 01]               │
+│    nonce: [b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba ba] (最后一字节变了)│
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+四、自定义线协议格式（演示用）
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    UDP 载荷格式                                │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  偏移    长度    字段            说明                          │
+│  ────    ────    ────            ────                          │
+│  0       1       frame_type      0x01=CRYPTO, 0x02=PING        │
+│  1       1       enc_level       0=Initial, 2=Handshake,       │
+│                                  3=Application                 │
+│  2       8       packet_number   包序号（用于计算 nonce）      │
+│  10      2       payload_len     密文长度                      │
+│  12      N       payload         AEAD 密文                     │
+│                                                                │
+│  注意:  真实 QUIC 的格式复杂得多，这里是简化演示版             │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+五、关键接口详解
+
+5.1 BoringSSL QUIC 集成接口
+
+```cpp
+//=============================================================================
+// 接口: SSL_set_quic_method
+//=============================================================================
+// 作用: 注册 QUIC 集成回调，让 BoringSSL 走"外部传输"模式
+// 
+// 调用时机: 创建 SSL 对象后、握手开始前
+//
+// 效果: TLS 不再直接读写 socket，而是通过你提供的回调函数：
+//       - set_read_secret:    下发读方向密钥
+//       - set_write_secret:  下发写方向密钥
+//       - add_handshake_data: 输出要发送的握手字节
+//       - flush_flight:      提示立即发送
+//       - send_alert:        发送告警
+//
+// 示例:
+SSL_set_quic_method(ssl, &quic_method);
+
+
+//=============================================================================
+// 回调:  set_read_secret / set_write_secret
+//=============================================================================
+// 作用: 当 TLS 为某个加密层计算出读/写方向的 traffic_secret 时调用
+//
+// 参数:
+//   - ssl:         SSL 连接对象
+//   - level:      加密层级 (0=Initial, 2=Handshake, 3=Application)
+//   - cipher:      协商出的密码套件
+//   - secret:     traffic_secret 字节串
+//   - secret_len:  secret 长度
+//
+// 你要做的事: 
+//   1) 根据 cipher 确定 AEAD 类型 (AES-128-GCM / ChaCha20 等)
+//   2) 用 HKDF-Expand-Label 从 secret 派生 key、iv、hp
+//   3) 保存到 QuicConn 对应层的 read_*/write_* 槽位
+//
+// 注意:  Initial 层的密钥不会通过这个回调下发！需要你自己算
+//
+static void set_read_secret(SSL* ssl, 
+                            enum ssl_encryption_level_t level,
+                            const SSL_CIPHER* cipher, 
+                            const uint8_t* secret, 
+                            size_t secret_len) {
+    // 派生 QUIC 密钥并保存到 read 方向
+}
+
+static void set_write_secret(SSL* ssl, 
+                             enum ssl_encryption_level_t level,
+                             const SSL_CIPHER* cipher, 
+                             const uint8_t* secret, 
+                             size_t secret_len) {
+    // 派生 QUIC 密钥并保存到 write 方向
+}
+
+
+//=============================================================================
+// 回调:  add_handshake_data
+//=============================================================================
+// 作用: TLS 产生了要发送的握手字节时调用
+//
+// 参数: 
+//   - ssl:   SSL 连接对象
+//   - level: 应该用哪个加密层发送 (0/2/3)
+//   - data:  握手字节（明文）
+//   - len:   长度
+//
+// 你要做的事:
+//   1) 把 data 追加到对应层的发送缓冲 (handshake_out_initial/hs/app)
+//   2) 尽快用该层的"写密钥"加密并通过 UDP 发出去
+//
+// 返回: 1=成功, 0=失败
+//
+static int add_handshake_data(SSL* ssl, 
+                              enum ssl_encryption_level_t level,
+                              const uint8_t* data, 
+                              size_t len) {
+    QuicConn* qc = get_conn(ssl);
+    // 根据 level 选择缓冲区并追加数据
+    // 建议在这里或 flush_flight 中立即发送
+    return 1;
+}
+
+
+//=============================================================================
+// 回调: flush_flight
+//=============================================================================
+// 作用: 提示"这一波握手数据应该立即发送"
+//
+// 你可以在这里触发发送所有非空的握手缓冲，或者在 add_handshake_data 里就发
+//
+static int flush_flight(SSL* ssl) {
+    // 可选: 立即发送所有待发数据
+    return 1;
+}
+
+
+//=============================================================================
+// 回调: send_alert
+//=============================================================================
+// 作用:  TLS 要发送告警（错误或关闭）
+//
+// 你决定如何封装发送；演示里我们只打印一下
+//
+static int send_alert(SSL* ssl, 
+                      enum ssl_encryption_level_t level, 
+                      uint8_t alert) {
+    fprintf(stderr, "[QUIC] send_alert level=%d alert=%u\n", (int)level, alert);
+    return 1;
+}
+
+
+//=============================================================================
+// 接口: SSL_provide_quic_data
+//=============================================================================
+// 作用: 把对端发来的握手明文（你已经用读密钥解密过的）喂给 TLS
+//
+// 参数: 
+//   - ssl:    SSL 连接对象
+//   - level: 这段数据属于哪个加密层 (必须与实际层级匹配!)
+//   - data:  握手明文字节
+//   - len:   长度
+//
+// 调用时机: 每次收到对端的 CRYPTO 帧并成功解密后
+//
+// 返回: 1=成功, 0=失败
+//
+// 注意: level 必须正确！如果把 handshake 层数据当 initial 喂，会报错
+//       WRONG_ENCRYPTION_LEVEL_RECEIVED
+//
+int ok = SSL_provide_quic_data(ssl, level, plaintext, len);
+if (!ok) {
+    ERR_print_errors_fp(stderr);
+}
+
+
+//=============================================================================
+// 接口:  SSL_do_handshake
+//=============================================================================
+// 作用: 推进 TLS 状态机
+//
+// 返回值:
+//   - 1:               握手完成! 
+//   - 0 或负数:       未完成，需要检查 SSL_get_error()
+//     - SSL_ERROR_WANT_READ:   需要更多对端数据，继续等待接收
+//     - SSL_ERROR_WANT_WRITE:  需要发送数据（已通过回调输出）
+//     - 其他:                  错误，调用 ERR_print_errors_fp 查看
+//
+// 调用时机: 
+//   1) 客户端初始化后调用一次，触发产出 ClientHello
+//   2) 每次 SSL_provide_quic_data 后调用，推进握手
+//
+int ret = SSL_do_handshake(ssl);
+if (ret == 1) {
+    // 握手完成! 
+} else {
+    int err = SSL_get_error(ssl, ret);
+    if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+        // 正常，继续等待/发送
+    } else {
+        // 出错
+        ERR_print_errors_fp(stderr);
+    }
+}
+
+
+//=============================================================================
+// 接口:  SSL_quic_read_level / SSL_quic_write_level
+//=============================================================================
+// 作用: 查询当前 TLS 期望在哪个层级读/写
+//
+// 用途:
+//   - 发送时用 SSL_quic_write_level() 确定应该用哪层的写密钥
+//   - 接收时可对比 SSL_quic_read_level() 判断是否是预期的层级
+//
+enum ssl_encryption_level_t read_level  = SSL_quic_read_level(ssl);
+enum ssl_encryption_level_t write_level = SSL_quic_write_level(ssl);
+
+
+//=============================================================================
+// 接口:  SSL_set_quic_transport_params
+//=============================================================================
+// 作用: 设置 QUIC 传输参数（会作为 TLS 扩展发送给对端）
+//
+// 参数:  必须是 RFC 9000 格式的序列化字节，不能为空！
+//
+// 如果传空或格式错误，会报 QUIC_TRANSPORT_PARAMETERS_MISCONFIGURED
+//
+std::vector<uint8_t> tp = build_min_quic_transport_params();
+SSL_set_quic_transport_params(ssl, tp.data(), tp.size());
+
+
+//=============================================================================
+// 接口: SSL_set_alpn_protos (客户端) / SSL_CTX_set_alpn_select_cb (服务端)
+//=============================================================================
+// 作用: 设置应用层协议协商 (ALPN)
+//
+// 客户端:  提供支持的协议列表（wire-format:  长度前缀+协议名）
+// 服务端:  注册回调，从客户端列表中选择一个
+//
+// 两端必须有交集，否则报 NO_APPLICATION_PROTOCOL
+//
+// 客户端示例: 
+std::vector<uint8_t> alpn = build_alpn_wire_format({"h3"});
+SSL_set_alpn_protos(ssl, alpn.data(), alpn.size());
+
+// 服务端示例:
+SSL_CTX_set_alpn_select_cb(ctx, [](SSL*, const uint8_t** out, uint8_t* outlen,
+                                   const uint8_t* in, unsigned inlen, void*) {
+    // 在 in 中查找 "h3"，找到则设置 *out/*outlen 并返回 SSL_TLSEXT_ERR_OK
+    return SSL_TLSEXT_ERR_OK;
+}, nullptr);
+```
+
+5.2 我们自己实现的核心函数
+
+```cpp
+//=============================================================================
+// 函数: install_initial_secrets
+//=============================================================================
+// 作用:  安装 Initial 层的读/写密钥
+//
+// 为什么需要它? 
+//   BoringSSL 不会通过 set_*_secret 回调给 Initial 层密钥，
+//   因为 Initial 密钥是用固定规则算出来的（不依赖 TLS 握手计算）。
+//   我们必须自己派生并安装。
+//
+// 参数:
+//   - qc:          连接状态对象，保存各层密钥
+//   - role:        Client 或 Server（决定读写方向）
+//   - client_dcid: 客户端目的连接ID（双方必须一致！）
+//   - dcid_len:    连接ID长度
+//
+// 内部流程:
+//   1) 调用 quic_derive_initial_secrets_sha256 得到 client/server initial secret
+//   2) 从各 secret 派生 AEAD key/iv/hp
+//   3) 根据角色分配读写方向: 
+//      - 客户端: write=client_initial, read=server_initial
+//      - 服务端: write=server_initial, read=client_initial
+//   4) 保存到 qc->level[ssl_encryption_initial]
+//
+// 调用时机: 握手开始前（SSL_do_handshake 之前）
+//
+// 返回: true=成功, false=失败
+//
+bool install_initial_secrets(QuicConn* qc, QuicRole role,
+                             const uint8_t* client_dcid, size_t dcid_len);
+
+
+//=============================================================================
+// 函数:  quic_derive_initial_secrets_sha256
+//=============================================================================
+// 作用: 根据 QUIC v1 规范派生 Initial 层的 client/server secret
+//
+// 内部流程: 
+//   1) initial_secret = HKDF_extract(initial_salt, client_dcid)
+//   2) client_initial = HKDF_expand_label(initial_secret, "client in", 32)
+//   3) server_initial = HKDF_expand_label(initial_secret, "server in", 32)
+//
+// 固定盐值 (QUIC v1):
+//   0x38762cf7f55934b34d179ae6a4c80cadccbb7f0a
+//
+bool quic_derive_initial_secrets_sha256(const uint8_t* client_dcid, size_t dcid_len,
+                                        uint8_t* client_initial,  // 输出 32 字节
+                                        uint8_t* server_initial); // 输出 32 字节
+
+
+//=============================================================================
+// 函数:  quic_derive_keys
+//=============================================================================
+// 作用: 从 traffic_secret 派生 AEAD 加密用的 key、IV、HP key
+//
+// 参数:
+//   - md:             哈希算法 (SHA-256 或 SHA-384)
+//   - aead_key_len:   AEAD 密钥长度 (AES-128=16, AES-256/ChaCha20=32)
+//   - iv_len:         IV 长度 (固定 12)
+//   - hp_key_len:     Header Protection 密钥长度
+//   - traffic_secret: 输入的 secret
+//   - secret_len:     secret 长度
+//   - out_key:        输出 AEAD 密钥
+//   - out_iv:          输出 IV
+//   - out_hp:         输出 HP 密钥
+//
+// 派生标签:
+//   key = HKDF-Expand-Label(secret, "quic key", "", key_len)
+//   iv  = HKDF-Expand-Label(secret, "quic iv",  "", 12)
+//   hp  = HKDF-Expand-Label(secret, "quic hp",  "", hp_len)
+//
+bool quic_derive_keys(const EVP_MD* md,
+                      size_t aead_key_len, size_t iv_len, size_t hp_key_len,
+                      const uint8_t* traffic_secret, size_t secret_len,
+                      uint8_t* out_key, uint8_t* out_iv, uint8_t* out_hp);
+
+
+//=============================================================================
+// 函数:  tls13_hkdf_expand_label
+//=============================================================================
+// 作用: 执行 TLS 1.3 的 HKDF-Expand-Label 操作
+//
+// 这是 TLS 1.3 密钥派生的核心操作，标签格式: 
+//   struct HkdfLabel {
+//       uint16 length;           // 输出长度
+//       opaque label<7.. 255>;    // "tls13 " + 实际标签
+//       opaque context<0..255>;  // 通常为空
+//   };
+//
+// 示例:  label="quic key" 实际会构造成 "tls13 quic key"
+//
+bool tls13_hkdf_expand_label(const EVP_MD* md,
+                             const uint8_t* secret, size_t secret_len,
+                             const char* label,
+                             const uint8_t* context, size_t context_len,
+                             uint8_t* out, size_t out_len);
+
+
+//=============================================================================
+// 函数:  make_nonce_from_pn
+//=============================================================================
+// 作用: 计算 AEAD 加解密用的 nonce
+//
+// 算法:  nonce = base_iv XOR packet_number
+//   - base_iv 是 12 字节
+//   - packet_number 编码为 8 字节大端序，与 iv 的后 8 字节 XOR
+//
+// 每发/收一个包，packet_number 都不同，所以 nonce 也不同
+//
+void make_nonce_from_pn(const uint8_t iv[12], uint64_t packet_number, 
+                        uint8_t nonce[12]);
+
+
+//=============================================================================
+// 函数: aead_seal
+//=============================================================================
+// 作用: 使用写方向密钥加密数据
+//
+// 参数:
+//   - aead:        AEAD 算法 (如 EVP_aead_aes_128_gcm())
+//   - key:        写密钥
+//   - key_len:     密钥长度
+//   - nonce:      12 字节 nonce (用 make_nonce_from_pn 计算)
+//   - nonce_len:  12
+//   - aad:        附加认证数据 (演示中为空)
+//   - aad_len:    AAD 长度
+//   - plaintext:  明文
+//   - pt_len:     明文长度
+//   - out:        输出密文 (长度 = 明文 + 认证标签)
+//
+// 调用时机: 发送握手数据或应用数据时
+//
+bool aead_seal(const EVP_AEAD* aead,
+               const uint8_t* key, size_t key_len,
+               const uint8_t* nonce, size_t nonce_len,
+               const uint8_t* aad, size_t aad_len,
+               const uint8_t* plaintext, size_t pt_len,
+               std::vector<uint8_t>& out_ciphertext);
+
+
+//=============================================================================
+// 函数:  aead_open
+//=============================================================================
+// 作用: 使用读方向密钥解密数据
+//
+// 参数:  与 aead_seal 类似，但 ciphertext 是输入，plaintext 是输出
+//
+// 调用时机: 收到对端数据后
+//
+// 返回: true=解密成功, false=失败（密钥错误/数据被篡改/nonce不对）
+//
+bool aead_open(const EVP_AEAD* aead,
+               const uint8_t* key, size_t key_len,
+               const uint8_t* nonce, size_t nonce_len,
+               const uint8_t* aad, size_t aad_len,
+               const uint8_t* ciphertext, size_t ct_len,
+               std::vector<uint8_t>& out_plaintext);
+
+
+//=============================================================================
+// 函数:  attach_quic_method
+//=============================================================================
+// 作用: 将 SSL 对象与我们的 QuicConn 绑定，并注册 QUIC 回调
+//
+// 内部操作:
+//   1) SSL_set_app_data(ssl, conn)  — 保存 conn 指针，回调中可取回
+//   2) SSL_set_quic_method(ssl, &quic_method) — 注册回调
+//
+// 调用时机: 创建 SSL 对象后
+//
+void attach_quic_method(SSL* ssl, QuicConn* conn);
+
+
+//=============================================================================
+// 函数:  tls_provide_crypto_and_step
+//=============================================================================
+// 作用: 把对端的 CRYPTO 明文投递给 TLS 并推进状态机（封装）
+//
+// 内部操作: 
+//   1) SSL_provide_quic_data(ssl, level, data, len)
+//   2) SSL_do_handshake(ssl)
+//   3) 检查返回值，如果握手完成则设置 handshake_complete = true
+//
+// 返回: true=处理成功（可能握手还没完，但没出错）, false=出错
+//
+bool tls_provide_crypto_and_step(SSL* ssl, enum ssl_encryption_level_t level,
+                                 const uint8_t* data, size_t len);
+
+
+//=============================================================================
+// 函数:  build_alpn_wire_format
+//=============================================================================
+// 作用: 构造 ALPN 的 wire-format（长度前缀格式）
+//
+// 输入:  {"h3", "h2"} 
+// 输出: [0x02, 'h', '3', 0x02, 'h', '2']
+//
+// 客户端用 SSL_set_alpn_protos 需要这个格式
+//
+std::vector<uint8_t> build_alpn_wire_format(const std:: vector<std::string>& protos);
+
+
+//=============================================================================
+// 函数:  build_min_quic_transport_params
+//=============================================================================
+// 作用: 构造最小可用的 QUIC 传输参数序列化字节
+//
+// 格式:  每个参数是 varint(id) + varint(len) + value
+//
+// 包含的参数 (示例):
+//   - initial_max_stream_data_bidi_local
+//   - initial_max_data
+//   - max_idle_timeout
+//   - active_connection_id_limit
+//   等... 
+//
+// 注意: 不能用空数组！否则报 QUIC_TRANSPORT_PARAMETERS_MISCONFIGURED
+//
+std::vector<uint8_t> build_min_quic_transport_params();
+```
+
+六、数据结构
+
+```cpp
+//=============================================================================
+// 结构:  QuicLevelKeys
+//=============================================================================
+// 作用: 保存某个加密层的读/写密钥材料
+//
+struct QuicLevelKeys {
+    const EVP_AEAD* aead = nullptr;  // AEAD 算法 (AES-GCM / ChaCha20)
+    const EVP_MD*   md   = nullptr;  // 哈希算法 (SHA-256 / SHA-384)
+
+    // ===== 写方向 (发送用) =====
+    uint8_t write_key[32] = {0};     // AEAD 密钥
+    uint8_t write_iv[12]  = {0};     // 基础 IV
+    uint8_t write_hp[32]  = {0};     // Header Protection 密钥
+    size_t  write_key_len = 0;
+    size_t  write_hp_len  = 0;
+    bool    write_ready   = false;   // 写密钥是否已安装
+
+    // ===== 读方向 (接收用) =====
+    uint8_t read_key[32] = {0};
+    uint8_t read_iv[12]  = {0};
+    uint8_t read_hp[32]  = {0};
+    size_t  read_key_len = 0;
+    size_t  read_hp_len  = 0;
+    bool    read_ready   = false;    // 读密钥是否已安装
+};
+
+
+//=============================================================================
+// 结构:  QuicConn
+//=============================================================================
+// 作用: 保存一个 QUIC/TLS 连接的完整状态
+//
+struct QuicConn {
+    // 每个加密层的密钥 (下标对应 ssl_encryption_level_t)
+    // [0]=Initial, [1]=EarlyData, [2]=Handshake, [3]=Application
+    QuicLevelKeys level[ssl_encryption_application + 1];
+
+    // TLS 产出的待发送握手数据 (由 add_handshake_data 回调填充)
+    std::vector<uint8_t> handshake_out_initial;  // Initial 层
+    std::vector<uint8_t> handshake_out_hs;       // Handshake 层
+    std::vector<uint8_t> handshake_out_app;      // Application 层
+
+    // 各层独立的包序号计数器 (用于 nonce 计算)
+    uint64_t pn_initial = 0;
+    uint64_t pn_hs      = 0;
+    uint64_t pn_app     = 0;
+
+    // 握手是否完成
+    bool handshake_complete = false;
+};
+
+
+//=============================================================================
+// 枚举: QuicRole
+//=============================================================================
+// 作用: 标识连接角色，决定 Initial 层密钥的读写方向
+//
+enum class QuicRole { Client, Server };
+```
+
+七、客户端完整流程伪代码
+
+```cpp
+int main() {
+    // ========== 1. 初始化 BoringSSL ==========
+    SSL_library_init();
+    
+    // ========== 2. 创建 SSL_CTX 并配置 ==========
+    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+    SSL_CTX_set_min_proto_version(ctx, TLS1_3_VERSION);  // 仅 TLS 1.3
+    SSL_CTX_set_max_proto_version(ctx, TLS1_3_VERSION);
+    
+    // ========== 3. 创建 SSL 对象 ==========
+    SSL* ssl = SSL_new(ctx);
+    SSL_set_connect_state(ssl);          // 设为客户端模式
+    SSL_set_tlsext_host_name(ssl, "example.com");  // SNI
+    
+    // ========== 4. 创建连接状态对象 ==========
+    QuicConn qc;
+    
+    // ========== 5. 注册 QUIC 回调 ==========
+    attach_quic_method(ssl, &qc);
+    
+    // ========== 6. 设置 ALPN ==========
+    auto alpn = build_alpn_wire_format({"h3"});
+    SSL_set_alpn_protos(ssl, alpn.data(), alpn.size());
+    
+    // ========== 7. 设置 QUIC 传输参数 ==========
+    auto tp = build_min_quic_transport_params();
+    SSL_set_quic_transport_params(ssl, tp.data(), tp.size());
+    
+    // ========== 8. 安装 Initial 层密钥 ==========
+    // 使用固定的 client_dcid（演示用）
+    static const uint8_t kClientDCID[] = {0x83,0x94,0xc8,0xf0,0x3e,0x51,0x57,0x08};
+    install_initial_secrets(&qc, QuicRole::Client, kClientDCID, sizeof(kClientDCID));
+    
+    // ========== 9. 创建 UDP socket 并连接服务器 ==========
+    UdpSocket sock;
+    sock. connect("127.0.0.1", 9000);
+    
+    // ========== 10. 发起握手 ==========
+    SSL_do_handshake(ssl);
+    // → 触发 add_handshake_data(level=0, ClientHello)
+    // → qc.handshake_out_initial 现在有数据了
+    
+    // ========== 11. 发送 ClientHello ==========
+    send_crypto_frame(sock, qc, ssl_encryption_initial);
+    
+    // ========== 12. 收发循环 ==========
+    while (! qc.handshake_complete) {
+        // 接收 UDP 包
+        auto pkt = sock.recv();
+        
+        // 解析帧头
+        uint8_t enc_level = pkt[1];
+        uint64_t pn = ... ;
+        
+        // 用对应层的读密钥解密
+        QuicLevelKeys& L = qc.level[enc_level];
+        uint8_t nonce[12];
+        make_nonce_from_pn(L.read_iv, pn, nonce);
+        std::vector<uint8_t> plaintext;
+        aead_open(L.aead, L.read_key, L. read_key_len, nonce, 12,
+                  nullptr, 0, ciphertext, ct_len, plaintext);
+        
+        // 喂给 TLS 并推进握手
+        tls_provide_crypto_and_step(ssl, (ssl_encryption_level_t)enc_level,
+                                    plaintext.data(), plaintext.size());
+        
+        // 发送 TLS 产出的握手数据
+        if (! qc.handshake_out_hs.empty()) {
+            send_crypto_frame(sock, qc, ssl_encryption_handshake);
+        }
+        if (!qc.handshake_out_app.empty()) {
+            send_crypto_frame(sock, qc, ssl_encryption_application);
+        }
+    }
+    
+    // ========== 13. 握手完成，收发应用数据 ==========
+    // ... 
+}
+```
+
+八、服务端完整流程伪代码
+
+```cpp
+int main() {
+    // ========== 1. 初始化 BoringSSL ==========
+    SSL_library_init();
+    
+    // ========== 2. 创建 SSL_CTX 并配置 ==========
+    SSL_CTX* ctx = SSL_CTX_new(TLS_server_method());
+    SSL_CTX_set_min_proto_version(ctx, TLS1_3_VERSION);
+    SSL_CTX_set_max_proto_version(ctx, TLS1_3_VERSION);
+    
+    // ========== 3. 加载证书和私钥 (必须!) ==========
+    SSL_CTX_use_certificate_file(ctx, "server.crt", SSL_FILETYPE_PEM);
+    SSL_CTX_use_PrivateKey_file(ctx, "server. key", SSL_FILETYPE_PEM);
+    SSL_CTX_check_private_key(ctx);
+    
+    // ========== 4. 设置 ALPN 选择回调 ==========
+    SSL_CTX_set_alpn_select_cb(ctx, alpn_select_callback, nullptr);
+    
+    // ========== 5. 创建 SSL 对象 ==========
+    SSL* ssl = SSL_new(ctx);
+    SSL_set_accept_state(ssl);  // 设为服务端模式
+    
+    // ========== 6. 创建连接状态对象 ==========
+    QuicConn qc;
+    
+    // ========== 7. 注册 QUIC 回调 ==========
+    attach_quic_method(ssl, &qc);
+    
+    // ========== 8. 设置 QUIC 传输参数 ==========
+    auto tp = build_min_quic_transport_params();
+    SSL_set_quic_transport_params(ssl, tp.data(), tp.size());
+    
+    // ========== 9. 安装 Initial 层密钥 ==========
+    // client_dcid 必须与客户端一致! 
+    static const uint8_t kClientDCID[] = {0x83,0x94,0xc8,0xf0,0x3e,0x51,0x57,0x08};
+    install_initial_secrets(&qc, QuicRole::Server, kClientDCID, sizeof(kClientDCID));
+    
+    // ========== 10. 创建 UDP socket 并监听 ==========
+    UdpSocket sock;
+    sock.bind("0.0.0.0", 9000);
+    
+    // ========== 11. 收发循环 ==========
+    while (true) {
+        // 接收 UDP 包
+        auto pkt = sock.recv();
+        
+        // 解析帧头
+        uint8_t enc_level = pkt[1];
+        uint64_t pn = ...;
+        
+        // 用对应层的读密钥解密
+        QuicLevelKeys& L = qc.level[enc_level];
+        uint8_t nonce[12];
+        make_nonce_from_pn(L.read_iv, pn, nonce);
+        std::vector<uint8_t> plaintext;
+        aead_open(L.aead, L.read_key, L.read_key_len, nonce, 12,
+                  nullptr, 0, ciphertext, ct_len, plaintext);
+        
+        // 喂给 TLS 并推进握手
+        tls_provide_crypto_and_step(ssl, (ssl_encryption_level_t)enc_level,
+                                    plaintext.data(), plaintext.size());
+        
+        // 发送 TLS 产出的握手数据
+        if (!qc. handshake_out_initial.empty()) {
+            send_crypto_frame(sock, qc, ssl_encryption_initial);
+        }
+        if (!qc.handshake_out_hs. empty()) {
+            send_crypto_frame(sock, qc, ssl_encryption_handshake);
+        }
+        if (!qc.handshake_out_app.empty()) {
+            send_crypto_frame(sock, qc, ssl_encryption_application);
+        }
+        
+        // 握手完成后可发送应用数据
+        if (qc.handshake_complete) {
+            send_ping(sock, qc);
+            break;
+        }
+    }
+}
+```
+
+九、常见错误与排查
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  错误信息                              │  原因与解决                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  NO_APPLICATION_PROTOCOL               │  ALPN 不匹配或格式错误             │
+│                                        │  → 客户端用 wire-format 设置       │
+│                                        │  → 服务端注册选择回调              │
+│                                        │  → 双方协议名一致 (如 "h3")        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  QUIC_TRANSPORT_PARAMETERS_            │  传输参数为空或格式错误            │
+│  MISCONFIGURED                         │  → 使用 build_min_quic_transport   │
+│                                        │     _params() 生成合法字节         │
+│                                        │  → 两端都要设置                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  WRONG_ENCRYPTION_LEVEL_RECEIVED       │  enc_level 映射错误                │
+│                                        │  → 确保 0=Initial, 2=Handshake,    │
+│                                        │     3=Application                  │
+│                                        │  → 不要把 1 当 Handshake!           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  AEAD open failed                      │  解密失败                          │
+│                                        │  → 检查读写密钥方向是否正确        │
+│                                        │  → 检查 nonce/PN 编码是否一致      │
+│                                        │  → 检查 client_dcid 是否双方一致   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Level X not ready for encryption/     │  对应层密钥未安装                  │
+│  decryption                            │  → Initial:  调用 install_initial   │
+│                                        │     _secrets                       │
+│                                        │  → 其他层:  等 set_*_secret 回调    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  SSL_do_handshake failed               │  握手出错                          │
+│                                        │  → 调用 ERR_print_errors_fp 查看   │
+│                                        │  → 检查证书/私钥是否加载           │
+│                                        │  → 检查 ALPN/TP 配置               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  add_handshake_data 只回调 level=0     │  TLS 状态机没推进                  │
+│                                        │  → 确保 Initial 解密成功           │
+│                                        │  → 确保调用了 SSL_provide_quic     │
+│                                        │     _data + SSL_do_handshake       │
+│                                        │  → 检查证书是否加载                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+十、扩展方向
+
+如果你想让这个演示更接近真实 QUIC，可以继续完善：
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  功能                        │  说明                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Header Protection (HP)      │  对包头做掩码，隐藏 PN 等字段   │
+├─────────────────────────────────────────────────────────────────┤
+│  AEAD AAD                    │  把包头作为附加认证数据         │
+├─────────────────────────────────────────────────────────────────┤
+│  变长 Packet Number          │  根据与最大确认 PN 的差值编码   │
+├─────────────────────────────────────────────────────────────────┤
+│  丢包检测与重传              │  定时器 + ACK 机制              │
+├─────────────────────────────────────────────────────────────────┤
+│  拥塞控制                    │  CUBIC / BBR 等                 │
+├─────────────────────────────────────────────────────────────────┤
+│  0-RTT (Early Data)          │  会话恢复 + 重放防护            │
+├─────────────────────────────────────────────────────────────────┤
+│  Key Update                  │  1-RTT 密钥轮换                 │
+├─────────────────────────────────────────────────────────────────┤
+│  连接迁移                    │  IP/端口变化后继续通信          │
+├─────────────────────────────────────────────────────────────────┤
+│  Retry / 版本协商            │  防放大攻击 + 版本兼容          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+这份文档应该能帮助你理解整个握手流程和每个接口的作用。如果还有不清楚的地方，随时问我！

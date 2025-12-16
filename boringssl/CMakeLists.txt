@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 根据你的环境调整 BoringSSL 的头文件与库路径
-# 假设安装在 /usr/local/include 与 /usr/local/lib
 include_directories(/home/eular/Github/lsquic/boringssl/include)
 link_directories(/home/eular/Github/lsquic/boringssl/lib)
 
