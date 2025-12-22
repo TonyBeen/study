@@ -216,22 +216,24 @@ int configure_client_socket(int sockfd, int family) {
 int send_probe_packet(int sockfd, const ResolvedAddress *addr,
                       MtuProbeContext *ctx, uint32_t probe_size) {
     // 分配探测包缓冲区
-    uint8_t *buffer = (uint8_t *)malloc(probe_size);
+    size_t ip_payload_size = addr->family == AF_INET ? (probe_size - IP_HEADER_SIZE) : (probe_size - IPV6_HEADER_SIZE);
+    size_t payload_size = ip_payload_size - UDP_HEADER_SIZE;
+    uint8_t *buffer = (uint8_t *)malloc(payload_size);
     if (!buffer) {
         perror("[Client] 分配探测包缓冲区失败");
         return -1;
     }
 
     // 填充探测包
-    memset(buffer, 0xAA, probe_size);
-    
+    memset(buffer, 0xAA, payload_size);
+
     ProbeHeader *header = (ProbeHeader *)buffer;
     header->type = MSG_TYPE_PROBE_REQ;
     header->flags = 0;
     header->seq = htons(ctx->probe_seq);
-    header->probe_size = htonl(probe_size);
+    header->probe_size = htonl(payload_size);
     header->timestamp = htonl((uint32_t)get_timestamp_ms());
-    header->checksum = htonl(calculate_checksum(buffer, probe_size - sizeof(uint32_t)));
+    header->checksum = htonl(calculate_checksum(buffer, payload_size - sizeof(uint32_t)));
 
     // 获取正确的地址指针
     const struct sockaddr *sa = (addr->family == AF_INET) 
@@ -239,8 +241,7 @@ int send_probe_packet(int sockfd, const ResolvedAddress *addr,
         : (const struct sockaddr *)&addr->addr.v6;
 
     // 发送探测包
-    ssize_t sent = sendto(sockfd, buffer, probe_size, 0, sa, addr->addr_len);
-    
+    ssize_t sent = sendto(sockfd, buffer, payload_size, 0, sa, addr->addr_len);
     free(buffer);
 
     if (sent < 0) {
@@ -254,7 +255,7 @@ int send_probe_packet(int sockfd, const ResolvedAddress *addr,
 
     printf("[Client] 发送探测包:  序列号=%u, 大小=%u, 目标=%s\n", 
            ctx->probe_seq, probe_size, addr->ip_str);
-    
+
     ctx->last_probe_time = get_timestamp_ms();
     return 0;
 }
@@ -348,33 +349,32 @@ int test_server_connectivity(int sockfd, const ResolvedAddress *addr,
 }
 
 // 执行 MTU 探测
-int perform_mtu_discovery(int sockfd, const ResolvedAddress *addr,
-                          MtuProbeContext *ctx) {
+int perform_mtu_discovery(int sockfd, const ResolvedAddress *addr, MtuProbeContext *ctx) {
     printf("\n[Client] 开始 MTU 探测...\n");
     printf("[Client] 目标地址: %s\n", addr->ip_str);
     printf("[Client] 探测范围: [%u, %u]\n", ctx->probe_low, ctx->probe_high);
-    
+
     ctx->state = PROBE_STATE_SEARCHING;
-    
+
     while (g_running && ctx->state == PROBE_STATE_SEARCHING) {
         ctx->probe_target = calculate_next_probe_size(ctx);
-        
+
         if (ctx->probe_high - ctx->probe_low <= MTU_PROBE_STEP) {
             ctx->current_mtu = ctx->probe_low;
             ctx->state = PROBE_STATE_COMPLETE;
             printf("[Client] 探测完成，确定 MTU = %u\n", ctx->current_mtu);
             break;
         }
-        
-        printf("\n[Client] 探测目标: %u (范围: [%u, %u])\n", 
+
+        printf("\n[Client] 探测目标: %u (范围: [%u, %u])\n",
                ctx->probe_target, ctx->probe_low, ctx->probe_high);
-        
+
         ctx->retry_count = 0;
         bool probe_success = false;
-        
-        while (ctx->retry_count < MTU_PROBE_MAX_RETRY && ! probe_success) {
+
+        while (ctx->retry_count < MTU_PROBE_MAX_RETRY && !probe_success) {
             ctx->probe_seq++;
-            
+
             int send_ret = send_probe_packet(sockfd, addr, ctx, ctx->probe_target);
             if (send_ret == -2) {
                 printf("[Client] 本地检测到包过大，缩小探测范围\n");
@@ -399,15 +399,15 @@ int perform_mtu_discovery(int sockfd, const ResolvedAddress *addr,
                 ctx->retry_count++;
             }
         }
-        
+
         if (! probe_success && ctx->retry_count >= MTU_PROBE_MAX_RETRY) {
             printf("[Client] 探测失败，缩小探测范围\n");
             ctx->probe_high = ctx->probe_target - 1;
         }
-        
+
         usleep(100 * 1000);
     }
-    
+
     return ctx->current_mtu;
 }
 
@@ -604,7 +604,6 @@ int main(int argc, char *argv[]) {
 
     // 执行 MTU 探测
     int discovered_mtu = perform_mtu_discovery(sockfd, target_addr, &ctx);
-    
     if (discovered_mtu > 0 && g_running) {
         verify_final_mtu(sockfd, target_addr, &ctx);
     }

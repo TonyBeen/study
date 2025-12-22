@@ -9,7 +9,7 @@
 #define MTU_PROBE_MIN          1200    // 最小 MTU (QUIC 要求)
 #define MTU_PROBE_MAX_ETH      1500    // 以太网标准 MTU
 #define MTU_PROBE_MAX_JUMBO    9000    // 巨型帧 MTU
-#define MTU_PROBE_STEP         32      // 探测步进
+#define MTU_PROBE_STEP         16      // 探测步进, 增大此值可加快探测速度但会降低精度
 
 #define MTU_PROBE_TIMEOUT_MS   1000    // 探测超时时间 (ms)
 #define MTU_PROBE_MAX_RETRY    3       // 最大重试次数
