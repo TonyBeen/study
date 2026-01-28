@@ -1,3 +1,9 @@
+/*************************************************************************
+    > File Name: udp_client.cc
+    > Author: eular
+    > Brief:
+    > Created Time: Mon 24 Nov 2025 04:00:40 PM CST
+ ************************************************************************/
 
 #include <cstring>
 #include <iostream>
@@ -6,6 +12,8 @@
 
 #include <unistd.h>
 #include <linux/udp.h>
+#include <linux/socket.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -22,7 +30,7 @@
 int main()
 {
     // 配置参数
-    const size_t TOTAL_SIZE = 128 * 1024 - 1400; // 128KB
+    const size_t TOTAL_SIZE = 32 * 1024 - 1400; // 128KB
     const int MTU = 1500;
     const int IP_UDP_HDR = 20 + 8 + 8;
     const int GSO_PAYLOAD = MTU - IP_UDP_HDR; // 1472

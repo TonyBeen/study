@@ -19,8 +19,8 @@
 
 #include <unistd.h>
 
-#define TCP_SERVER_IP   "127.0.0.1"
-#define TCP_SERVER_PORT 12345
+#define TCP_SERVER_IP   "0.0.0.0"
+#define TCP_SERVER_PORT 14000
 
 int main(int argc, char **argv)
 {

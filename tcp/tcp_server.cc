@@ -22,7 +22,7 @@
 
 #include "common.h"
 
-#define PORT 13999
+#define PORT 14000
 
 void start_server(int server_sock) {
     struct sockaddr_in address;

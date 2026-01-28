@@ -77,7 +77,7 @@ int main() {
                              const unsigned char** out, unsigned char* outlen,
                              const unsigned char* in, unsigned int inlen, void* /*arg*/) -> int {
         // 遍历客户端的 wire-format 列表，寻找 "h3"
-        const char* want = "h3";
+        const char* want = "MyQuicProtocol";
         size_t want_len = std::strlen(want);
         unsigned int i = 0;
         while (i < inlen) {

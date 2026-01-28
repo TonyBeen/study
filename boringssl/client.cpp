@@ -67,7 +67,7 @@ int main() {
 
     // 设置 ALPN：例如选择 "h3"（与服务端一致）
     {
-        auto alpn = build_alpn_wire_format({"h3"});
+        auto alpn = build_alpn_wire_format({"MyQuicProtocol"});
         // 重要：wire-format，需要传入原始字节串
         if (SSL_set_alpn_protos(ssl, alpn.data(), (unsigned)alpn.size()) != 0) {
             std::fprintf(stderr, "[Client] SSL_set_alpn_protos failed\n");
